@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { useTokens } from '@/hooks/useTokens';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
@@ -10,28 +9,41 @@ import { SubscriptionCard } from '@/components/subscriptions/SubscriptionCard';
 import { TokenPackageCard } from '@/components/tokens/TokenPackageCard/TokenPackageCard';
 import { Heading } from '@/components/ui/heading';
 import { SubscriptionManagement } from '@/components/subscriptions/SubscriptionManagement';
-import { PaymentStatus } from '@/components/tokens/PaymentStatus';
 import { FaCoins, FaCrown } from 'react-icons/fa';
 import styles from './page.module.css';
 import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
+import { SubscriptionPlan } from '@prisma/client';
+import { TokenPackage } from '@/types/tokens';
 
-const Tokens = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+const Subscriptions = ({
+    subscriptionPlans,
+    tokensPackages,
+}: {
+    subscriptionPlans: SubscriptionPlan[];
+    tokensPackages: TokenPackage[];
+}) => {
+    // const router = useRouter();
+    // const searchParams = useSearchParams();
     const { data: session } = useSession();
 
-    const { balance, loading: tokensLoading, packages, refreshBalance } = useTokens();
+    const [dataLoaded, setDataLoaded] = useState(false);
+
+    const { balance, loading: tokensLoading } = useTokens();
     const {
-        plans,
+        // plans,
         activeSubscription,
         loading: subsLoading,
         createSubscription,
-        cancelSubscription,
         refreshSubscriptionStatus,
     } = useSubscriptions();
 
-    const [activePurchaseId, setActivePurchaseId] = useState<string | null>(null);
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    useEffect(() => {
+        if (!tokensLoading && !subsLoading) {
+            setDataLoaded(true);
+        }
+    }, [tokensLoading, subsLoading]);
 
     const handleSubscriptionPurchase = async (planId: string) => {
         if (!session?.user) {
@@ -144,130 +156,106 @@ const Tokens = () => {
         }
     };
 
-    useEffect(() => {
-        const purchaseId = searchParams.get('purchase');
-        if (purchaseId) {
-            setActivePurchaseId(purchaseId);
-        }
-    }, [searchParams]);
-
-    const handleTokenPurchase = (purchaseId: string) => {
-        setActivePurchaseId(purchaseId);
-    };
-
-    const handlePaymentSuccess = () => {
-        setActivePurchaseId(null);
-        refreshBalance();
-        router.replace('/tokens');
-    };
-
-    // const handleSubscriptionBuy = async (planId: string) => {
-    //     if (!session?.user) return;
-    //     const result = await createSubscription(planId);
-    //     if (result.success && result.paymentData && window.cp?.CloudPayments) {
-    //         const cp = new window.cp.CloudPayments();
-    //         cp.pay('charge', {
-    //             ...result.paymentData.cloudpaymentsData,
-    //             data: { subscriptionId: result.paymentData.subscriptionId, planId, userId: session.user.id },
-    //         });
-    //     }
-    // };
-
-    // const handleCancelSubscription = async () => {
-    //     if (!activeSubscription) return;
-    //     await cancelSubscription(activeSubscription.id);
-    //     refreshSubscriptionStatus();
-    // };
-
-    // const loading = tokensLoading || subsLoading;
-
     return (
         <div className={styles.container}>
             <div className={styles.content}>
                 <Heading title="Токены и подписка" description="Управляйте балансом и подпиской" />
 
-                {notification && (
-                    <div className={`${styles.notification} ${styles[notification.type]}`}>{notification.message}</div>
-                )}
-
-                {activePurchaseId && (
-                    <div className={styles.paymentStatusCard}>
-                        <h2 className={styles.sectionTitle}>Статус платежа</h2>
-                        <PaymentStatus
-                            purchaseId={activePurchaseId}
-                            onSuccess={handlePaymentSuccess}
-                            onError={() => setActivePurchaseId(null)}
-                        />
+                {!dataLoaded && (
+                    <div className={styles.loadingContainer}>
+                        <div className={styles.loadingSpinnerLarge}></div>
                     </div>
                 )}
+                {dataLoaded && (
+                    <>
+                        {notification && (
+                            <div className={`${styles.notification} ${styles[notification.type]}`}>
+                                {notification.message}
+                            </div>
+                        )}
 
-                {activeSubscription && activeSubscription.status !== 'expired' && (
-                    <SubscriptionManagement
-                        subscription={activeSubscription}
-                        loading={subsLoading}
-                        error={null}
-                        refreshSubscriptionStatus={refreshSubscriptionStatus}
-                        availablePlans={plans}
-                    />
-                )}
-
-                <div className={styles.balanceCard}>
-                    <h2 className={styles.sectionTitle}>Баланс токенов</h2>
-                    <div className={styles.balanceAmount}>
-                        <FaCoins className={styles.balanceIcon} />
-                        {formatTokenAmount(balance)}
-                    </div>
-                </div>
-
-                {(!activeSubscription || activeSubscription.status === 'expired') && (
-                    <div className={styles.subscriptionsSection}>
-                        <div className={styles.sectionHeader}>
-                            <h2 className={styles.sectionTitle}>
-                                <FaCrown className={styles.sectionIcon} />
-                                Планы подписки
-                            </h2>
-                            <div className={styles.recommendedBadge}>Рекомендуем</div>
-                        </div>
-                        <p className={styles.sectionDescription}>
-                            Подписка дает доступ к расширенным возможностям и снимает лимиты
-                        </p>
-                        <SubscriptionFeatures />
-                        <div className={styles.subscriptionsGrid}>
-                            {plans.map(plan => (
-                                <SubscriptionCard
-                                    key={plan.id}
-                                    plan={plan}
-                                    onSubscribe={handleSubscriptionPurchase}
-                                    isLoading={subsLoading}
-                                    isActive={false}
+                        {/* {activePurchaseId && (
+                            <div className={styles.paymentStatusCard}>
+                                <h2 className={styles.sectionTitle}>Статус платежа</h2>
+                                <PaymentStatus
+                                    purchaseId={activePurchaseId}
+                                    onSuccess={handlePaymentSuccess}
+                                    onError={() => setActivePurchaseId(null)}
                                 />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                            </div>
+                        )} */}
 
-                <div className={styles.packagesSection}>
-                    <div className={styles.sectionHeader}>
-                        <h2 className={styles.sectionTitle}>
-                            <FaCoins className={styles.sectionIcon} />
-                            Пакеты токенов
-                        </h2>
-                    </div>
-                    <p className={styles.sectionDescription}>Токены используются для AI-генерации контента и слайдов</p>
-                    <div className={styles.packagesGrid}>
-                        {packages.map(pkg => (
-                            <TokenPackageCard
-                                key={pkg.id}
-                                package={pkg}
-                                onPurchase={handleTokenPurchase}
-                                isLoading={false}
+                        {activeSubscription && activeSubscription.status !== 'expired' && (
+                            <SubscriptionManagement
+                                subscription={activeSubscription}
+                                loading={subsLoading}
+                                error={null}
+                                refreshSubscriptionStatus={refreshSubscriptionStatus}
+                                availablePlans={subscriptionPlans}
                             />
-                        ))}
-                    </div>
-                </div>
+                        )}
+
+                        <div className={styles.balanceCard}>
+                            <h2 className={styles.sectionTitle}>Баланс токенов</h2>
+                            <div className={styles.balanceAmount}>
+                                <FaCoins className={styles.balanceIcon} />
+                                {formatTokenAmount(balance)}
+                            </div>
+                        </div>
+
+                        {(!activeSubscription || activeSubscription.status === 'expired') && (
+                            <div className={styles.subscriptionsSection}>
+                                <div className={styles.sectionHeader}>
+                                    <h2 className={styles.sectionTitle}>
+                                        <FaCrown className={styles.sectionIcon} />
+                                        Планы подписки
+                                    </h2>
+                                    <div className={styles.recommendedBadge}>Рекомендуем</div>
+                                </div>
+                                <p className={styles.sectionDescription}>
+                                    Подписка дает доступ к расширенным возможностям и снимает лимиты
+                                </p>
+                                <SubscriptionFeatures />
+                                <div className={styles.subscriptionsGrid}>
+                                    {subscriptionPlans.map(plan => (
+                                        <SubscriptionCard
+                                            key={plan.id}
+                                            plan={plan}
+                                            onSubscribe={handleSubscriptionPurchase}
+                                            isLoading={subsLoading}
+                                            isActive={false}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className={styles.packagesSection}>
+                            <div className={styles.sectionHeader}>
+                                <h2 className={styles.sectionTitle}>
+                                    <FaCoins className={styles.sectionIcon} />
+                                    Пакеты токенов
+                                </h2>
+                            </div>
+                            <p className={styles.sectionDescription}>
+                                Токены используются для AI-генерации контента и слайдов
+                            </p>
+                            <div className={styles.packagesGrid}>
+                                {tokensPackages.map(pkg => (
+                                    <TokenPackageCard
+                                        key={pkg.id}
+                                        package={pkg}
+                                        // onPurchase={handleTokenPurchase}
+                                        isLoading={false}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
 };
 
-export default Tokens;
+export default Subscriptions;

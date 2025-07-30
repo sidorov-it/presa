@@ -12,14 +12,14 @@ export interface UserTokenBalance {
 export interface TokenPackage {
     id: string;
     name: string;
-    description?: string;
+    description?: string | null;
     tokens: number;
     price: number;
     currency: string;
     isActive: boolean;
     isPopular: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    // createdAt: Date;
+    // updatedAt: Date;
 }
 
 export interface TokenPurchase {

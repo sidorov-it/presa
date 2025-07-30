@@ -3,13 +3,13 @@ import { SubscriptionInterval, SubscriptionStatus } from '@prisma/client';
 export interface SubscriptionPlan {
     id: string;
     name: string;
-    description: string;
+    description?: string | null;
     interval: SubscriptionInterval;
     price: number;
     currency: string;
     isActive: boolean;
     isPopular?: boolean;
-    features: SubscriptionFeatures;
+    // features: SubscriptionFeatures;
 }
 
 export interface SubscriptionFeatures {
