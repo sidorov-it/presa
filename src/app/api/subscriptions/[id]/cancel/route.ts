@@ -74,7 +74,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             });
         }
     } catch (error) {
-        console.error('Error cancelling subscription:', error.message);
+        console.error('Error cancelling subscription:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             {
                 error: 'Failed to cancel subscription',

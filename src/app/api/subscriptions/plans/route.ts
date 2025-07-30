@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         // Fetch active subscription plans
         const plans = await prisma.subscriptionPlan.findMany({
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
             plans,
         });
     } catch (error) {
-        console.error('Error fetching subscription plans:', error.message);
+        console.error('Error fetching subscription plans:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             {
                 error: 'Failed to fetch subscription plans',

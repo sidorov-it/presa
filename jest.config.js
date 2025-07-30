@@ -15,7 +15,6 @@ const customJestConfig = {
     testEnvironment: 'node',
     preset: 'ts-jest',
     testPathIgnorePatterns: [
-        '<rootDir>/src/test/database.test.ts',
         '<rootDir>/src/utils/spec/',
         '<rootDir>/src/utils/rewriteSlide.test.ts',
         '<rootDir>/src/services/llm/gigaChat/',

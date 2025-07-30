@@ -6,8 +6,6 @@ import {
     FaTimesCircle,
     FaInfoCircle,
     FaExclamationTriangle,
-    FaUndo,
-    FaPlay,
 } from 'react-icons/fa';
 import { SubscriptionStatus } from '@prisma/client';
 import { UserSubscription, SubscriptionPlan } from '@/types/subscriptions';
@@ -99,7 +97,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     error,
     refreshSubscriptionStatus,
 }) => {
-    const [isRestarting, setIsRestarting] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
