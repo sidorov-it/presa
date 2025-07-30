@@ -42,9 +42,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
 
         if (recentFailedPayments.length === 0) {
-            return NextResponse.json({ 
-                error: 'No recent failed payments found for this subscription' 
-            }, { status: 400 });
+            return NextResponse.json(
+                {
+                    error: 'No recent failed payments found for this subscription',
+                },
+                { status: 400 }
+            );
         }
 
         // Create a new subscription to retry payment
@@ -59,21 +62,21 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             });
         } else {
             return NextResponse.json(
-                { 
-                    success: false, 
-                    error: result.error || 'Failed to create retry payment' 
-                }, 
+                {
+                    success: false,
+                    error: result.error || 'Failed to create retry payment',
+                },
                 { status: 400 }
             );
         }
     } catch (error) {
         console.error('Error retrying payment:', error);
         return NextResponse.json(
-            { 
-                success: false, 
-                error: 'Internal server error' 
-            }, 
+            {
+                success: false,
+                error: 'Internal server error',
+            },
             { status: 500 }
         );
     }
-} 
+}

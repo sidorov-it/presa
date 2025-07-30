@@ -15,8 +15,10 @@ const handlers: Record<string, any> = {
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ type: string }> }) {
     const { type } = await params;
+    console.log('[WEBHOOK] Cloudpayments webhook received', type);
     const handler = handlers[type];
     if (!handler || typeof handler.POST !== 'function') {
+        console.log('[WEBHOOK] Unsupported webhook type', type);
         return NextResponse.json({ error: 'Unsupported webhook type' }, { status: 400 });
     }
     return handler.POST(request);

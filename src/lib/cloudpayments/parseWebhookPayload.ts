@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { NextRequest } from 'next/server';
 
 export interface CloudPaymentsWebhookData {
@@ -61,7 +62,13 @@ export async function parseWebhookPayload(request: NextRequest): Promise<{
         RecurrenceType: formData.get('RecurrenceType') ? String(formData.get('RecurrenceType')) : undefined,
     };
 
-    console.log('webhookData', webhookData);
+    console.log(
+        `[CLOUDPAYMENTS] recurrent webhookData
+${Object.entries(webhookData)
+        .map(([key, value]) => `${key}:${value?.replaceAll('\n', '')}`)
+        .join('\n')}`
+    );
+
     let paymentData: Record<string, any> = {};
     if (webhookData.Data) {
         try {
@@ -95,13 +102,23 @@ export async function parseRecurrentWebhookPayload(request: NextRequest): Promis
         SuccessfulTransactionsNumber: Number(formData.get('SuccessfulTransactionsNumber') || 0),
         FailedTransactionsNumber: Number(formData.get('FailedTransactionsNumber') || 0),
         MaxPeriods: formData.get('MaxPeriods') ? Number(formData.get('MaxPeriods')) : undefined,
-        LastTransactionDate: formData.get('LastTransactionDate') ? String(formData.get('LastTransactionDate')) : undefined,
-        NextTransactionDate: formData.get('NextTransactionDate') ? String(formData.get('NextTransactionDate')) : undefined,
+        LastTransactionDate: formData.get('LastTransactionDate')
+            ? String(formData.get('LastTransactionDate'))
+            : undefined,
+        NextTransactionDate: formData.get('NextTransactionDate')
+            ? String(formData.get('NextTransactionDate'))
+            : undefined,
     };
 
-    console.log('recurrent webhookData', webhookData);
-    let paymentData: Record<string, any> = {};
-    
+    console.log(
+        `[CLOUDPAYMENTS] recurrent webhookData
+${Object.entries(webhookData)
+        .map(([key, value]) => `${key}:${value}`)
+        .join('\n')}`
+    );
+
+    const paymentData: Record<string, any> = {};
+
     // Для рекуррентных уведомлений может быть дополнительная информация в других полях
     const dataFields = ['Data', 'TestMode', 'DateTime'];
     dataFields.forEach(field => {

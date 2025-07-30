@@ -8,15 +8,11 @@ import styles from './TokenPackageCard.module.css';
 
 interface TokenPackageCardProps {
     package: TokenPackage;
-    onPurchase: (purchaseId: string) => void;
+    // onPurchase: (purchaseId: string) => void;
     isLoading: boolean;
 }
 
-export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({ 
-    package: pkg, 
-    onPurchase, 
-    isLoading 
-}) => {
+export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({ package: pkg, isLoading }) => {
     return (
         <Card isPopular={pkg.isPopular}>
             <div className={styles.packageContent}>
@@ -34,11 +30,11 @@ export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({
 
                 <CloudPaymentsPaymentButton
                     packageId={pkg.id}
-                    onSuccess={purchaseId => onPurchase(purchaseId)}
+                    // onSuccess={purchaseId => onPurchase(purchaseId)}
                     onError={error => console.error('Payment error:', error)}
                     isLoading={isLoading}
                 />
             </div>
         </Card>
     );
-}; 
+};

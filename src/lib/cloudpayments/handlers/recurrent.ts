@@ -32,10 +32,10 @@ async function handleRecurrentNotification(
     // Находим подписку по CloudPayments ID
     const subscription = await prisma.userSubscription.findFirst({
         where: {
-            cloudpaymentsId: webhookData.Id,
+            cloudpaymentsSubscriptionId: webhookData.Id,
             userId: webhookData.AccountId,
         },
-        include: { plan: true },
+        include: { subscriptionPlan: true },
     });
 
     if (!subscription) {
@@ -45,20 +45,7 @@ async function handleRecurrentNotification(
 
     // Обновляем статус подписки в соответствии с уведомлением
     let newStatus: SubscriptionStatus;
-    const updateData: any = {
-        metadata: {
-            ...(subscription.metadata as Record<string, any> | undefined),
-            lastRecurrentNotification: {
-                status: webhookData.Status,
-                successfulTransactions: webhookData.SuccessfulTransactionsNumber,
-                failedTransactions: webhookData.FailedTransactionsNumber,
-                lastTransactionDate: webhookData.LastTransactionDate,
-                nextTransactionDate: webhookData.NextTransactionDate,
-                receivedAt: new Date().toISOString(),
-                ...paymentData,
-            },
-        },
-    };
+    const updateData: any = {};
 
     switch (webhookData.Status) {
         case 'Active':
@@ -67,17 +54,13 @@ async function handleRecurrentNotification(
         case 'PastDue':
             // Просроченная подписка - оставляем активной, но добавляем флаг
             newStatus = SubscriptionStatus.active;
-            updateData.metadata.pastDue = true;
-            updateData.metadata.pastDueDate = new Date().toISOString();
             break;
         case 'Cancelled':
             newStatus = SubscriptionStatus.cancelled;
-            updateData.cancelledAt = new Date();
-            updateData.cancelReason = 'Cancelled via CloudPayments recurrent notification';
+            updateData.cloudpaymentsSubscriptionId = webhookData.Id;
             break;
         case 'Rejected':
             newStatus = SubscriptionStatus.failed;
-            updateData.metadata.rejectionReason = 'Rejected via CloudPayments recurrent notification';
             break;
         case 'Expired':
             newStatus = SubscriptionStatus.expired;

@@ -4,22 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './layout.module.css';
-import {
-    FaChalkboard,
-    FaHome,
-    FaPalette,
-    FaTrash,
-    FaCog,
-    FaCreditCard,
-    FaBars,
-    FaTimes,
-    FaComment,
-} from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import Logo from '@/components/icons/Logo/Logo';
 import UserMenu from '@/components/ui/UserMenu/UserMenu';
 import Footer from '@/components/ui/Footer';
 import { Tooltip } from '@/components/ui/tooltip';
-import { LuInfo } from 'react-icons/lu';
+import { LuCreditCard, LuHouse, LuInfo, LuLayoutTemplate, LuMessageSquare, LuPalette, LuSettings, LuTrash } from 'react-icons/lu';
 import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
 import { useSubscriptionHealthCheck } from '@/hooks/useSubscriptionHealthCheck';
 
@@ -42,38 +32,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {
             label: 'Мои презентации',
             path: '/dashboard',
-            icon: <FaHome size={20} />,
+            icon: <LuHouse size={20} />,
         },
         {
             label: 'Шаблоны',
             path: '/templates',
-            icon: <FaChalkboard size={20} />,
+            icon: <LuLayoutTemplate size={20} />,
         },
         {
             label: 'Темы',
             path: '/themes',
-            icon: <FaPalette size={20} />,
+            icon: <LuPalette size={20} />,
         },
         {
             label: 'Корзина',
             path: '/trash',
-            icon: <FaTrash size={20} />,
+            icon: <LuTrash size={20} />,
         },
         {
             label: 'Настройки',
             path: '/settings',
-            icon: <FaCog size={20} />,
+            icon: <LuSettings size={20} />,
         },
         {
             label: 'Оплата',
-            path: '/tokens',
-            icon: <FaCreditCard size={20} />,
+            path: '/subscriptions',
+            icon: <LuCreditCard size={20} />,
         },
         {
             label: 'Обратная связь',
             path: 'https://forms.yandex.ru/u/6879f43890fa7b0b0f2f43f1',
             tooltip: 'Поделиться мнением, предложить недостающий функционал, рассказать о проблемах',
-            icon: <FaComment size={20} />,
+            icon: <LuMessageSquare size={20} />,
         },
     ];
 

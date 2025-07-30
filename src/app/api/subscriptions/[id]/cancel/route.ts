@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 Authorization: `Basic ${authToken}`,
             },
             body: JSON.stringify({
-                Id: subscription.cloudpaymentsId,
+                Id: subscription.cloudpaymentsSubscriptionId,
             }),
         });
 
@@ -55,9 +55,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 where: { id: subscriptionId },
                 data: {
                     status: SubscriptionStatus.cancelled,
-                    cancelledAt: new Date(),
-                    cancelReason: 'User requested cancellation',
-                    // Keep the endDate as is - user can use subscription until it expires
                 },
             });
 

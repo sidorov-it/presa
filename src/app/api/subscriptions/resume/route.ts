@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { planId } = body; // Optional - if not provided, will use the same plan
+        const { subscriptionId, planId } = body; // Optional - if not provided, will use the same plan
 
-        const result = await resumeSubscription(session.user.id, planId);
+        const result = await resumeSubscription(session.user.id, subscriptionId, planId);
 
         if (result.success) {
             return NextResponse.json({
@@ -24,21 +24,21 @@ export async function POST(request: NextRequest) {
             });
         } else {
             return NextResponse.json(
-                { 
-                    success: false, 
-                    error: result.error || 'Failed to resume subscription' 
-                }, 
+                {
+                    success: false,
+                    error: result.error || 'Failed to resume subscription',
+                },
                 { status: 400 }
             );
         }
     } catch (error) {
         console.error('Error resuming subscription:', error);
         return NextResponse.json(
-            { 
-                success: false, 
-                error: 'Internal server error' 
-            }, 
+            {
+                success: false,
+                error: 'Internal server error',
+            },
             { status: 500 }
         );
     }
-} 
+}

@@ -381,7 +381,7 @@ const AiPresentationPage = () => {
                         <Box>
                             Недостаточно средств для создания презентации.{' '}
                             <Link
-                                href="/tokens"
+                                href="/subscriptions"
                                 target="_blank"
                                 style={{ color: '#a20101', textDecoration: 'underline' }}
                             >
@@ -462,7 +462,7 @@ const AiPresentationPage = () => {
                         <Box>
                             Недостаточно средств для создания презентации.{' '}
                             <Link
-                                href="/tokens"
+                                href="/subscriptions"
                                 target="_blank"
                                 style={{ color: '#a20101', textDecoration: 'underline' }}
                             >
@@ -630,7 +630,7 @@ const AiPresentationPage = () => {
                         <Box>
                             Недостаточно средств для создания презентации.{' '}
                             <Link
-                                href="/tokens"
+                                href="/subscriptions"
                                 target="_blank"
                                 style={{ color: '#a20101', textDecoration: 'underline' }}
                             >

@@ -47,7 +47,7 @@ export default function UserMenu() {
             content={
                 <div className={styles.menu}>
                     <div className={styles.balance}>
-                        <Link href="/tokens" className={styles.balanceLink}>
+                        <Link href="/subscriptions" className={styles.balanceLink}>
                             <LuCoins className={styles.balanceIcon} />
                             <TokenBalance balance={balance} loading={loading} variant="large" showIcon={false} />
                         </Link>

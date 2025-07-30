@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
-import { SubscriptionStatus } from '@prisma/client';
+import { SubscriptionPayment, SubscriptionStatus, UserSubscription } from '@prisma/client';
 import { CreateSubscriptionRequest, CreateSubscriptionResponse } from '@/types/subscriptions';
 import {
-    hasActiveSubscription,
     getCloudPaymentsInterval,
     generateSubscriptionReceipt,
     calculateSubscriptionEndDate,
+    validateAndSyncSubscriptionStatus,
+    calculateNextBillingDate,
 } from '@/utils/subscriptions';
 
 export async function POST(request: NextRequest) {
@@ -26,95 +27,151 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Plan ID is required' }, { status: 400 });
         }
 
-        // Check if user already has an active subscription
-        const hasActive = await hasActiveSubscription(session.user.id);
-        if (hasActive) {
-            return NextResponse.json({ error: 'User already has an active subscription' }, { status: 409 });
-        }
-
-        // Get subscription plan
-        const plan = await prisma.subscriptionPlan.findUnique({
+        // получаем план подписки
+        const subscriptionPlan = await prisma.subscriptionPlan.findUnique({
             where: { id: planId, isActive: true },
         });
 
-        if (!plan) {
+        // подписка не найдена
+        if (!subscriptionPlan) {
             return NextResponse.json({ error: 'Subscription plan not found' }, { status: 404 });
         }
 
-        // Create subscription record
-        const subscription = await prisma.userSubscription.create({
-            data: {
-                userId: session.user.id,
-                planId: plan.id,
-                status: SubscriptionStatus.pending,
-                startDate: new Date(),
-                endDate: new Date(), // Will be updated after successful payment
-                nextBillingDate: new Date(), // Will be updated after successful payment
-            },
+        await validateAndSyncSubscriptionStatus(session.user.id);
+
+        // получаем все подписки пользователя
+        const userSubscriptions = await prisma.userSubscription.findMany({
+            where: { userId: session.user.id },
         });
 
-        // Create initial payment record
-        await prisma.subscriptionPayment.create({
-            data: {
-                subscriptionId: subscription.id,
-                amount: plan.price,
-                currency: plan.currency,
-                status: 'pending',
-                billingStart: new Date(),
-                // billingEnd: new Date(),
-            },
-        });
+        // проверяем, есть ли уже активная подписка
+        const activeSubscription = userSubscriptions.find(
+            subscription => subscription.status === SubscriptionStatus.active
+        );
+
+        // уже есть активная подписка. новую не даем оплатить
+        if (activeSubscription) {
+            return NextResponse.json({ error: 'User already has an active subscription' }, { status: 409 });
+        }
+
+        // проверяем, есть ли подписка с таким планом в статусе pending?
+        const pendingSubscription = userSubscriptions.find(
+            subscription =>
+                subscription.status === SubscriptionStatus.pending &&
+                subscription.subscriptionPlanId === subscriptionPlan.id
+        );
+
+        let userSubscription: UserSubscription;
+        let payment: SubscriptionPayment | null = null;
+
+        // если есть подписка в статусе pending, обновляем даты
+        if (pendingSubscription) {
+            // обновляем startDate endDate updatedAt
+            userSubscription = await prisma.userSubscription.update({
+                where: { id: pendingSubscription.id },
+                data: {
+                    startDate: new Date(),
+                    endDate: calculateSubscriptionEndDate(new Date(), subscriptionPlan.interval),
+                    nextBillingDate: calculateNextBillingDate(new Date(), subscriptionPlan.interval),
+                    updatedAt: new Date(),
+                },
+            });
+
+            // проверяем, есть ли уже счет на оплату
+            payment = await prisma.subscriptionPayment.findFirst({
+                where: { userSubscriptionId: pendingSubscription.id },
+            });
+
+            // если нет - создаем
+
+            if (!payment) {
+                payment = await prisma.subscriptionPayment.create({
+                    data: {
+                        userSubscriptionId: pendingSubscription.id,
+                        subscriptionPlanId: subscriptionPlan.id,
+                        amount: subscriptionPlan.price,
+                        currency: subscriptionPlan.currency,
+                        billingStart: new Date(),
+                        billingEnd: calculateSubscriptionEndDate(new Date(), subscriptionPlan.interval),
+                        status: 'pending',
+                        // userSubscriptionId: pendingSubscription.id,
+                        // subscriptionPlanId: subscriptionPlan.id,
+                        // amount: subscriptionPlan.price,
+                        // currency: subscriptionPlan.currency,
+                        // status: 'pending',
+                        // billingStart: new Date(),
+                    },
+                });
+            } else {
+                payment = await prisma.subscriptionPayment.update({
+                    where: { id: payment.id },
+                    data: {
+                        billingStart: new Date(),
+                        billingEnd: calculateSubscriptionEndDate(new Date(), subscriptionPlan.interval),
+                    },
+                });
+            }
+        } else {
+            // создаем новую подписку
+            userSubscription = await prisma.userSubscription.create({
+                data: {
+                    userId: session.user.id,
+                    subscriptionPlanId: subscriptionPlan.id,
+                    status: SubscriptionStatus.pending,
+                    startDate: new Date(),
+                    endDate: calculateSubscriptionEndDate(new Date(), subscriptionPlan.interval),
+                    nextBillingDate: calculateNextBillingDate(new Date(), subscriptionPlan.interval),
+                },
+            });
+
+            payment = await prisma.subscriptionPayment.create({
+                data: {
+                    userSubscriptionId: userSubscription.id,
+                    subscriptionPlanId: subscriptionPlan.id,
+                    amount: subscriptionPlan.price,
+                    currency: subscriptionPlan.currency,
+                    status: 'pending',
+                    billingStart: new Date(),
+                },
+            });
+        }
 
         // Get CloudPayments recurrent configuration
-        const recurrentConfig = getCloudPaymentsInterval(plan.interval);
-
-        // Calculate start date for recurrent payments (next billing cycle)
-        const nextBillingDate = calculateSubscriptionEndDate(new Date(), plan.interval);
+        const recurrentConfig = getCloudPaymentsInterval(subscriptionPlan.interval);
+        const nextBillingDate = calculateNextBillingDate(new Date(), subscriptionPlan.interval);
 
         // Generate receipt for CloudPayments
-        const receipt = generateSubscriptionReceipt(plan, session.user.email);
+        const receipt = generateSubscriptionReceipt(subscriptionPlan, session.user.email);
 
         console.log('Subscription creation details:', {
-            subscriptionId: subscription.id,
-            planId: plan.id,
-            planName: plan.name,
-            planPrice: plan.price,
-            planInterval: plan.interval,
+            userSubscriptionId: userSubscription.id,
+            planId: subscriptionPlan.id,
+            planName: subscriptionPlan.name,
+            planPrice: subscriptionPlan.price,
+            planInterval: subscriptionPlan.interval,
             recurrentConfig,
-            nextBillingDate: nextBillingDate.toISOString(),
             userId: session.user.id,
             userEmail: session.user.email,
         });
 
-        console.log('Generated receipt:', JSON.stringify(receipt, null, 2));
-        console.log('CloudPayments Public ID:', process.env.CLOUDPAYMENTS_PUBLIC_ID);
-
         const response: CreateSubscriptionResponse = {
             success: true,
-            subscriptionId: subscription.id,
+            publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!,
+
+            // subscriptionId: subscription.id,
             paymentData: {
-                subscriptionId: subscription.id,
-                amount: plan.price.toString(),
-                currency: plan.currency,
-                description: `Подписка ${plan.name}`,
-                cloudpaymentsData: {
-                    publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!,
-                    description: `Подписка ${plan.name}`,
-                    amount: plan.price,
-                    currency: plan.currency.toUpperCase(),
-                    invoiceId: subscription.id,
-                    accountId: session.user.id,
-                    skin: 'modern',
-                    data: {
-                        subscriptionId: subscription.id,
-                        planId: plan.id,
-                        userId: session.user.id,
-                    },
-                },
+                userSubscriptionId: userSubscription.id,
+                amount: subscriptionPlan.price.toString(),
+                currency: subscriptionPlan.currency.toUpperCase(),
+                description: `Подписка ${subscriptionPlan.name}`,
+                invoiceId: payment.id,
+                userId: session.user.id,
+                planId: subscriptionPlan.id,
+
                 recurrentData: {
                     period: recurrentConfig.period,
                     interval: recurrentConfig.interval,
-                    amount: plan.price,
+                    amount: subscriptionPlan.price,
                     startDate: nextBillingDate.toISOString(),
                     maxPeriods: undefined, // Unlimited recurring payments
                     receipt,

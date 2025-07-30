@@ -18,11 +18,11 @@ export const CloudPaymentsPaymentButton: React.FC<CloudPaymentsPaymentButtonProp
     isLoading = false,
     className = '',
 }) => {
-    const { createPayment, loading, error } = useCloudPaymentsPayment();
+    const { createTokensPayment, loading } = useCloudPaymentsPayment();
 
     const handlePayment = async () => {
         try {
-            const paymentResponse = await createPayment({
+            const paymentResponse = await createTokensPayment({
                 packageId,
                 returnUrl: `${window.location.origin}/tokens`,
             });

@@ -20,7 +20,7 @@ export const useCloudPaymentsPayment = () => {
     const [error, setError] = useState<string | null>(null);
 
     // Создание платежа и открытие CloudPayments виджета
-    const createPayment = useCallback(
+    const createTokensPayment = useCallback(
         async (paymentData: PaymentData): Promise<PaymentResponse> => {
             setLoading(true);
             setError(null);
@@ -84,7 +84,7 @@ export const useCloudPaymentsPayment = () => {
 
                 return {
                     purchaseId: result.purchaseId,
-                    // publicId: result.confirmationUrl,
+                    publicId: result.confirmationUrl,
                     amount: result.amount,
                     currency: result.currency,
                     description: result.description,
@@ -122,7 +122,7 @@ export const useCloudPaymentsPayment = () => {
     }, []);
 
     return {
-        createPayment,
+        createTokensPayment,
         checkPaymentStatus,
         loading,
         error,
