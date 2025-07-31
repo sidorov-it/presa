@@ -141,8 +141,11 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
                     </p>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Scenario Name *</label>
+                        <label htmlFor="scenario-name" className={styles.formLabel}>
+                            Scenario Name *
+                        </label>
                         <input
+                            id="scenario-name"
                             type="text"
                             className={styles.formInput}
                             value={scenarioName}
@@ -153,8 +156,11 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Description</label>
+                        <label htmlFor="scenario-description" className={styles.formLabel}>
+                            Description
+                        </label>
                         <textarea
+                            id="scenario-description"
                             className={styles.formTextarea}
                             value={scenarioDescription}
                             onChange={e => setScenarioDescription(e.target.value)}

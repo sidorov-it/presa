@@ -2,7 +2,7 @@ import React from 'react';
 import { TokenPackage } from '@/types/tokens';
 import { FaCoins } from 'react-icons/fa';
 import { formatTokenAmount } from '@/utils/formatTokenAmount';
-import { Card } from '@/components/ui/Card/Card';
+import { ProductCard } from '@/components/ui/ProductCard/ProductCard';
 import { CloudPaymentsPaymentButton } from '@/components/tokens/CloudPaymentsPaymentButton';
 import styles from './TokenPackageCard.module.css';
 
@@ -14,7 +14,7 @@ interface TokenPackageCardProps {
 
 export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({ package: pkg, isLoading }) => {
     return (
-        <Card isPopular={pkg.isPopular}>
+        <ProductCard isPopular={pkg.isPopular}>
             <div className={styles.packageContent}>
                 <h3 className={styles.packageName}>{pkg.name}</h3>
                 {pkg.description && <p className={styles.packageDescription}>{pkg.description}</p>}
@@ -35,6 +35,6 @@ export const TokenPackageCard: React.FC<TokenPackageCardProps> = ({ package: pkg
                     isLoading={isLoading}
                 />
             </div>
-        </Card>
+        </ProductCard>
     );
 };

@@ -72,6 +72,9 @@ export class GigaChatService implements LLMService {
             },
         ];
     }
+    getTokensCount(): Promise<number> {
+        throw new Error('Method not implemented.');
+    }
 
     private calculateCost(tokens: number): number {
         return (tokens / 1000) * COST_PER_1K_TOKENS;
@@ -91,7 +94,9 @@ export class GigaChatService implements LLMService {
             requireFunctionCall?: boolean;
             __attemptCount?: number;
             requestId: string;
-        } = {}
+        } = {
+            requestId: ''
+        }
     ): Promise<LLMResponse> {
         const startTime = performance.now();
         let cached = false;

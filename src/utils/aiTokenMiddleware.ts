@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
 import { getTokenCostForOperation, TOKEN_COSTS } from '@/utils/getTokenCostForOperation';
 import logger from '@/utils/logger';
+import { handleApiError } from './errorHandler';
 
 interface AIOperationConfig {
     operation: keyof typeof TOKEN_COSTS;
@@ -103,14 +104,7 @@ export async function withTokenDeduction<T>(
             tokensUsed: requiredTokens,
         });
     } catch (error) {
-        logger.error(`Error in AI operation: ${error?.message} ${error?.stack}`);
-        return NextResponse.json(
-            {
-                error: 'Internal server error',
-                details: error instanceof Error ? error.message : 'Unknown error',
-            },
-            { status: 500 }
-        );
+        return handleApiError(error, 'AI operation', 'withTokenDeduction');
     }
 }
 

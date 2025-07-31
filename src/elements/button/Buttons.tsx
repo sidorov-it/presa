@@ -6,8 +6,8 @@ import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import styles from './Buttons.module.css';
 import { generateId } from '@/utils/id';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
-import { useUIStateStore } from '@/store/uiStateStore';
-import { useShallow } from 'zustand/react/shallow';
+// import { useUIStateStore } from '@/store/uiStateStore';
+// import { useShallow } from 'zustand/react/shallow';
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import { getContrastingTextColor } from '@/utils/themeUtils';
 import Portal from '@/components/Portal';
@@ -32,13 +32,13 @@ export default function Buttons({ elementId, presentationId, slideId, layoutId, 
     const buttonRefs = useRef<Record<string, HTMLDivElement | null>>({});
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const [hovered, setHovered] = useState(false);
-    const isSelected = useUIStateStore(useShallow(state => state.selectedElementId === elementId));
-    const isMenuOpen = useUIStateStore(
-        useShallow(state => state.isContextMenuOpen && state.selectedElementId === elementId)
-    );
+    // const [hovered, setHovered] = useState(false);
+    // const isSelected = useUIStateStore(useShallow(state => state.selectedElementId === elementId));
+    // const isMenuOpen = useUIStateStore(
+    //     useShallow(state => state.isContextMenuOpen && state.selectedElementId === elementId)
+    // );
 
-    const itemRef = useRef<HTMLDivElement>(null);
+    // const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
 
     const setRef = (id: string) => (el: HTMLDivElement | null) => {
@@ -192,7 +192,7 @@ export default function Buttons({ elementId, presentationId, slideId, layoutId, 
             className={`${styles.container} ${isFocused ? styles.focused : ''} ${element.alignment ? styles[element.alignment] : ''}`}
         >
             {element.items.map((item, index) => {
-                const backgroundColor = item?.color;
+                // const backgroundColor = item?.color;
                 const style: React.CSSProperties = {};
 
                 // если filled, то backgroundColor - primary-accent, color - contrastColor

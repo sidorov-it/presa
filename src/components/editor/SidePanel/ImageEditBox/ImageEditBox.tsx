@@ -180,55 +180,6 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
         disabled: isLoading,
     });
 
-    const handleUpdateLink = async (link: string) => {
-        if (!link) {
-            setImageUrlLocal('');
-            onUpdateLink('', false);
-            return;
-        }
-
-        try {
-            const url = new URL(link);
-            const isExternalUrl = !url.hostname.includes(window.location.hostname);
-
-            if (isExternalUrl) {
-                setIsLoading(true);
-                setError('');
-
-                const imageResponse = await fetch(link);
-                if (!imageResponse.ok) {
-                    throw new Error('Не удалось загрузить изображение');
-                }
-
-                const blob = await imageResponse.blob();
-                const formData = new FormData();
-                formData.append('file', blob, 'image.' + blob.type.split('/')[1]);
-
-                const response = await fetch('/api/assets/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    throw new Error('Не удалось сохранить изображение');
-                }
-
-                const data = await response.json();
-                onUpdateLink(data.url, true);
-                setImageUrlLocal(data.url);
-                setError('');
-            } else {
-                onUpdateLink(link, false);
-                setImageUrlLocal(link);
-            }
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
-            setImageUrlLocal(imageUrl);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     const handleReplaceImageClick = useCallback(() => {
         onClearImage();
         setImageUrlLocal('');

@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         },
         {
             label: 'Оплата',
-            path: '/subscriptions',
+            path: '/payment',
             icon: <LuCreditCard size={20} />,
         },
         {

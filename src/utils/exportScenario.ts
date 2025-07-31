@@ -35,36 +35,6 @@ interface MockGPTResponse {
 }
 
 /**
- * Extract template ID from prompt text
- */
-function extractTemplateId(prompt: string): string | null {
-    // Look for template mentions in the prompt
-    const templateMatches = prompt.match(/шаблон[а-я\s]*:?\s*([a-z-]+)/i);
-    if (templateMatches) {
-        return templateMatches[1];
-    }
-
-    // Look for common template patterns
-    const patterns = [
-        { pattern: /двухколон|two.column/i, template: 'two-columns' },
-        { pattern: /приветств|welcome/i, template: 'welcome-slide' },
-        { pattern: /финальн|final|контакт/i, template: 'final-slide-contacts' },
-        { pattern: /диаграмм|chart/i, template: 'chart' },
-        { pattern: /умн[а-я]*\s*макет|smart.layout/i, template: 'smart-layout' },
-        { pattern: /изображени[а-я]*.*текст|image.*text/i, template: 'image-text' },
-        { pattern: /текст.*изображени|text.*image/i, template: 'text-image' },
-    ];
-
-    for (const { pattern, template } of patterns) {
-        if (pattern.test(prompt)) {
-            return template;
-        }
-    }
-
-    return null;
-}
-
-/**
  * Generate trigger for a request
  */
 function generateTrigger(request: LLMRequest): MockGPTResponse['trigger'] {

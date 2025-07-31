@@ -1,10 +1,9 @@
 import { Tiptap } from '@/components/tiptap/Tiptap';
-import { SmartLayoutElement, TipTapRefs } from '@/types';
+import { TipTapRefs } from '@/types';
 import { RefObject, useMemo } from 'react';
 import { HiPlus } from 'react-icons/hi';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import TimelineMenu from './TimelineMenu';
-import { usePresentationStore } from '@/store/presentationStore';
 
 import styles from './Timeline.module.css';
 import { useUIStateStore } from '@/store/uiStateStore';
@@ -60,21 +59,7 @@ const TimelineHorizontalContent = ({
     elementRef?: RefObject<HTMLDivElement>;
     isLastItem: boolean;
 }) => {
-    // Get current item data for styling
-    // const element = usePresentationStore(
-    //     state => state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement
-    // );
-    const currentItem = usePresentationStore(state =>
-        (state.getElement(presentationId, slideId, layoutId, elementId) as SmartLayoutElement).items?.find(
-            item => item.id === itemId
-        )
-    );
-
     const isSelected = useUIStateStore(state => state.selectedSmartLayoutItemId === itemId);
-    // const currentItem = element?;
-
-    // Calculate the position for the second line items in two sides mode
-    // to align them with their corresponding timeline points
     const itemStyle: { width: string; marginLeft?: string; marginRight?: string | number } = useMemo(() => {
         // Base style depending on direction
         const baseStyle =

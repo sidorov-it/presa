@@ -6,9 +6,9 @@ import { performSubscriptionHealthCheck } from '@/utils/subscriptions';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
-        const { webhookData, paymentData } = await parseRecurrentWebhookPayload(request);
+        const { webhookData } = await parseRecurrentWebhookPayload(request);
 
-        await handleRecurrentNotification(webhookData, paymentData);
+        await handleRecurrentNotification(webhookData);
 
         return NextResponse.json({ code: 0 });
     } catch (error) {
@@ -17,10 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 }
 
-async function handleRecurrentNotification(
-    webhookData: CloudPaymentsRecurrentWebhookData,
-    paymentData: Record<string, any>
-) {
+async function handleRecurrentNotification(webhookData: CloudPaymentsRecurrentWebhookData) {
     console.log('Processing recurrent notification:', webhookData);
 
     // Validate required fields to prevent Prisma errors

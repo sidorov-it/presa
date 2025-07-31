@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable no-nested-ternary */
 import fs from 'fs';
 import path from 'path';
 
@@ -100,7 +102,7 @@ export function createScenarioFromLogs(
             ? { type: 'function_name', value: entry.functionCall }
             : entry.templateId
               ? { type: 'template_id', value: entry.templateId }
-                : { type: 'prompt_contains', value: entry.prompt.substring(0, 50) },
+              : { type: 'prompt_contains', value: entry.prompt.substring(0, 50) },
         response: entry.response,
     }));
 

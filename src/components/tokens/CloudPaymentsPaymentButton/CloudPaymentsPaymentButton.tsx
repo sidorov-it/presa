@@ -18,7 +18,7 @@ export const CloudPaymentsPaymentButton: React.FC<CloudPaymentsPaymentButtonProp
     isLoading = false,
     className = '',
 }) => {
-    const { createTokensPayment } = useTokens();
+    const { createTokensPayment, loading } = useTokens();
 
     const handlePayment = async () => {
         try {

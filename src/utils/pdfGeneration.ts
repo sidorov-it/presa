@@ -7,12 +7,6 @@ import path from 'path';
 import { PdfGenerationStatus } from '@prisma/client';
 import { getUploadPath } from './uploadPath';
 
-function encodeRFC5987(v: string) {
-    return encodeURIComponent(v)
-        .replace(/['()]/g, escape) // %27 %28 %29
-        .replace(/\*/g, '%2A');
-}
-
 // Функция для транслитерации кириллицы и очистки имени файла
 function sanitizeFileName(fileName: string): string {
     // Словарь для транслитерации кириллицы

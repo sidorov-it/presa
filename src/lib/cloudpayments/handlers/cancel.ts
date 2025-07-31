@@ -9,7 +9,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const isSubscription = Boolean(webhookData.SubscriptionId) || Boolean(paymentData.subscriptionId);
 
         if (isSubscription) {
-            await handleSubscriptionCancellation(webhookData, paymentData);
+            await handleSubscriptionCancellation(webhookData);
         }
 
         return NextResponse.json({ code: 0 });
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 }
 
-async function handleSubscriptionCancellation(webhookData: CloudPaymentsWebhookData, paymentData: Record<string, any>) {
+async function handleSubscriptionCancellation(webhookData: CloudPaymentsWebhookData) {
     // Validate required fields
     if (!webhookData.SubscriptionId || !webhookData.AccountId) {
         console.warn('Invalid subscription cancellation webhook data: missing SubscriptionId or AccountId');

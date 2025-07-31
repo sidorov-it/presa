@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Heading } from '@/components/ui/heading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/ProductCard/ProductCard';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { useThemeStore } from '@/store/themeStore';

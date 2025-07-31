@@ -71,9 +71,7 @@ export const authOptions: NextAuthOptions = {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
             },
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            async authorize(credentials, req) {
+            async authorize(credentials) {
                 if (!credentials?.email || !credentials.password) {
                     logger.warn('[AUTH] Missing credentials', {
                         hasEmail: !!credentials?.email,
@@ -209,6 +207,8 @@ export const authOptions: NextAuthOptions = {
                     }
 
                     // Use transaction to ensure atomicity
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     const result = await prisma.$transaction(async (tx: typeof prisma) => {
                         const newUser = await tx.user.create({
                             data: {
