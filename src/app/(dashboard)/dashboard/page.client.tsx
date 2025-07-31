@@ -14,6 +14,7 @@ import { pluralize, formatRelativeTime } from '@/utils/helpers';
 import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
 import { Heading } from '@/components/ui/heading';
+import SubscriptionStatus from '@/components/ui/SubscriptionStatus';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 
@@ -244,6 +245,7 @@ export default function DashboardPage() {
                     title="Мои презентации"
                     description="Управление и редактирование ваших презентаций"
                     withoutMargin={true}
+                    rightElement={<SubscriptionStatus showDetails={true} />}
                 />
                 <div className={styles.buttonGroup}>
                     <Button variant="premium" onClick={handleCreateWithAI}>

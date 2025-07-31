@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserSubscription, CreateSubscriptionRequest, CreateSubscriptionResponse } from '@/types/subscriptions';
+import { invalidateSubscriptionCache } from './useSubscriptionCheck';
 
 interface UseSubscriptionsReturn {
     activeSubscription: UserSubscription | null;
@@ -22,6 +23,8 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             if (response.ok) {
                 const data = await response.json();
                 setActiveSubscription(data.subscription || null);
+                // Инвалидируем кеш легковесного хука
+                invalidateSubscriptionCache();
             } else {
                 const errorData = await response.json();
                 setError(errorData.error || 'Failed to load subscription status');

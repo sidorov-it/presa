@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { FaSignOutAlt } from 'react-icons/fa';
+import { FaSignOutAlt, FaCrown } from 'react-icons/fa';
 import Popover from '../Popover';
 import { useTokens } from '@/hooks/useTokens';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 import TokenBalance from '@/components/tokens/TokenBalance';
 import styles from './UserMenu.module.css';
 import { LuCoins } from 'react-icons/lu';
@@ -11,6 +12,7 @@ import { LuCoins } from 'react-icons/lu';
 export default function UserMenu() {
     const { data: session } = useSession();
     const { balance, loading } = useTokens();
+    const { hasActiveSubscription } = useSubscriptionCheck();
     const [isOpen, setIsOpen] = useState(false);
 
     const handleSignOut = async () => {
@@ -40,7 +42,12 @@ export default function UserMenu() {
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label="Открыть меню пользователя"
                 >
-                    <span className={styles.avatar}>{initials}</span>
+                    <div className={styles.avatarContainer}>
+                        <span className={styles.avatar}>{initials}</span>
+                        {hasActiveSubscription && (
+                            <FaCrown className={styles.subscriptionBadge} title="Активная подписка" />
+                        )}
+                    </div>
                     <span className={styles.userName}>{userLabel}</span>
                 </button>
             }

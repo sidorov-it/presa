@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaCrown } from 'react-icons/fa';
-import styles from './Card.module.css';
+import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
     children: React.ReactNode;

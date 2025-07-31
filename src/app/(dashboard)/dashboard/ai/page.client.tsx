@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
     Box,
     Stack,
@@ -17,10 +17,11 @@ import {
 } from '@chakra-ui/react';
 // import * as Select from '@chakra-ui/react/components/select';
 import { Portal } from '@chakra-ui/react';
-import { FaPlus, FaTrash, FaGripVertical, FaFileAlt, FaEdit, FaUpload, FaClipboardList } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaGripVertical, FaFileAlt, FaEdit, FaUpload, FaClipboardList, FaCrown } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 import GenerationLoader from '@/components/ui/GenerationLoader';
 import {
     DndContext,
@@ -220,10 +221,11 @@ export const CONTENT_AMOUNT_OPTIONS = [
     { value: 'detailed', label: 'Подробный' },
 ];
 
-const SLIDES_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10];
+const SLIDES_OPTIONS_PREMIUM = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 const AiPresentationPage = () => {
     const router = useRouter();
+    const { hasActiveSubscription, features } = useSubscriptionCheck();
     const [step, setStep] = useState<Step>('method');
     const [creationMethod, setCreationMethod] = useState<CreationMethod | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -577,9 +579,33 @@ const AiPresentationPage = () => {
         }
     };
 
-    const slideOptions = createListCollection({
-        items: SLIDES_OPTIONS.map(num => ({ value: String(num), label: String(num) })),
-    });
+    // Создаем опции слайдов с информацией о доступности
+    const slideOptions = useMemo(
+        () =>
+            createListCollection({
+                items: SLIDES_OPTIONS_PREMIUM.map(num => ({
+                    value: String(num),
+                    label: String(num),
+                    disabled: num > 10 && !hasActiveSubscription,
+                })),
+            }),
+        [hasActiveSubscription]
+    );
+
+    // Обработчик изменения количества слайдов с проверкой подписки
+    const handleSlidesChange = (value: string) => {
+        const selectedSlides = Number(value);
+
+        // Проверяем, что опция не заблокирована
+        if (selectedSlides > 10 && !hasActiveSubscription) {
+            toast.error(
+                `Для создания ${selectedSlides} слайдов требуется подписка. Максимум без подписки: 10 слайдов.`
+            );
+            return;
+        }
+
+        setNumSlides(selectedSlides);
+    };
 
     const toneOptions = createListCollection({
         items: TONE_OPTIONS.map(opt => ({ value: opt.value, label: opt.label })),
@@ -876,7 +902,7 @@ const AiPresentationPage = () => {
                                     <Select.Root
                                         collection={slideOptions}
                                         value={[String(numSlides)]}
-                                        onValueChange={value => setNumSlides(Number(value.value[0]))}
+                                        onValueChange={value => handleSlidesChange(value.value[0])}
                                         size="sm"
                                         width="100%"
                                     >
@@ -894,8 +920,22 @@ const AiPresentationPage = () => {
                                             <Select.Positioner>
                                                 <Select.Content>
                                                     {slideOptions.items.map(option => (
-                                                        <Select.Item item={option} key={option.value}>
-                                                            {option.label}
+                                                        <Select.Item
+                                                            item={option}
+                                                            key={option.value}
+                                                            style={{
+                                                                opacity: option.disabled ? 0.5 : 1,
+                                                                cursor: option.disabled ? 'not-allowed' : 'pointer',
+                                                                color: option.disabled ? '#9ca3af' : 'inherit',
+                                                                pointerEvents: option.disabled ? 'none' : 'auto',
+                                                            }}
+                                                        >
+                                                            <Flex alignItems="center" gap="8px">
+                                                                {option.label}
+                                                                {option.disabled && (
+                                                                    <FaCrown size={12} color="#fbbf24" />
+                                                                )}
+                                                            </Flex>
                                                             <Select.ItemIndicator />
                                                         </Select.Item>
                                                     ))}
@@ -1173,6 +1213,36 @@ const AiPresentationPage = () => {
                             </Flex>
                         </Stack>
 
+                        {/* Информация о подписке */}
+                        {!hasActiveSubscription && (
+                            <Card.Root backgroundColor="blue.50" borderColor="blue.200" marginTop="16px">
+                                <Card.Body>
+                                    <Flex alignItems="center" gap="8px">
+                                        <FaCrown color="#3182ce" />
+                                        <Text fontSize="sm" color="blue.700">
+                                            <strong>Получите больше возможностей с подпиской:</strong>
+                                        </Text>
+                                    </Flex>
+                                    <Text fontSize="sm" color="blue.600" marginTop="4px">
+                                        • До {SLIDES_OPTIONS_PREMIUM[SLIDES_OPTIONS_PREMIUM.length - 1]} слайдов вместо{' '}
+                                        {features.maxSlides}
+                                        <br />
+                                        • Без водяного знака при экспорте
+                                        <br />• Приоритетная обработка запросов
+                                    </Text>
+                                    <Link
+                                        href="/payment"
+                                        color="blue.600"
+                                        fontSize="sm"
+                                        marginTop="8px"
+                                        display="inline-block"
+                                    >
+                                        Оформить подписку →
+                                    </Link>
+                                </Card.Body>
+                            </Card.Root>
+                        )}
+
                         {error && (
                             <Text color="red.500" marginTop="16px">
                                 {error}
@@ -1244,7 +1314,7 @@ const AiPresentationPage = () => {
                                 <Select.Root
                                     collection={slideOptions}
                                     value={[String(numSlides)]}
-                                    onValueChange={value => setNumSlides(Number(value.value[0]))}
+                                    onValueChange={value => handleSlidesChange(value.value[0])}
                                     size="sm"
                                     width="100%"
                                 >
@@ -1262,8 +1332,20 @@ const AiPresentationPage = () => {
                                         <Select.Positioner>
                                             <Select.Content>
                                                 {slideOptions.items.map(option => (
-                                                    <Select.Item item={option} key={option.value}>
-                                                        {option.label}
+                                                    <Select.Item
+                                                        item={option}
+                                                        key={option.value}
+                                                        style={{
+                                                            opacity: option.disabled ? 0.5 : 1,
+                                                            cursor: option.disabled ? 'not-allowed' : 'pointer',
+                                                            color: option.disabled ? '#9ca3af' : 'inherit',
+                                                            pointerEvents: option.disabled ? 'none' : 'auto',
+                                                        }}
+                                                    >
+                                                        <Flex alignItems="center" gap="8px">
+                                                            {option.label}
+                                                            {option.disabled && <FaCrown size={12} color="#fbbf24" />}
+                                                        </Flex>
                                                         <Select.ItemIndicator />
                                                     </Select.Item>
                                                 ))}

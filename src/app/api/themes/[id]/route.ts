@@ -100,6 +100,7 @@ async function PUTHandler(request: Request, props: { params: Promise<Params> }) 
             where: { id },
             data: {
                 name: theme.name,
+                logo: theme.logo,
                 colors: {
                     set: theme.colors,
                 },
