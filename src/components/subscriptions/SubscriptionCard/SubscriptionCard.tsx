@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubscriptionPlan } from '@/types/subscriptions';
 import { FaCheckCircle, FaCreditCard } from 'react-icons/fa';
-import { Card } from '@/components/ui/Card/Card';
+import { ProductCard } from '@/components/ui/ProductCard/ProductCard';
 import styles from './SubscriptionCard.module.css';
 
 interface SubscriptionCardProps {
@@ -39,7 +39,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     const intervalLabel = getIntervalLabel(plan.interval);
 
     return (
-        <Card isPopular={plan.isPopular} className={`${isActive ? styles.active : ''}`}>
+        <ProductCard isPopular={plan.isPopular} className={`${isActive ? styles.active : ''}`}>
             <div className={styles.cardHeader}>
                 <h3 className={styles.planName}>{plan.name}</h3>
                 {plan.description && <p className={styles.planDescription}>{plan.description}</p>}
@@ -75,6 +75,6 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     </button>
                 )}
             </div>
-        </Card>
+        </ProductCard>
     );
 };

@@ -36,7 +36,7 @@ async function handleSubscriptionCheck(
 ): Promise<NextResponse> {
     // обработка первой покупки. достаем данные, переданные в виджет
     if (paymentData.subscriptionId) {
-        const { invoiceId, subscriptionId: userSubscriptionId, planId, userId } = paymentData;
+        const { subscriptionId: userSubscriptionId, planId, userId } = paymentData;
         const { OperationType, InvoiceId: invoiceIdFromWebhook } = webhookData;
 
         if (OperationType !== 'Payment') {
@@ -76,7 +76,7 @@ async function handleSubscriptionCheck(
     } else {
         // если paymentData пустой, то это автоматическое продление подписки
 
-        const { AccountId: userId, SubscriptionId: cloudpaymentsSubscriptionId, Status } = webhookData;
+        const { AccountId: userId, SubscriptionId: cloudpaymentsSubscriptionId } = webhookData;
 
         // находим подписку по cloudpaymentsId и userId
         const userSubscription = await prisma.userSubscription.findFirst({
@@ -92,106 +92,6 @@ async function handleSubscriptionCheck(
 
         return NextResponse.json({ code: ERROR_CODES.INCORRECT_INVOICE });
     }
-
-    // return NextResponse.json({ code: 0 });
-    // сравниванием, что данные в инвойсе совпадают с данными из хука
-    // // id подписки
-    // // сраниванием id пакета
-    // // стоимость и валюту
-    //
-
-    // проверяем пользователя AccountId, InvoiceId, SubscriptionId, OperationType, Amount, Currency
-    // проверяем planId, subscriptionId, userId
-    // что-то делаем с TransactionId?
-
-    // проверяем наличие пользователя, плана, инвойса, подписки
-    // если все есть - code: 0
-
-    // if (webhookData.OperationType !== 'Payment') {
-    //     return NextResponse.json({ code: 14, message: 'Операция не является платежом' });
-    // }
-
-    // const subscriptionPlan = await prisma.subscriptionPlan.findFirst({
-    //     where: {
-    //         id: webhookData.PlanId,
-    //     },
-    // });
-
-    // if (!subscriptionPlan) {
-    //     return NextResponse.json({ code: ERROR_CODES.INCORRECT_INVOICE });
-    // }
-
-    // const invoice = await prisma.subscriptionPayment.findFirst({
-    //     where: {
-    //         id: webhookData.InvoiceId,
-    //     },
-    // });
-
-    // if (!invoice || invoice.status !== 'pending') {
-    //     return NextResponse.json({ code: ERROR_CODES.INCORRECT_INVOICE });
-    // }
-
-    // const userSubscription = await prisma.userSubscription.findFirst({
-    //     where: {
-    //         userId: user.id,
-    //         subscriptionId: invoice.subscriptionId,
-    //     },
-    // });
-
-    // if (userSubscription.planId !== subscriptionPlan.id) {
-    //     return NextResponse.json({ code: ERROR_CODES.INCORRECT_INVOICE });
-    // }
-
-    // if (!userSubscription) {
-    //     return NextResponse.json({ code: ERROR_CODES.INCORRECT_INVOICE });
-    // }
-
-    // const userId = webhookData.AccountId;
-    // const invoiceId = webhookData.InvoiceId;
-    // const subscriptionId = webhookData.SubscriptionId;
-    // const operationType = webhookData.OperationType;
-    // const amount = webhookData.Amount;
-    // const currency = webhookData.Currency;
-
-    // if (!subscriptionId) {
-    //     return NextResponse.json({ code: 14, message: 'Подписка не найдена' });
-    // }
-
-    // // оплата подписки
-    // const subscription = await prisma.userSubscription.findFirst({
-    //     where: {
-    //         userId: user.id,
-    //         cloudpaymentsId: webhookData.SubscriptionId,
-    //     },
-    //     include: { plan: true },
-    // });
-
-    // if (!subscription) {
-    //     return NextResponse.json({ code: 14, message: 'Подписка не найдена' });
-    // }
-
-    // // Не отклоняем по истечению срока действия — подписку можно продлить
-    // const isCancellableStatus = subscription.status === SubscriptionStatus.cancelled;
-
-    // if (isCancellableStatus) {
-    //     return NextResponse.json({ code: 15, message: 'Подписка отменена' });
-    // }
-
-    // // Можно добавить логирование отклонённых статусов:
-    // if (subscription.status === SubscriptionStatus.failed || subscription.status === SubscriptionStatus.expired) {
-    //     console.warn(`Subscription ${subscription.id} in status "${subscription.status}", but allowing renewal.`);
-    // }
-
-    // // Проверка суммы (логируем, но не блокируем)
-    // const amount = parseFloat(webhookData.Amount);
-    // if (!Number.isNaN(amount) && subscription.plan && amount !== subscription.plan.price) {
-    //     console.warn(
-    //         `Check mismatch amount: got ${amount}, expected ${subscription.plan.price} for subscription ${subscription.id}`
-    //     );
-    //     // Можно вернуть code: 0, чтобы не блокировать, если точно уверены
-    // }
-
-    // return NextResponse.json({ code: 0 });
 }
 
 async function handleTokenPurchaseCheck(

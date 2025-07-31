@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { TransactionType, PurchaseStatus } from '@prisma/client';
+import { TransactionType, PurchaseStatus, Prisma } from '@prisma/client';
 import { TokenUsageData } from '@/types/tokens';
 
 /**
@@ -41,6 +41,8 @@ export async function deductTokens(data: TokenUsageData): Promise<boolean> {
     const { userId, amount, description, llmRequestId, metadata } = data;
 
     // Start transaction
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return await prisma.$transaction(async (tx: any) => {
         // Get current balance
         const userTokens = await tx.userTokens.findUnique({
@@ -95,10 +97,12 @@ export async function addTokens(
     // Retry logic for transaction conflicts
     let retryCount = 0;
     const maxRetries = 10; // Increased from 3 to 10
-    
+
     while (retryCount < maxRetries) {
         try {
-            await prisma.$transaction(async (tx: any) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 // Ensure user tokens record exists
                 let userTokens = await tx.userTokens.findUnique({
                     where: { userId },
@@ -127,7 +131,9 @@ export async function addTokens(
                     });
 
                     if (existingTransaction) {
-                        console.log(`Transaction already processed for user ${userId}, purchase ${purchaseId}, skipping`);
+                        console.log(
+                            `Transaction already processed for user ${userId}, purchase ${purchaseId}, skipping`
+                        );
                         return; // Skip processing if already done
                     }
                 }

@@ -14,6 +14,8 @@ export function createLLMService({ userId, provider, testScenario }: CreateServi
     const selectedProvider: SupportedLLMProvider =
         provider || (process.env.LLM_PROVIDER as SupportedLLMProvider) || 'gigachat';
 
+    const scenarioToUse = testScenario || getTestScenarioFromEnv();
+
     switch (selectedProvider) {
         case 'gigachat':
             return new GigaChatService({ userId });
@@ -21,7 +23,6 @@ export function createLLMService({ userId, provider, testScenario }: CreateServi
             return new YaGptService({ userId });
         case 'mock':
             // Use provided testScenario or fallback to environment variable
-            const scenarioToUse = testScenario || getTestScenarioFromEnv();
             return new MockGptService({ userId, testScenario: scenarioToUse });
         default:
             throw new Error(`Unsupported LLM provider: ${selectedProvider}`);

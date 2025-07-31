@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { packageId, returnUrl }: CreatePaymentRequest = await request.json();
+        const { packageId }: CreatePaymentRequest = await request.json();
         if (!packageId) {
             return NextResponse.json({ error: 'Package ID is required' }, { status: 400 });
         }

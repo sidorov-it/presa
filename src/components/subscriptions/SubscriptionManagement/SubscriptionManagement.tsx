@@ -6,8 +6,6 @@ import {
     FaTimesCircle,
     FaInfoCircle,
     FaExclamationTriangle,
-    FaUndo,
-    FaPlay,
 } from 'react-icons/fa';
 import { SubscriptionStatus } from '@prisma/client';
 import { UserSubscription, SubscriptionPlan } from '@/types/subscriptions';
@@ -35,8 +33,6 @@ const getStatusLabel = (status: SubscriptionStatus): string => {
             return 'Истекла';
         case 'failed':
             return 'Ошибка оплаты';
-        case 'scheduled':
-            return 'Запланирована';
         default:
             return status;
     }
@@ -54,8 +50,6 @@ const getStatusColor = (status: SubscriptionStatus): string => {
             return '#ef4444';
         case 'failed':
             return '#dc2626';
-        case 'scheduled':
-            return '#8b5cf6';
         default:
             return '#6b7280';
     }
@@ -99,7 +93,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     error,
     refreshSubscriptionStatus,
 }) => {
-    const [isRestarting, setIsRestarting] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
@@ -187,24 +180,13 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
 
     const startDate = new Date(currentSubscription.startDate);
     const endDate = new Date(currentSubscription.endDate);
-    // const nextBillingDate = currentSubscription.nextBillingDate ? new Date(currentSubscription.nextBillingDate) : null;
     const nextBillingDate = currentSubscription.nextBillingDate ? new Date(currentSubscription.nextBillingDate) : null;
     const isExpired = currentSubscription.status === SubscriptionStatus.expired || endDate.getTime() < Date.now();
     const isCancelled = currentSubscription.status === SubscriptionStatus.cancelled;
     const isFailed = currentSubscription.status === SubscriptionStatus.failed;
     const canCancel = currentSubscription.status === SubscriptionStatus.active && !isCancelled;
-    // const isAutoRenewalCancelled =
-    //     currentSubscription.status === SubscriptionStatus.active && currentSubscription.cancelledAt;
-    // const hasNextSubscription = nextSubscription && nextSubscription.planId !== currentSubscription.planId;
 
-    // Determine which scenario we're in
     const isScenario1 = subscription && subscription.status === SubscriptionStatus.active;
-    const isScenario2 =
-        subscription && subscription.status === SubscriptionStatus.cancelled && endDate.getTime() > Date.now();
-    // const isScenario3 = activeSubscription && hasNextSubscription;
-    // const isScenario4 = !activeSubscription && lastSubscription && !hasNextSubscription;
-    // const isScenario5 = !activeSubscription && lastSubscription && hasNextSubscription;
-    // const isScenario7 = activeSubscription && activeSubscription.status === SubscriptionStatus.active && isAutoRenewalCancelled;
 
     return (
         <div className={`${styles.container} ${className || ''}`}>

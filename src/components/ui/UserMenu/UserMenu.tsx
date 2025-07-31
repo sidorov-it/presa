@@ -47,9 +47,9 @@ export default function UserMenu() {
             content={
                 <div className={styles.menu}>
                     <div className={styles.balance}>
-                        <Link href="/subscriptions" className={styles.balanceLink}>
+                        <Link href="/payment" className={styles.balanceLink}>
                             <LuCoins className={styles.balanceIcon} />
-                            <TokenBalance balance={balance} loading={loading} variant="large" showIcon={false} />
+                            <TokenBalance balance={balance} loading={loading} showIcon={false} />
                         </Link>
                     </div>
                     <button onClick={handleSignOut} className={styles.signOut} aria-label="Выйти">

@@ -1,6 +1,6 @@
 import { withLogging } from '@/hooks/withLoging';
 import { prisma } from '@/lib/prisma';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 async function GETHandler(request: NextRequest) {
     const allThemes = await prisma.theme.findMany({
@@ -17,5 +17,7 @@ async function GETHandler(request: NextRequest) {
             themeId: allThemes[Math.floor(Math.random() * allThemes.length)].id,
         },
     });
+
+    return NextResponse.json({ message: 'Backup completed' });
 }
 export const GET = withLogging(GETHandler);

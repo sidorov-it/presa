@@ -96,6 +96,7 @@ describe('markdownToHtml', () => {
         expect(html).toContain('<span class="body-text normar-text">Обычный текст параграфа.</span>');
         expect(html).toContain(
             '<span class="body-text normar-text">Еще один параграф с <strong>жирным</strong> текстом.</span>'
+        );
 
         console.log('\n=== Body text wrapping test ===');
         console.log('Input:', JSON.stringify(md));

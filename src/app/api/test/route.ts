@@ -142,6 +142,7 @@ async function transformTheme(basicTheme: any): Promise<Theme> {
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function GETHandler(_request: NextRequest, _props: { params: Promise<{ default: string }> }) {
     try {
         // if (params?.default === 'true') {

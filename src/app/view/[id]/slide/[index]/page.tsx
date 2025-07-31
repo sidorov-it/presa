@@ -11,6 +11,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { shouldHideBranding } from '@/utils/subscriptions';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { ThemeStylesApplier, ViewerProvider } from '@/components/viewer';
+import { Slide } from '@/types';
 
 export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
@@ -45,7 +46,7 @@ export default async function SlidePage(props: {
     const slides = parsedPresentation.slides;
 
     // Filter out hidden slides for viewer
-    const visibleSlides = slides.filter(slide => !slide.hidden);
+    const visibleSlides = slides.filter((slide: Slide) => !slide.hidden);
 
     if (slideIndex < 0 || slideIndex >= visibleSlides.length) {
         notFound();
@@ -80,7 +81,7 @@ export default async function SlidePage(props: {
     return (
         <ReadOnlyProvider isReadOnly={true}>
             <ThemeStylesApplier theme={finalTheme}>
-                <ViewerProvider isViewer={true}>
+                <ViewerProvider>
                     <div
                         className="slide-page-container"
                         style={{

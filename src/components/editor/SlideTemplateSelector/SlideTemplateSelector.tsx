@@ -421,7 +421,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             </div>
 
             <div className={styles.headerFooterSection}>
-                <label className={styles.headerFooterLabel}>Заголовки и подвалы</label>
+                <span className={styles.headerFooterLabel}>Заголовки и подвалы</span>
                 <div className={styles.headerFooterButtons}>
                     <button
                         onClick={() => {

@@ -9,7 +9,16 @@ import Logo from '@/components/icons/Logo/Logo';
 import UserMenu from '@/components/ui/UserMenu/UserMenu';
 import Footer from '@/components/ui/Footer';
 import { Tooltip } from '@/components/ui/tooltip';
-import { LuCreditCard, LuHouse, LuInfo, LuLayoutTemplate, LuMessageSquare, LuPalette, LuSettings, LuTrash } from 'react-icons/lu';
+import {
+    LuCreditCard,
+    LuHouse,
+    LuInfo,
+    LuLayoutTemplate,
+    LuMessageSquare,
+    LuPalette,
+    LuSettings,
+    LuTrash,
+} from 'react-icons/lu';
 import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
 import { useSubscriptionHealthCheck } from '@/hooks/useSubscriptionHealthCheck';
 
@@ -56,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         },
         {
             label: 'Оплата',
-            path: '/subscriptions',
+            path: '/payment',
             icon: <LuCreditCard size={20} />,
         },
         {

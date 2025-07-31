@@ -1,11 +1,11 @@
 import { withLogging } from '@/hooks/withLoging';
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { ExportPresentationData } from '@/types';
 import { validateImportData, regenerateIds, isVersionSupported } from '@/utils/exportImport';
+import { handleApiErrorWithCustomMessage } from '@/utils/errorHandler';
 
 const handleRequest = async (request: NextRequest) => {
     try {
@@ -37,7 +37,13 @@ const handleRequest = async (request: NextRequest) => {
         try {
             importData = JSON.parse(fileContent);
         } catch (error) {
-            return NextResponse.json({ error: 'Invalid JSON file' }, { status: 400 });
+            return handleApiErrorWithCustomMessage(
+                error,
+                'Invalid JSON file',
+                400,
+                'Import presentation',
+                'POST /api/presentations/import'
+            );
         }
 
         // Validate import data structure
@@ -80,8 +86,13 @@ const handleRequest = async (request: NextRequest) => {
             },
         });
     } catch (error) {
-        logger.error('Error importing presentation:', error);
-        return NextResponse.json({ error: 'Failed to import presentation' }, { status: 500 });
+        return handleApiErrorWithCustomMessage(
+            error,
+            'Failed to import presentation',
+            500,
+            'Import presentation',
+            'POST /api/presentations/import'
+        );
     }
 };
 

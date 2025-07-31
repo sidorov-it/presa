@@ -1,9 +1,9 @@
 import { withLogging } from '@/hooks/withLoging';
-import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getUserTokenBalance, ensureUserTokensRecord } from '@/utils/tokens';
+import { handleApiError } from '@/utils/errorHandler';
 
 async function GETHandler(_request: NextRequest) {
     try {
@@ -24,8 +24,7 @@ async function GETHandler(_request: NextRequest) {
             userId: session.user.id,
         });
     } catch (error) {
-        logger.error('Error getting token balance:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, 'Token balance retrieval', 'GET /api/tokens/balance');
     }
 }
 export const GET = withLogging(GETHandler);

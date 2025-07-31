@@ -1,16 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { TokenPackage, TokenTransaction } from '@/types/tokens';
 
 interface UseTokensReturn {
     balance: number;
     loading: boolean;
     error: string | null;
-    packages: TokenPackage[];
-    transactions: TokenTransaction[];
-    refreshBalance: () => Promise<void>;
-    refreshPackages: () => Promise<void>;
-    refreshTransactions: () => Promise<void>;
+    createTokensPayment: (paymentData: PaymentData) => Promise<PaymentResponse>;
+}
+
+interface PaymentData {
+    packageId: string;
+    returnUrl?: string;
+}
+
+interface PaymentResponse {
+    purchaseId: string;
+    publicId: string;
+    amount: number;
+    currency: string;
+    description: string;
 }
 
 export const useTokens = (): UseTokensReturn => {
@@ -18,8 +26,6 @@ export const useTokens = (): UseTokensReturn => {
     const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [packages, setPackages] = useState<TokenPackage[]>([]);
-    const [transactions, setTransactions] = useState<TokenTransaction[]>([]);
 
     const refreshBalance = useCallback(async () => {
         if (!session?.user?.id) return;
@@ -36,38 +42,11 @@ export const useTokens = (): UseTokensReturn => {
         }
     }, [session?.user?.id]);
 
-    const refreshPackages = useCallback(async () => {
-        try {
-            const response = await fetch('/api/tokens/packages');
-            if (!response.ok) throw new Error('Failed to fetch packages');
-
-            const data = await response.json();
-            setPackages(data.packages);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch packages');
-        }
-    }, []);
-
-    const refreshTransactions = useCallback(async () => {
-        if (!session?.user?.id) return;
-
-        try {
-            const response = await fetch('/api/tokens/transactions');
-            if (!response.ok) throw new Error('Failed to fetch transactions');
-
-            const data = await response.json();
-            setTransactions(data.transactions);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch transactions');
-        }
-    }, [session?.user?.id]);
-
-    // Load initial data
     useEffect(() => {
         const loadInitialData = async () => {
             setLoading(true);
             try {
-                await Promise.all([refreshBalance(), refreshPackages(), refreshTransactions()]);
+                await Promise.all([refreshBalance()]);
             } finally {
                 setLoading(false);
             }
@@ -78,16 +57,93 @@ export const useTokens = (): UseTokensReturn => {
         } else {
             setLoading(false);
         }
-    }, [session?.user?.id, refreshBalance, refreshPackages, refreshTransactions]);
+    }, [session?.user?.id, refreshBalance]);
+
+    // Создание платежа и открытие CloudPayments виджета
+    const createTokensPayment = useCallback(
+        async (paymentData: PaymentData): Promise<PaymentResponse> => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await fetch('/api/tokens/purchase/cloudpayments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(paymentData),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create payment');
+                }
+
+                const result = await response.json();
+
+                // Открываем CloudPayments виджет через CDN
+                if (window.cp?.CloudPayments) {
+                    const cp = new window.cp.CloudPayments();
+                    // eslint-disable-next-line no-trailing-spaces
+
+                    cp.pay(
+                        'charge',
+                        {
+                            // publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!, // publicId CloudPayments
+                            publicId: 'pk_99c7613d5b4422d18b4784f5ff9e4', // publicId CloudPayments
+
+                            description: result.description,
+                            amount: Number(result.amount),
+                            currency: result.currency.toUpperCase(),
+                            invoiceId: result.purchaseId,
+                            accountId: session?.user?.id || '',
+                            skin: 'classic',
+                            data: {
+                                packageId: paymentData.packageId,
+                                userId: session?.user?.id,
+                            },
+                        },
+                        {
+                            onSuccess: function (options: any) {
+                                console.log('Payment successful:', options);
+                                // Платеж успешен, webhook обновит статус
+                            },
+                            onFail: function (reason: any, options: any) {
+                                console.error('Payment failed:', reason, options);
+                                setError('Платеж не удался');
+                            },
+                            onComplete: function (paymentResult: any, options: any) {
+                                console.log('Payment completed:', paymentResult, options);
+                                setLoading(false);
+                            },
+                        }
+                    );
+                } else {
+                    throw new Error('CloudPayments widget not loaded');
+                }
+
+                return {
+                    purchaseId: result.purchaseId,
+                    publicId: result.confirmationUrl,
+                    amount: result.amount,
+                    currency: result.currency,
+                    description: result.description,
+                };
+            } catch (err) {
+                const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+                setError(errorMessage);
+                throw new Error(errorMessage);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [session?.user?.id]
+    );
 
     return {
         balance,
         loading,
         error,
-        packages,
-        transactions,
-        refreshBalance,
-        refreshPackages,
-        refreshTransactions,
+        createTokensPayment,
     };
 };

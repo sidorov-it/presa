@@ -30,7 +30,6 @@ const Subscriptions = ({
 
     const { balance, loading: tokensLoading } = useTokens();
     const {
-        // plans,
         activeSubscription,
         loading: subsLoading,
         createSubscription,
@@ -173,17 +172,6 @@ const Subscriptions = ({
                                 {notification.message}
                             </div>
                         )}
-
-                        {/* {activePurchaseId && (
-                            <div className={styles.paymentStatusCard}>
-                                <h2 className={styles.sectionTitle}>Статус платежа</h2>
-                                <PaymentStatus
-                                    purchaseId={activePurchaseId}
-                                    onSuccess={handlePaymentSuccess}
-                                    onError={() => setActivePurchaseId(null)}
-                                />
-                            </div>
-                        )} */}
 
                         {activeSubscription && activeSubscription.status !== 'expired' && (
                             <SubscriptionManagement

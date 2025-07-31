@@ -1,13 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-    SubscriptionPlan,
-    UserSubscription,
-    CreateSubscriptionRequest,
-    CreateSubscriptionResponse,
-} from '@/types/subscriptions';
+import { UserSubscription, CreateSubscriptionRequest, CreateSubscriptionResponse } from '@/types/subscriptions';
 
 interface UseSubscriptionsReturn {
-    plans: SubscriptionPlan[];
     activeSubscription: UserSubscription | null;
     loading: boolean;
     error: string | null;
@@ -17,27 +11,10 @@ interface UseSubscriptionsReturn {
 }
 
 export const useSubscriptions = (): UseSubscriptionsReturn => {
-    const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
     const [activeSubscription, setActiveSubscription] = useState<UserSubscription | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Load subscription plans
-    const loadPlans = useCallback(async () => {
-        try {
-            const response = await fetch('/api/subscriptions/plans');
-            if (response.ok) {
-                const data = await response.json();
-                setPlans(data.plans.sort((a: SubscriptionPlan, b: SubscriptionPlan) => a.price - b.price));
-            } else {
-                console.error('Failed to load subscription plans');
-            }
-        } catch (err) {
-            console.error('Error loading subscription plans:', err);
-        }
-    }, []);
-
-    // Load subscription status
     const loadSubscriptionStatus = useCallback(async () => {
         try {
             setError(null);
@@ -122,16 +99,16 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             setLoading(true);
             setError(null);
 
-            await Promise.all([loadPlans(), loadSubscriptionStatus()]);
+            await Promise.all([loadSubscriptionStatus()]);
 
             setLoading(false);
         };
 
         loadData();
-    }, [loadPlans, loadSubscriptionStatus]);
+    }, [loadSubscriptionStatus]);
 
     return {
-        plans,
+        // plans,
         activeSubscription,
         loading,
         error,

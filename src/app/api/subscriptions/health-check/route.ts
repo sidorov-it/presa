@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { performSubscriptionHealthCheck } from '@/utils/subscriptions';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
     try {
         const session = await getServerSession(authOptions);
 

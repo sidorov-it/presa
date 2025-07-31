@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable indent */
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 
