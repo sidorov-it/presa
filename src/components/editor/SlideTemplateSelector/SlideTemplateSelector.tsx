@@ -421,29 +421,18 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             </div>
 
             <div className={styles.headerFooterSection}>
-                <span className={styles.headerFooterLabel}>Заголовки и подвалы</span>
+                <span className={styles.headerFooterLabel}>Колонтитулы</span>
                 <div className={styles.headerFooterButtons}>
-                    <button
-                        onClick={() => {
-                            useUIStateStore.getState().setCurrentSlideId(null);
-                            setGlobalHeaderFooterModalOpen(true);
-                        }}
-                        className={styles.headerFooterButton}
-                        aria-label="Настроить глобальные заголовки и подвалы"
-                    >
-                        <HeaderFooterIcon />
-                        <span>Глобальные настройки</span>
-                    </button>
                     <button
                         onClick={() => {
                             useUIStateStore.getState().setCurrentSlideId(slideId);
                             useUIStateStore.getState().setGlobalHeaderFooterModalOpen(true);
                         }}
                         className={styles.headerFooterButton}
-                        aria-label="Настроить заголовки и подвалы для этого слайда"
+                        aria-label="Настроить колонтитулы"
                     >
                         <HeaderFooterIcon />
-                        <span>Настройки слайда</span>
+                        <span>Настроить</span>
                     </button>
                 </div>
             </div>

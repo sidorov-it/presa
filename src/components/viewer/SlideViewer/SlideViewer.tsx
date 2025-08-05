@@ -22,7 +22,7 @@ const getHeaderFooterPadding = (headerFooter?: HeaderFooterConfig): number => {
             medium: 7.5, // ≈ 0.116
             large: 10, // ≈ 0.155
         };
-        let largestLogoSize: 'small' | 'medium' | 'large' | undefined = undefined;
+        let largestLogoSize: 'small' | 'medium' | 'large' = 'medium';
 
         // Проверяем все позиции (left, center, right) на наличие логотипов
         const positions = [headerFooter.left, headerFooter.center, headerFooter.right];
@@ -242,7 +242,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
         // Применяем глобальные настройки колонтитулов к слайду
         const effectiveSlide = globalHeaderFooterConfig
-            ? applyGlobalHeaderFooterToSlide(slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig)
+            ? applyGlobalHeaderFooterToSlide(slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig, currentSlideIndex)
             : slide;
 
         const headerPadding = getHeaderFooterPadding(effectiveSlide.header);
@@ -407,7 +407,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                   slide,
                                   currentSlideIndex,
                                   totalSlides,
-                                  globalHeaderFooterConfig
+                                  globalHeaderFooterConfig,
+                                  currentSlideIndex
                               )
                             : slide;
 
@@ -418,6 +419,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                     type="header"
                                     currentSlideIndex={currentSlideIndex}
                                     totalSlides={totalSlides}
+                                    theme={theme}
                                 />
                             )
                         );
@@ -459,7 +461,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                   slide,
                                   currentSlideIndex,
                                   totalSlides,
-                                  globalHeaderFooterConfig
+                                  globalHeaderFooterConfig,
+                                  currentSlideIndex
                               )
                             : slide;
                         return (

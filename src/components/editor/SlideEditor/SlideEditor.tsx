@@ -44,7 +44,7 @@ const getHeaderFooterPadding = (headerFooter?: HeaderFooterConfig): number => {
             medium: 7.5 / 64.5, // ≈ 0.116
             large: 10 / 64.5, // ≈ 0.155
         };
-        let largestLogoSize: 'small' | 'medium' | 'large' | undefined = undefined;
+        let largestLogoSize: 'small' | 'medium' | 'large' = 'medium';
 
         // Проверяем все позиции (left, center, right) на наличие логотипов
         const positions = [headerFooter.left, headerFooter.center, headerFooter.right];
@@ -67,7 +67,7 @@ const getHeaderFooterPadding = (headerFooter?: HeaderFooterConfig): number => {
     return 0;
 };
 
-const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tiptapRefs, presentationId, isLast }) => {
+const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tiptapRefs, presentationId, isLast, theme }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -111,7 +111,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                       fixedHeight: false,
                   },
                   applyTo: 'all',
-              }
+              },
+              currentSlideIndex
           )
         : null;
 
@@ -589,16 +590,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
                 <div ref={editorRef} className={`${styles.slideContent}`} data-slide-content="true">
-                    {/* Header */}
-                    {header && (
-                        <HeaderFooter
-                            config={header}
-                            type="header"
-                            currentSlideIndex={currentSlideIndex}
-                            totalSlides={totalSlides}
-                        />
-                    )}
-
                     {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
                             <DragHandler
@@ -655,6 +646,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                             type="header"
                             currentSlideIndex={currentSlideIndex}
                             totalSlides={totalSlides}
+                            theme={theme}
                         />
                     )}
 
@@ -684,6 +676,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                             type="footer"
                             currentSlideIndex={currentSlideIndex}
                             totalSlides={totalSlides}
+                            theme={theme}
                         />
                     )}
                 </div>

@@ -1092,6 +1092,14 @@ button[data-type="button"]:hover {
     margin-bottom: 2em;
 }
 
+.ProseMirror.body-text {
+    margin-bottom: 0;
+}
+
+.ProseMirror.body-text .placeholder-text{
+    margin-bottom: 2em;
+}
+
 /* --presentation-heading-capitaliza    tion
 none
 

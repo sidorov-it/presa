@@ -25,8 +25,22 @@
       "name": "Next.js: debug full stack",
       "type": "node",
       "request": "launch",
+      "runtimeExecutable": "/Users/sidorov/.nvm/versions/node/v20.11.1/bin/node",
       "program": "${workspaceFolder}/node_modules/.bin/next",
       "args": ["dev"],
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    },
+    {
+      "name": "Next.js: debug with npm",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
       "console": "integratedTerminal",
       "serverReadyAction": {
         "pattern": "started server on .+, url: (https?://.+)",

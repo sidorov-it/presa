@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { HeaderFooterConfig, HeaderFooterPosition } from '@/types';
+import { Theme } from '@/types/theme';
 import styles from './HeaderFooter.module.css';
+import { useThemeStore } from '@/store/themeStore';
 
 interface HeaderFooterProps {
     config: HeaderFooterConfig;
@@ -10,7 +12,7 @@ interface HeaderFooterProps {
     currentSlideIndex: number;
     totalSlides: number;
     className?: string;
-    theme?: { logo?: string };
+    theme: Theme;
 }
 
 const HeaderFooter: React.FC<HeaderFooterProps> = ({
@@ -21,6 +23,7 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
     className,
     theme,
 }) => {
+    const themeLogo = theme.logo;
     if (!config.enabled) {
         return null;
     }
@@ -39,7 +42,7 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
 
     const renderPosition = (position: HeaderFooterPosition, alignment: 'left' | 'center' | 'right') => {
         if (position.type === 'none') {
-            return null;
+            return <div className={`${styles.position} ${styles[alignment]}`} />;
         }
 
         let content: React.ReactNode = null;
@@ -64,10 +67,10 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
                 }
                 break;
             case 'theme-logo':
-                if (theme?.logo) {
+                if (themeLogo) {
                     content = (
                         <img
-                            src={theme.logo}
+                            src={themeLogo}
                             alt="Theme Logo"
                             className={styles.logo}
                             style={{ maxWidth: getLogoMaxWidth(position.logoSize) }}
@@ -76,6 +79,8 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
                             }}
                         />
                     );
+                } else {
+                    content = <div className={styles.logo} />;
                 }
                 break;
             case 'slide-number':

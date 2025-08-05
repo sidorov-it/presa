@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 'use client';
 
 import React, { useState } from 'react';
@@ -11,6 +12,8 @@ import { FiUpload } from 'react-icons/fi';
 import { FiLoader } from 'react-icons/fi';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useUIStateStore } from '@/store/uiStateStore';
+import { useThemeStore } from '@/store/themeStore';
+import Image from 'next/image';
 
 interface HeaderFooterConfiguratorProps {
     header: HeaderFooterConfig;
@@ -18,8 +21,8 @@ interface HeaderFooterConfiguratorProps {
     onHeaderChange: (config: HeaderFooterConfig) => void;
     onFooterChange: (config: HeaderFooterConfig) => void;
     showApplyTo?: boolean;
-    applyTo?: 'all' | 'except-first' | 'except-first-last';
-    onApplyToChange?: (value: 'all' | 'except-first' | 'except-first-last') => void;
+    applyTo?: 'all' | 'except-first' | 'except-first-last' | 'current-slide';
+    onApplyToChange?: (value: 'all' | 'except-first' | 'except-first-last' | 'current-slide') => void;
     currentSlideIndex?: number;
     totalSlides?: number;
 }
@@ -39,6 +42,9 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
     // Новый state для загрузки по каждой позиции
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
     const updateSlide = usePresentationStore(state => state.updateSlide);
+
+    const themeLogo = useThemeStore(state => state.currentTheme?.logo);
+    // const themeLogoSize = useThemeStore(state => state.currentTheme.logoSize);
 
     const addItem = (section: 'header' | 'footer', position: 'left' | 'center' | 'right') => {
         const newItem: HeaderFooterItem = {
@@ -209,6 +215,16 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
             );
         }
 
+        const logoImageSize = item.logoSize || 'medium';
+        const sizeMap = {
+            small: 50,
+            medium: 75,
+            large: 100,
+        };
+
+        const logoImageWidth = sizeMap[logoImageSize as keyof typeof sizeMap];
+        const logoImageHeight = sizeMap[logoImageSize as keyof typeof sizeMap];
+
         return (
             <div className={styles.itemContainer}>
                 <div className={styles.itemHeader}>
@@ -292,18 +308,32 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                                 />
                             </label>
                         ))}
-                    {item.type === 'theme-logo' && (
-                        <div className={styles.slideNumberInfo}>Логотип будет взят из темы презентации</div>
+                    {item.type === 'theme-logo' && themeLogo && (
+                        <div className={styles.slideLogoContainer}>
+                            <Image
+                                src={themeLogo}
+                                alt="Логотип из темы"
+                                width={logoImageWidth}
+                                height={logoImageHeight}
+                            />
+                        </div>
+                    )}
+                    {item.type === 'theme-logo' && !themeLogo && (
+                         <div className={styles.slideNumberInfo}>В теме нет логотипа</div>
                     )}
                     {item.type === 'slide-number' && (
                         <div className={styles.slideNumberInfo}>Номер слайда будет отображаться автоматически</div>
                     )}
                     {(item.type === 'logo' || item.type === 'theme-logo') && (
                         <div style={{ marginTop: 8, marginBottom: 4 }}>
-                            <label style={{ fontSize: 13, color: 'var(--presentation-text-color)', marginRight: 8 }}>
+                            <label
+                                htmlFor="logoSize"
+                                style={{ fontSize: 13, color: 'var(--presentation-text-color)', marginRight: 8 }}
+                            >
                                 Размер логотипа:
                             </label>
                             <select
+                                id="logoSize"
                                 value={item.logoSize || 'medium'}
                                 onChange={e =>
                                     updateItem(section, position, { ...item, logoSize: e.target.value as any })
@@ -341,6 +371,7 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                         <option value="all">Все слайды</option>
                         <option value="except-first">Кроме первого</option>
                         <option value="except-first-last">Кроме первого и последнего</option>
+                        {/* <option value="current-slide">Текущий слайд</option> */}
                     </select>
                 </div>
             )}

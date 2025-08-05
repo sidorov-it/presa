@@ -33,7 +33,7 @@ export default async function SlidePage(props: {
         where: { id },
         include: {
             user: true,
-            theme: true,
+            // theme: true,
         },
     });
 
@@ -55,18 +55,18 @@ export default async function SlidePage(props: {
     const slide = visibleSlides[slideIndex];
 
     // Получаем тему
-    let finalTheme: Theme;
-    if (presentation.theme) {
-        finalTheme = presentation.theme as Theme;
+    let theme: Theme | null = null;
+    if (presentation?.themeId) {
+        theme = await prisma.theme.findUnique({
+            where: { id: presentation.themeId },
+        });
     } else {
-        // Fallback: get default theme
-        const defaultTheme = await prisma.theme.findFirst({
+        theme = await prisma.theme.findFirst({
             where: { isDefault: true },
         });
-        finalTheme = defaultTheme as Theme;
     }
 
-    if (!finalTheme) {
+    if (!theme) {
         notFound();
     }
 
@@ -80,7 +80,7 @@ export default async function SlidePage(props: {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={finalTheme}>
+            <ThemeStylesApplier theme={theme}>
                 <ViewerProvider>
                     <div
                         className="slide-page-container"
@@ -95,9 +95,9 @@ export default async function SlidePage(props: {
                         }}
                     >
                         <SlideViewer
-                            theme={finalTheme}
+                            theme={theme}
                             slide={slide}
-                            primaryAccentColor={finalTheme.colors.primaryAccent}
+                            primaryAccentColor={theme.colors.primaryAccent}
                             fullPage={true}
                             isPdfExport={isPdfExport}
                             hideBranding={hideBranding}
