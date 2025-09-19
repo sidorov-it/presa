@@ -207,6 +207,7 @@
     height: auto !important;
     /* overflow: visible !important; */
     padding: var(--card-inner-padding);
+    padding-top: calc(48px + var(--card-inner-padding-y));
     /* padding: 40px; */
     /* display: block !important; */
     /* width: 100% !important; */

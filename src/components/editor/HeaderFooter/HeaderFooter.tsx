@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { HeaderFooterConfig, HeaderFooterPosition } from '@/types';
+import { HeaderFooterConfig, HeaderFooterLogoSize, HeaderFooterPosition } from '@/types';
 import { Theme } from '@/types/theme';
 import styles from './HeaderFooter.module.css';
-import { useThemeStore } from '@/store/themeStore';
 
 interface HeaderFooterProps {
     config: HeaderFooterConfig;
@@ -28,16 +27,19 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
         return null;
     }
 
-    const getLogoMaxWidth = (logoSize?: 'small' | 'medium' | 'large') => {
-        switch (logoSize) {
-            case 'small':
-                return '5em';
-            case 'large':
-                return '10em';
-            case 'medium':
-            default:
-                return '7.5em';
-        }
+    const getLogoDimension = (logoSize?: HeaderFooterLogoSize) => {
+        const size = logoSize || 'M';
+        const dimensionBySize: Record<HeaderFooterLogoSize, string> = {
+            // S: 'calc(1.53884em / var(--media-scale))',
+            S: '1.53884em',
+            // M: 'calc(1.9856em / var(--media-scale))',
+            M: '1.9856em',
+            // L: 'calc(2.63092em / var(--media-scale))',
+            L: '2.63092em',
+            // XL: 'calc(3.4748em / var(--media-scale))',
+            XL: '3.4748em',
+        };
+        return dimensionBySize[size];
     };
 
     const renderPosition = (position: HeaderFooterPosition, alignment: 'left' | 'center' | 'right') => {
@@ -58,7 +60,10 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
                             src={position.content}
                             alt="Logo"
                             className={styles.logo}
-                            style={{ maxWidth: getLogoMaxWidth(position.logoSize) }}
+                            style={{
+                                maxWidth: getLogoDimension(position.logoSize),
+                                maxHeight: getLogoDimension(position.logoSize),
+                            }}
                             onError={e => {
                                 e.currentTarget.style.display = 'none';
                             }}
@@ -73,7 +78,10 @@ const HeaderFooter: React.FC<HeaderFooterProps> = ({
                             src={themeLogo}
                             alt="Theme Logo"
                             className={styles.logo}
-                            style={{ maxWidth: getLogoMaxWidth(position.logoSize) }}
+                            style={{
+                                maxWidth: getLogoDimension(position.logoSize),
+                                maxHeight: getLogoDimension(position.logoSize),
+                            }}
                             onError={e => {
                                 e.currentTarget.style.display = 'none';
                             }}

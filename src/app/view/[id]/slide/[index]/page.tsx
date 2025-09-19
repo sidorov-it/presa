@@ -15,12 +15,12 @@ import { Slide } from '@/types';
 
 export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
-    searchParams: Promise<{ pdf?: string }>;
+    searchParams: Promise<{ pdf?: string; hideBranding?: string }>;
 }) {
     const params = await props.params;
     const searchParams = await props.searchParams;
     const { id, index } = params;
-    const { pdf } = searchParams;
+    const { pdf, hideBranding } = searchParams;
 
     const slideIndex = parseInt(index, 10);
     const isPdfExport = pdf === 'true';
@@ -71,11 +71,16 @@ export default async function SlidePage(props: {
     }
 
     // Check if branding should be hidden for this user
-    let hideBranding = false;
-    if (session?.user?.id && isPdfExport) {
-        // Check if the presentation owner has an active subscription
-        const presentationOwnerId = presentation.userId;
-        hideBranding = await shouldHideBranding(presentationOwnerId);
+    let shouldHideBrandingFlag = false;
+    if (isPdfExport) {
+        // For PDF export, check if hideBranding parameter is passed from the API
+        if (hideBranding === 'true') {
+            shouldHideBrandingFlag = true;
+        } else if (session?.user?.id) {
+            // Fallback: check if the presentation owner has an active subscription
+            const presentationOwnerId = presentation.userId;
+            shouldHideBrandingFlag = await shouldHideBranding(presentationOwnerId);
+        }
     }
 
     return (
@@ -86,12 +91,15 @@ export default async function SlidePage(props: {
                         className="slide-page-container"
                         style={{
                             width: '100%',
-                            height: '100vh',
+                            height: isPdfExport ? 'auto' : '100vh',
+                            minHeight: isPdfExport ? 'auto' : '100vh',
                             display: 'flex',
-                            alignItems: 'center',
+                            alignItems: isPdfExport ? 'flex-start' : 'center',
                             justifyContent: 'center',
                             backgroundColor: isPdfExport ? 'white' : '#f8f9fa',
                             overflow: isPdfExport ? 'visible' : 'hidden',
+                            paddingTop: isPdfExport ? '20px' : '0',
+                            paddingBottom: isPdfExport ? '20px' : '0',
                         }}
                     >
                         <SlideViewer
@@ -100,7 +108,7 @@ export default async function SlidePage(props: {
                             primaryAccentColor={theme.colors.primaryAccent}
                             fullPage={true}
                             isPdfExport={isPdfExport}
-                            hideBranding={hideBranding}
+                            hideBranding={shouldHideBrandingFlag}
                             currentSlideIndex={slideIndex}
                             totalSlides={visibleSlides.length}
                             globalHeaderFooterConfig={presentation.headerFooterConfig}

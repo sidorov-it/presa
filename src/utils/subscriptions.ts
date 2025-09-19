@@ -107,6 +107,7 @@ export function getDefaultFeatures(): SubscriptionFeatures {
 export async function getUserFeatures(userId: string): Promise<SubscriptionFeatures> {
     try {
         const subscriptionFeatures = await getSubscriptionFeatures(userId);
+        console.log('subscriptionFeatures', subscriptionFeatures);
         return subscriptionFeatures || getDefaultFeatures();
     } catch (error) {
         console.error('Error getting user features:', error);

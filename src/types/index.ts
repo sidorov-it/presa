@@ -241,18 +241,21 @@ export interface Layout {
 // Header/Footer position content types
 export type HeaderFooterContentType = 'none' | 'text' | 'logo' | 'theme-logo' | 'slide-number';
 
+export type HeaderFooterLogoSize = 'S' | 'M' | 'L' | 'XL';
+
 export interface HeaderFooterPosition {
     type: HeaderFooterContentType;
     content?: string; // Text content or logo URL
-    logoSize?: 'small' | 'medium' | 'large';
+    logoSize?: HeaderFooterLogoSize;
 }
+
+export type HeaderFooterItem = HeaderFooterPosition;
 
 export interface HeaderFooterConfig {
     enabled: boolean;
     left: HeaderFooterPosition;
     center: HeaderFooterPosition;
     right: HeaderFooterPosition;
-    fixedHeight: boolean;
 }
 
 // Slide-specific header/footer configuration that can explicitly disable or use custom settings

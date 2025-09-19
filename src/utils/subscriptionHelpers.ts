@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { hasActiveSubscription, getSubscriptionFeatures } from '@/utils/subscriptions';
+import { hasActiveSubscription } from '@/utils/subscriptions';
 import { SubscriptionFeatures } from '@/types/subscriptions';
 
 /**
@@ -9,36 +9,20 @@ import { SubscriptionFeatures } from '@/types/subscriptions';
  */
 export const checkServerSubscription = async (): Promise<{
     hasActiveSubscription: boolean;
-    features: SubscriptionFeatures;
     userId?: string;
 }> => {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
         return {
             hasActiveSubscription: false,
-            features: {
-                maxSlides: 10,
-                hideBranding: false,
-                maxDocumentSize: 5,
-                priority: false,
-                customExport: false,
-            },
         };
     }
 
     const hasActive = await hasActiveSubscription(session.user.id);
-    const features = await getSubscriptionFeatures(session.user.id) || {
-        maxSlides: hasActive ? 20 : 10,
-        hideBranding: hasActive,
-        maxDocumentSize: hasActive ? 50 : 5,
-        priority: hasActive,
-        customExport: hasActive,
-    };
 
     return {
         hasActiveSubscription: hasActive,
-        features,
         userId: session.user.id,
     };
 };

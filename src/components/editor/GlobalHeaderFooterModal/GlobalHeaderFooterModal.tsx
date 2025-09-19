@@ -23,7 +23,6 @@ const defaultHeaderFooter: HeaderFooterConfig = {
     left: { type: 'none' },
     center: { type: 'none' },
     right: { type: 'none' },
-    fixedHeight: false,
 };
 
 const defaultSlideHeaderFooter: SlideHeaderFooterConfig = {
@@ -31,7 +30,6 @@ const defaultSlideHeaderFooter: SlideHeaderFooterConfig = {
     left: { type: 'none' },
     center: { type: 'none' },
     right: { type: 'none' },
-    fixedHeight: false,
     overrideGlobal: undefined,
 };
 

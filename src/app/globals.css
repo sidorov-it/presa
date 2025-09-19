@@ -95,8 +95,8 @@
 
         --card-font-scale: 1;
 
-        --card-inner-padding-x: calc(3.5em / var(--card-font-scale, 1));
-        --card-inner-padding-y: calc(2.75em / var(--card-font-scale, 1));
+        --card-inner-padding-y: calc(3.5em / var(--card-font-scale, 1));
+        --card-inner-padding-x: calc(2.75em / var(--card-font-scale, 1));
         --card-inner-padding: var(--card-inner-padding-y) var(--card-inner-padding-x);
 
         --line-height-heading: 1.25;

@@ -4,7 +4,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject, useEffect } from 'react';
-import { HeaderFooterConfig, TipTapRefs } from '@/types';
+import { TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
 import LayoutContent from '../LayoutContent/LayoutContent';
@@ -25,6 +25,7 @@ import TemplateTestModal from '../TemplateTestModal';
 import HeaderFooter from '../HeaderFooter/HeaderFooter';
 // import SlideHeaderFooterModal from '../SlideHeaderFooterModal/SlideHeaderFooterModal';
 import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
+import { getHeaderFooterLogoPadding } from '@/utils/headerFooterPadding';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -34,40 +35,16 @@ interface SlideEditorProps {
     isLast: boolean;
 }
 
-const getHeaderFooterPadding = (headerFooter?: HeaderFooterConfig): number => {
-    if (headerFooter?.enabled && headerFooter.fixedHeight) {
-        // Размеры логотипов как пропорции от ширины слайда
-        // Базируемся на том, что стандартная ширина слайда 64.5em,
-        // и переводим em в пропорции (em / 64.5)
-        const logoSizeOrder = {
-            small: 5 / 64.5, // ≈ 0.0775
-            medium: 7.5 / 64.5, // ≈ 0.116
-            large: 10 / 64.5, // ≈ 0.155
-        };
-        let largestLogoSize: 'small' | 'medium' | 'large' = 'medium';
+const DEFAULT_CONTENT_PADDING = 'var(--card-inner-padding-y)';
 
-        // Проверяем все позиции (left, center, right) на наличие логотипов
-        const positions = [headerFooter.left, headerFooter.center, headerFooter.right];
-        const logos = positions.filter(position => position?.type === 'logo' || position?.type === 'theme-logo');
-
-        if (logos.length > 0) {
-            // Находим самый большой логотип
-            if (logos.some(logo => logo.logoSize === 'large')) {
-                largestLogoSize = 'large';
-            } else if (logos.some(logo => logo.logoSize === 'medium')) {
-                largestLogoSize = 'medium';
-            } else if (logos.some(logo => logo.logoSize === 'small')) {
-                largestLogoSize = 'small';
-            }
-        }
-
-        // Если есть логотипы, используем размер самого большого, иначе 10/64.5 ≈ 0.155
-        return largestLogoSize ? logoSizeOrder[largestLogoSize] : 10 / 64.5;
-    }
-    return 0;
-};
-
-const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tiptapRefs, presentationId, isLast, theme }) => {
+const SlideEditor: React.FC<SlideEditorProps> = ({
+    slideLayoutIds,
+    slideId,
+    tiptapRefs,
+    presentationId,
+    isLast,
+    theme,
+}) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -101,14 +78,12 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                       left: { type: 'none' },
                       center: { type: 'none' },
                       right: { type: 'none' },
-                      fixedHeight: false,
                   },
                   footer: {
                       enabled: false,
                       left: { type: 'none' },
                       center: { type: 'none' },
                       right: { type: 'none' },
-                      fixedHeight: false,
                   },
                   applyTo: 'all',
               },
@@ -458,20 +433,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
             // Font scaling now handled by gamma.app-style system in ElementContent
         } as React.CSSProperties;
 
-        const headerPadding = getHeaderFooterPadding(header);
-        const footerPadding = getHeaderFooterPadding(footer);
+        const rawHeaderPadding = getHeaderFooterLogoPadding(header);
+        const rawFooterPadding = getHeaderFooterLogoPadding(footer);
 
-        if (headerPadding > 0) {
-            baseStyle.paddingTop = `calc(48px + 64.5em * ${headerPadding})`;
-        } else {
-            baseStyle.paddingTop = 'calc(48px + var(--card-inner-padding-y))';
-        }
+        const resolvedHeaderPadding = rawHeaderPadding ?? DEFAULT_CONTENT_PADDING;
+        const resolvedFooterPadding = rawFooterPadding ?? DEFAULT_CONTENT_PADDING;
 
-        if (footerPadding > 0) {
-            baseStyle.paddingBottom = `calc(48px + 64.5em * ${footerPadding})`;
-        } else {
-            baseStyle.paddingBottom = 'calc(48px + var(--card-inner-padding-y))';
-        }
+        baseStyle.paddingTop = resolvedHeaderPadding;
+        baseStyle.paddingBottom = resolvedFooterPadding;
         // Apply content alignment
         if (contentAlignment) {
             baseStyle.display = 'flex';
@@ -506,15 +475,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
 
             switch (templateType) {
                 case 'imageTop': {
-                    const paddingTopVw =
-                        headerPadding > 0
-                            ? `calc(64.5em * ${currentImageHeightRatio} + 64.5em * ${headerPadding} + 1em)`
-                            : `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
+                    const imageHeightValue = `calc(64.5em * ${currentImageHeightRatio})`;
+                    const topSpacing = resolvedHeaderPadding;
+                    const paddingTopValue = `calc(${imageHeightValue} + ${topSpacing} + 1em)`;
 
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        paddingTop: paddingTopVw,
+                        paddingTop: paddingTopValue,
                         height: remainingHeight,
                     };
                 }
@@ -544,16 +512,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                     return baseStyle;
             }
         }
-
-        // // Высота колонтитула (можно вынести в константу)
-        // const HEADER_HEIGHT = header?.enabled && header.fixedHeight ? 48 : 0;
-        // const FOOTER_HEIGHT = footer?.enabled && footer.fixedHeight ? 48 : 0;
-
-        // // padding для контента
-        // const slideContainerPadding = {
-        //     paddingTop: HEADER_HEIGHT,
-        //     paddingBottom: FOOTER_HEIGHT,
-        // };
 
         return baseStyle;
     }, [contentAlignment, templateType, header, footer, imageWidthRatio, imageHeightRatio, imageUrl]);

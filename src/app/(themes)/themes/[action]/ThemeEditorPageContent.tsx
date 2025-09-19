@@ -103,7 +103,7 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
     }, [loadTheme, params.action, existingTheme]);
 
     const calculateFontSize = useCallback(() => {
-        return `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${(window.innerWidth - 40 * 16) / window.innerWidth} * var(--viewport-scale-factor, 1.125))`;
+        return `calc(1 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${(window.innerWidth - 40 * 16) / window.innerWidth} * var(--viewport-scale-factor, 1.125))`;
     }, []);
 
     useEffect(() => {
