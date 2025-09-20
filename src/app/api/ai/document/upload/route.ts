@@ -2,11 +2,11 @@ import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import logger from '@/utils/logger';
 import { createLLMService } from '@/services/llm';
 import { getTextExtractor } from 'office-text-extractor';
 import { DocExtractor } from './DocExtractor';
 import { getUserFeatures } from '@/utils/subscriptions';
+import { handleApiError } from '@/utils/errorHandler';
 
 const Extractor = getTextExtractor();
 
@@ -53,8 +53,9 @@ async function POSTHandler(request: NextRequest) {
                 {
                     error: `File size exceeds ${maxFileSizeInMB}MB limit for your subscription plan`,
                     maxSizeAllowed: maxFileSizeInMB,
+                    maxSizeError: true,
                 },
-                { status: 400 }
+                { status: 403 }
             );
         }
 
@@ -62,6 +63,7 @@ async function POSTHandler(request: NextRequest) {
         let extractedText = '';
 
         const buffer = Buffer.from(await file.arrayBuffer());
+        const docExtractor = new DocExtractor();
 
         switch (file.type) {
             case 'text/plain':
@@ -71,7 +73,6 @@ async function POSTHandler(request: NextRequest) {
                 extractedText = await Extractor.extractText({ input: buffer, type: 'buffer' });
                 break;
             case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-                const docExtractor = new DocExtractor();
                 extractedText = await docExtractor.apply(buffer);
                 break;
             default:
@@ -109,34 +110,6 @@ async function POSTHandler(request: NextRequest) {
         const llmService = createLLMService({ userId: session.user.id });
         tokenCount = await llmService.getTokensCount(extractedText);
 
-        // try {
-        //     const tokenResponse = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             Authorization: `Bearer ${process.env.YANDEX_GPT_API_KEY}`,
-        //             'x-folder-id': process.env.YANDEX_FOLDER_ID || '',
-        //         },
-        //         body: JSON.stringify({
-        //             modelUri: `gpt://${process.env.YANDEX_FOLDER_ID}/yandexgpt-lite`,
-        //             text: extractedText,
-        //         }),
-        //     });
-
-        //     if (tokenResponse.ok) {
-        //         const tokenData = await tokenResponse.json();
-        //         tokenCount = tokenData.tokens?.length || 0;
-        //     } else {
-        //         logger.warn('Failed to get token count from Yandex API, using fallback estimation');
-        //         // Fallback: rough estimation (1 token ≈ 4 characters)
-        //         tokenCount = Math.ceil(extractedText.length / 4);
-        //     }
-        // } catch (error) {
-        //     logger.error('Error calling Yandex tokenization API:', error);
-        //     // Fallback: rough estimation (1 token ≈ 4 characters)
-        //     tokenCount = Math.ceil(extractedText.length / 4);
-        // }
-
         return Response.json({
             extractedText,
             tokenCount,
@@ -144,8 +117,7 @@ async function POSTHandler(request: NextRequest) {
             maxDocumentSize: maxFileSizeInMB,
         });
     } catch (error) {
-        logger.error('Error processing document upload:', error.message);
-        return Response.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, 'Document upload processing', 'POST /api/ai/document/upload');
     }
 }
 

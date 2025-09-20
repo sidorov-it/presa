@@ -1,16 +1,18 @@
+/* eslint-disable no-nested-ternary */
 'use client';
 
 import React, { useState } from 'react';
-import { HeaderFooterConfig, HeaderFooterItem } from '@/types';
+import { HeaderFooterConfig, HeaderFooterItem, HeaderFooterLogoSize } from '@/types';
 import { Button } from '@/components/ui/Button';
 import styles from './HeaderFooterConfigurator.module.css';
 import { LuPlus } from 'react-icons/lu';
 import { RiCloseFill } from 'react-icons/ri';
-import { Switch } from '@chakra-ui/react';
 import { FiUpload } from 'react-icons/fi';
 import { FiLoader } from 'react-icons/fi';
 import { usePresentationStore } from '@/store/presentationStore';
 import { useUIStateStore } from '@/store/uiStateStore';
+import { useThemeStore } from '@/store/themeStore';
+import Image from 'next/image';
 
 interface HeaderFooterConfiguratorProps {
     header: HeaderFooterConfig;
@@ -18,10 +20,8 @@ interface HeaderFooterConfiguratorProps {
     onHeaderChange: (config: HeaderFooterConfig) => void;
     onFooterChange: (config: HeaderFooterConfig) => void;
     showApplyTo?: boolean;
-    applyTo?: 'all' | 'except-first' | 'except-first-last';
-    onApplyToChange?: (value: 'all' | 'except-first' | 'except-first-last') => void;
-    currentSlideIndex?: number;
-    totalSlides?: number;
+    applyTo?: 'all' | 'except-first' | 'except-first-last' | 'current-slide';
+    onApplyToChange?: (value: 'all' | 'except-first' | 'except-first-last' | 'current-slide') => void;
 }
 
 const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
@@ -32,13 +32,13 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
     showApplyTo = false,
     applyTo = 'all',
     onApplyToChange,
-    currentSlideIndex,
-    totalSlides,
 }) => {
-    const [activeSection, setActiveSection] = useState<'header' | 'footer'>('header');
     // Новый state для загрузки по каждой позиции
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
     const updateSlide = usePresentationStore(state => state.updateSlide);
+
+    const themeLogo = useThemeStore(state => state.currentTheme?.logo);
+    // const themeLogoSize = useThemeStore(state => state.currentTheme.logoSize);
 
     const addItem = (section: 'header' | 'footer', position: 'left' | 'center' | 'right') => {
         const newItem: HeaderFooterItem = {
@@ -84,19 +84,6 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
             [position]: item,
         };
 
-        if (section === 'header') {
-            onHeaderChange(updatedConfig);
-        } else {
-            onFooterChange(updatedConfig);
-        }
-    };
-
-    const toggleFixedHeight = (section: 'header' | 'footer') => {
-        const currentConfig = section === 'header' ? header : footer;
-        const updatedConfig = {
-            ...currentConfig,
-            fixedHeight: !currentConfig.fixedHeight,
-        };
         if (section === 'header') {
             onHeaderChange(updatedConfig);
         } else {
@@ -153,7 +140,7 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                     footer: section === 'footer' ? { ...footer, [position]: { ...item, content: url } } : footer,
                 }
             );
-        } catch (err) {
+        } catch {
             // TODO: show error
         } finally {
             setUploading(prev => ({ ...prev, [key]: false }));
@@ -181,10 +168,11 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
         );
     };
 
-    const LOGO_SIZE_OPTIONS = [
-        { value: 'small', label: 'Маленький (5em)' },
-        { value: 'medium', label: 'Средний (7.5em)' },
-        { value: 'large', label: 'Большой (10em)' },
+    const LOGO_SIZE_OPTIONS: Array<{ value: HeaderFooterLogoSize; label: string }> = [
+        { value: 'S', label: 'S' },
+        { value: 'M', label: 'M' },
+        { value: 'L', label: 'L' },
+        { value: 'XL', label: 'XL' },
     ];
 
     // renderPosition теперь не содержит хуков
@@ -193,6 +181,7 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
         const item = config[position];
         const key = `${section}_${position}`;
         const isUploading = uploading[key];
+        const logoSizeControlId = `logo-size-${section}-${position}`;
 
         if (item.type === 'none') {
             return (
@@ -208,6 +197,17 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                 </div>
             );
         }
+
+        const logoImageSize = item.logoSize || 'M';
+        const sizeMap: Record<HeaderFooterLogoSize, number> = {
+            S: 26,
+            M: 32,
+            L: 42,
+            XL: 56,
+        };
+
+        const logoImageWidth = sizeMap[logoImageSize];
+        const logoImageHeight = sizeMap[logoImageSize];
 
         return (
             <div className={styles.itemContainer}>
@@ -292,21 +292,44 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                                 />
                             </label>
                         ))}
-                    {item.type === 'theme-logo' && (
-                        <div className={styles.slideNumberInfo}>Логотип будет взят из темы презентации</div>
+                    {item.type === 'theme-logo' && themeLogo && (
+                        <div className={styles.slideLogoContainer}>
+                            <Image
+                                src={themeLogo}
+                                alt="Логотип из темы"
+                                width={logoImageWidth}
+                                height={logoImageHeight}
+                            />
+                        </div>
+                    )}
+                    {item.type === 'theme-logo' && !themeLogo && (
+                        <div className={styles.slideNumberInfo}>В теме нет логотипа</div>
                     )}
                     {item.type === 'slide-number' && (
                         <div className={styles.slideNumberInfo}>Номер слайда будет отображаться автоматически</div>
                     )}
                     {(item.type === 'logo' || item.type === 'theme-logo') && (
                         <div style={{ marginTop: 8, marginBottom: 4 }}>
-                            <label style={{ fontSize: 13, color: 'var(--presentation-text-color)', marginRight: 8 }}>
+                            <label
+                                htmlFor={logoSizeControlId}
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 8,
+                                    fontSize: 13,
+                                    color: 'var(--presentation-text-color)',
+                                }}
+                            >
                                 Размер логотипа:
                             </label>
                             <select
-                                value={item.logoSize || 'medium'}
+                                id={logoSizeControlId}
+                                value={item.logoSize || 'M'}
                                 onChange={e =>
-                                    updateItem(section, position, { ...item, logoSize: e.target.value as any })
+                                    updateItem(section, position, {
+                                        ...item,
+                                        logoSize: e.target.value as HeaderFooterLogoSize,
+                                    })
                                 }
                                 style={{
                                     fontSize: 13,
@@ -332,8 +355,11 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
         <div className={styles.configurator}>
             {showApplyTo && onApplyToChange && (
                 <div className={styles.applyToSection}>
-                    <label className={styles.label}>Применить к:</label>
+                    <label className={styles.label} htmlFor="header-footer-apply-to">
+                        Применить к:
+                    </label>
                     <select
+                        id="header-footer-apply-to"
                         value={applyTo}
                         onChange={e => onApplyToChange(e.target.value as any)}
                         className={styles.applyToSelect}
@@ -341,6 +367,7 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                         <option value="all">Все слайды</option>
                         <option value="except-first">Кроме первого</option>
                         <option value="except-first-last">Кроме первого и последнего</option>
+                        {/* <option value="current-slide">Текущий слайд</option> */}
                     </select>
                 </div>
             )}
@@ -360,16 +387,6 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                     </div>
                     {header.enabled && (
                         <>
-                            <Switch.Root
-                                checked={header.fixedHeight}
-                                onCheckedChange={() => toggleFixedHeight('header')}
-                            >
-                                <Switch.HiddenInput />
-                                <Switch.Control>
-                                    <Switch.Thumb />
-                                </Switch.Control>
-                                <Switch.Label>Фиксированная высота</Switch.Label>
-                            </Switch.Root>
                             <div className={styles.positionsGrid}>
                                 <div className={styles.position}>
                                     <div className={styles.positionLabel}>Слева</div>
@@ -401,17 +418,6 @@ const HeaderFooterConfigurator: React.FC<HeaderFooterConfiguratorProps> = ({
                     </div>
                     {footer.enabled && (
                         <>
-                            <Switch.Root
-                                checked={footer.fixedHeight}
-                                onCheckedChange={() => toggleFixedHeight('footer')}
-                            >
-                                <Switch.HiddenInput />
-                                <Switch.Control>
-                                    <Switch.Thumb />
-                                </Switch.Control>
-                                <Switch.Label>Фиксированная высота</Switch.Label>
-                            </Switch.Root>
-
                             <div className={styles.positionsGrid}>
                                 <div className={styles.position}>
                                     <div className={styles.positionLabel}>Слева</div>

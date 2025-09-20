@@ -1,0 +1,36 @@
+.featuresSection {
+    flex: 1;
+    margin-bottom: 24px;
+}
+
+.featuresTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+}
+
+.featuresList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.featureItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.checkIcon {
+    color: #10b981;
+    font-size: 12px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}

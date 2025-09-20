@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaCreditCard } from 'react-icons/fa';
-import { useCloudPaymentsPayment } from '@/hooks/useCloudPaymentsPayment';
 import styles from './CloudPaymentsPaymentButton.module.css';
+import { useTokens } from '@/hooks/useTokens';
 
 interface CloudPaymentsPaymentButtonProps {
     packageId: string;
@@ -18,11 +18,11 @@ export const CloudPaymentsPaymentButton: React.FC<CloudPaymentsPaymentButtonProp
     isLoading = false,
     className = '',
 }) => {
-    const { createPayment, loading, error } = useCloudPaymentsPayment();
+    const { createTokensPayment, loading } = useTokens();
 
     const handlePayment = async () => {
         try {
-            const paymentResponse = await createPayment({
+            const paymentResponse = await createTokensPayment({
                 packageId,
                 returnUrl: `${window.location.origin}/tokens`,
             });

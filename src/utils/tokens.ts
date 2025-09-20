@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { TransactionType, PurchaseStatus } from '@prisma/client';
+import { TransactionType, PurchaseStatus, Prisma } from '@prisma/client';
 import { TokenUsageData } from '@/types/tokens';
 
 /**
@@ -41,6 +41,8 @@ export async function deductTokens(data: TokenUsageData): Promise<boolean> {
     const { userId, amount, description, llmRequestId, metadata } = data;
 
     // Start transaction
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return await prisma.$transaction(async (tx: any) => {
         // Get current balance
         const userTokens = await tx.userTokens.findUnique({
@@ -92,47 +94,85 @@ export async function addTokens(
     purchaseId?: string,
     metadata?: any
 ): Promise<void> {
-    await prisma.$transaction(async (tx: any) => {
-        // Ensure user tokens record exists
-        let userTokens = await tx.userTokens.findUnique({
-            where: { userId },
-        });
+    // Retry logic for transaction conflicts
+    let retryCount = 0;
+    const maxRetries = 10; // Increased from 3 to 10
 
-        if (!userTokens) {
-            userTokens = await tx.userTokens.create({
-                data: {
-                    userId,
-                    balance: 0,
-                    totalUsed: 0,
-                },
+    while (retryCount < maxRetries) {
+        try {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+                // Ensure user tokens record exists
+                let userTokens = await tx.userTokens.findUnique({
+                    where: { userId },
+                });
+
+                if (!userTokens) {
+                    userTokens = await tx.userTokens.create({
+                        data: {
+                            userId,
+                            balance: 0,
+                            totalUsed: 0,
+                        },
+                    });
+                }
+
+                const balanceBefore = userTokens.balance;
+                const balanceAfter = balanceBefore + amount;
+
+                // Check if this transaction has already been processed
+                if (purchaseId) {
+                    const existingTransaction = await tx.tokenTransaction.findFirst({
+                        where: {
+                            userId,
+                            purchaseId,
+                        },
+                    });
+
+                    if (existingTransaction) {
+                        console.log(
+                            `Transaction already processed for user ${userId}, purchase ${purchaseId}, skipping`
+                        );
+                        return; // Skip processing if already done
+                    }
+                }
+
+                // Update user tokens
+                await tx.userTokens.update({
+                    where: { userId },
+                    data: {
+                        balance: balanceAfter,
+                    },
+                });
+
+                // Create transaction record
+                await tx.tokenTransaction.create({
+                    data: {
+                        userId,
+                        amount,
+                        type,
+                        description,
+                        purchaseId,
+                        balanceBefore,
+                        balanceAfter,
+                        metadata,
+                    },
+                });
             });
+            break; // Success, exit retry loop
+        } catch (error: any) {
+            retryCount++;
+            if (error.code === 'P2034' && retryCount < maxRetries) {
+                // Transaction conflict, wait and retry with longer delay
+                console.warn(`Transaction conflict in addTokens for user ${userId}, retry ${retryCount}/${maxRetries}`);
+                await new Promise(resolve => setTimeout(resolve, 200 * retryCount)); // Increased delay
+            } else {
+                // Other error or max retries reached
+                throw error;
+            }
         }
-
-        const balanceBefore = userTokens.balance;
-        const balanceAfter = balanceBefore + amount;
-
-        // Update user tokens
-        await tx.userTokens.update({
-            where: { userId },
-            data: {
-                balance: balanceAfter,
-            },
-        });
-
-        // Create transaction record
-        await tx.tokenTransaction.create({
-            data: {
-                userId,
-                amount,
-                type,
-                description,
-                purchaseId,
-                balanceBefore,
-                balanceAfter,
-                metadata,
-            },
-        });
-    });
+    }
 }
 
 /**

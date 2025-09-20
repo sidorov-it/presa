@@ -95,8 +95,8 @@
 
         --card-font-scale: 1;
 
-        --card-inner-padding-x: calc(3.5em / var(--card-font-scale, 1));
-        --card-inner-padding-y: calc(2.75em / var(--card-font-scale, 1));
+        --card-inner-padding-y: calc(3.5em / var(--card-font-scale, 1));
+        --card-inner-padding-x: calc(2.75em / var(--card-font-scale, 1));
         --card-inner-padding: var(--card-inner-padding-y) var(--card-inner-padding-x);
 
         --line-height-heading: 1.25;
@@ -1089,6 +1089,14 @@ button[data-type="button"]:hover {
     color: var(--presentation-text-color);
     caret-color: var(--presentation-text-color);
     font-family: var(--presentation-body-font);
+    margin-bottom: 2em;
+}
+
+.ProseMirror.body-text {
+    margin-bottom: 0;
+}
+
+.ProseMirror.body-text .placeholder-text{
     margin-bottom: 2em;
 }
 

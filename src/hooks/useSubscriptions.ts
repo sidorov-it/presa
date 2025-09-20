@@ -1,85 +1,50 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-    SubscriptionPlan,
-    UserSubscription,
-    SubscriptionFeatures,
-    CreateSubscriptionRequest,
-} from '@/types/subscriptions';
+import { UserSubscription, CreateSubscriptionRequest, CreateSubscriptionResponse } from '@/types/subscriptions';
+import { invalidateSubscriptionCache } from './useSubscriptionCheck';
 
 interface UseSubscriptionsReturn {
-    plans: SubscriptionPlan[];
-    userSubscription: UserSubscription | null;
-    features: SubscriptionFeatures | null;
-    hasActiveSubscription: boolean;
+    activeSubscription: UserSubscription | null;
     loading: boolean;
     error: string | null;
-    createSubscription: (planId: string) => Promise<{ success: boolean; subscriptionId?: string; error?: string }>;
+    createSubscription: (planId: string) => Promise<CreateSubscriptionResponse>;
+    cancelSubscription: (subscriptionId: string) => Promise<{ success: boolean; error?: string }>;
     refreshSubscriptionStatus: () => Promise<void>;
 }
 
 export const useSubscriptions = (): UseSubscriptionsReturn => {
-    const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-    const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
-    const [features, setFeatures] = useState<SubscriptionFeatures | null>(null);
-    const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+    const [activeSubscription, setActiveSubscription] = useState<UserSubscription | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Load subscription plans
-    const loadPlans = useCallback(async () => {
-        try {
-            const response = await fetch('/api/subscriptions/plans');
-            if (!response.ok) {
-                throw new Error('Failed to fetch subscription plans');
-            }
-            const data = await response.json();
-            if (data.success) {
-                setPlans(data.plans.sort((a: SubscriptionPlan, b: SubscriptionPlan) => a.price - b.price));
-            }
-        } catch (err) {
-            console.error('Error loading subscription plans:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load plans');
-        }
-    }, []);
-
-    // Load user subscription status
     const loadSubscriptionStatus = useCallback(async () => {
         try {
+            setError(null);
             const response = await fetch('/api/subscriptions/status');
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // User not authenticated, clear subscription data
-                    setUserSubscription(null);
-                    setFeatures(null);
-                    setHasActiveSubscription(false);
-                    return;
-                }
-                throw new Error('Failed to fetch subscription status');
-            }
-            const data = await response.json();
-            if (data.success) {
-                setUserSubscription(data.subscription);
-                setFeatures(data.features);
-                setHasActiveSubscription(data.hasActiveSubscription);
+            if (response.ok) {
+                const data = await response.json();
+                setActiveSubscription(data.subscription || null);
+                // Инвалидируем кеш легковесного хука
+                invalidateSubscriptionCache();
+            } else {
+                const errorData = await response.json();
+                setError(errorData.error || 'Failed to load subscription status');
             }
         } catch (err) {
-            console.error('Error loading subscription status:', err);
-            setError(err instanceof Error ? err.message : 'Failed to load subscription status');
+            const errorMessage = err instanceof Error ? err.message : 'Failed to load subscription status';
+            setError(errorMessage);
         }
     }, []);
 
     // Create subscription
-    const createSubscription = useCallback(async (planId: string) => {
+    const createSubscription = useCallback(async (planId: string): Promise<CreateSubscriptionResponse> => {
         try {
             setError(null);
-            const requestData: CreateSubscriptionRequest = { planId };
-
             const response = await fetch('/api/subscriptions/purchase', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(requestData),
+                body: JSON.stringify({ planId } as CreateSubscriptionRequest),
             });
 
             if (!response.ok) {
@@ -87,21 +52,42 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
                 throw new Error(errorData.error || 'Failed to create subscription');
             }
 
-            const data = await response.json();
-            return {
-                success: true,
-                subscriptionId: data.subscriptionId,
-                paymentData: data.paymentData,
-            };
+            const result = await response.json();
+            return result;
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to create subscription';
             setError(errorMessage);
-            return {
-                success: false,
-                error: errorMessage,
-            };
+            return { success: false, error: errorMessage, publicId: '' };
         }
     }, []);
+
+    // Cancel subscription
+    const cancelSubscription = useCallback(
+        async (subscriptionId: string): Promise<{ success: boolean; error?: string }> => {
+            try {
+                setError(null);
+                const response = await fetch(`/api/subscriptions/${subscriptionId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to cancel subscription');
+                }
+
+                await loadSubscriptionStatus();
+                return { success: true };
+            } catch (err) {
+                const errorMessage = err instanceof Error ? err.message : 'Failed to cancel subscription';
+                setError(errorMessage);
+                return { success: false, error: errorMessage };
+            }
+        },
+        [loadSubscriptionStatus]
+    );
 
     // Refresh subscription status
     const refreshSubscriptionStatus = useCallback(async () => {
@@ -116,22 +102,21 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             setLoading(true);
             setError(null);
 
-            await Promise.all([loadPlans(), loadSubscriptionStatus()]);
+            await Promise.all([loadSubscriptionStatus()]);
 
             setLoading(false);
         };
 
         loadData();
-    }, [loadPlans, loadSubscriptionStatus]);
+    }, [loadSubscriptionStatus]);
 
     return {
-        plans,
-        userSubscription,
-        features,
-        hasActiveSubscription,
+        // plans,
+        activeSubscription,
         loading,
         error,
         createSubscription,
+        cancelSubscription,
         refreshSubscriptionStatus,
     };
 };

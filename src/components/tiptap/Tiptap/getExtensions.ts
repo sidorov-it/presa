@@ -298,6 +298,7 @@ const getExtensions = ({
                           initialStyle: stylesToUse,
                       })
                   )
+                : undefined;
 
             const htmlAfterCursor = contentAfterCursor
                 ? generateHTML(

@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { generatePdfAsync } from '@/utils/pdfGeneration';
+import { shouldHideBranding } from '@/utils/subscriptions';
 
 const handleRequest = async (request: NextRequest, props: { params: { id: string } }) => {
     try {
@@ -65,12 +66,15 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
             },
         });
 
+        // Check if branding should be hidden for this user
+        const hideBranding = await shouldHideBranding(session.user.id);
+
         // Get the base URL for the slide pages
         // const baseUrl = 'http://localhost:3000';
         const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://app.slydle.ru';
 
         // Start async PDF generation (don't await)
-        generatePdfAsync(task.id, presentationId, slideIndex, baseUrl).catch(error => {
+        generatePdfAsync(task.id, presentationId, slideIndex, baseUrl, hideBranding).catch(error => {
             logger.error('Async PDF generation failed:', error);
         });
 

@@ -7,9 +7,10 @@ import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { generateId } from '@/utils/id';
 import logger from '@/utils/logger';
 import { prisma } from '@/lib/prisma';
-import { extractTextFromElement } from '@/utils/textExtraction';
+// import { extractTextFromElement } from '@/utils/textExtraction';
 import { v4 as uuidv4 } from 'uuid';
 import { getUserFeatures, performSubscriptionHealthCheck } from '@/utils/subscriptions';
+import extractTextFromElement from '@/utils/extractTextFromElement';
 
 async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/presentation');

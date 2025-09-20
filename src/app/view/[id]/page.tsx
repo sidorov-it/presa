@@ -82,13 +82,17 @@ export default async function PresentationViewWrapper({ params }: Props) {
         return <NotFoundPage />;
     }
 
-    if (!presentationData.themeId) {
-        presentationData.themeId = '687f6b77009104ef7546a07b';
-    }
+    let theme;
 
-    const theme = await prisma.theme.findUnique({
-        where: { id: presentationData.themeId },
-    });
+    if (!presentationData.themeId) {
+        theme = await prisma.theme.findFirst({
+            where: { isDefault: true },
+        });
+    } else {
+        theme = await prisma.theme.findUnique({
+            where: { id: presentationData.themeId },
+        });
+    }
 
     // Serialize the data to plain objects to avoid symbol properties
     const serializedPresentation = JSON.parse(JSON.stringify(presentationData));

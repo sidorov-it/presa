@@ -13,7 +13,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
         const { id: subscriptionId } = await params;
 
-        // Find the subscription and verify ownership
         const subscription = await prisma.userSubscription.findFirst({
             where: {
                 id: subscriptionId,
@@ -23,30 +22,59 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
 
         if (!subscription) {
-            return NextResponse.json({ error: 'Subscription not found or cannot be cancelled' }, { status: 404 });
+            return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
         }
 
-        // Update subscription status to cancelled
-        const updatedSubscription = await prisma.userSubscription.update({
-            where: { id: subscriptionId },
-            data: {
-                status: SubscriptionStatus.cancelled,
-                cancelledAt: new Date(),
-                cancelReason: 'User requested cancellation',
-                // Keep the endDate as is - user can use subscription until it expires
+        // https://api.cloudpayments.ru/subscriptions/cancel
+
+        const authToken = Buffer.from(
+            `${process.env.CLOUDPAYMENTS_PUBLIC_ID}:${process.env.CLOUDPAYMENTS_SECRET_KEY}`
+        ).toString('base64');
+
+        const response = await fetch(`https://api.cloudpayments.ru/subscriptions/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${authToken}`,
             },
+            body: JSON.stringify({
+                Id: subscription.cloudpaymentsSubscriptionId,
+            }),
         });
 
-        // Log the cancellation
-        console.log(`Subscription ${subscriptionId} cancelled by user ${session.user.id}`);
+        const data = await response.json();
+        if (data.Success) {
+            //        Find the subscription and verify ownership
 
-        return NextResponse.json({
-            success: true,
-            message: 'Subscription cancelled successfully',
-            subscription: updatedSubscription,
-        });
+            if (!subscription) {
+                return NextResponse.json({ error: 'Subscription not found or cannot be cancelled' }, { status: 404 });
+            }
+
+            // Update subscription status to cancelled
+            const updatedSubscription = await prisma.userSubscription.update({
+                where: { id: subscriptionId },
+                data: {
+                    status: SubscriptionStatus.cancelled,
+                },
+            });
+
+            // Log the cancellation
+            console.log(`Subscription ${subscriptionId} cancelled by user ${session.user.id}`);
+
+            return NextResponse.json({
+                success: true,
+                message: 'Subscription cancelled successfully',
+                subscription: updatedSubscription,
+            });
+        } else {
+            return NextResponse.json({
+                success: false,
+                message: 'Subscription cancellation failed',
+                subscription: data,
+            });
+        }
     } catch (error) {
-        console.error('Error cancelling subscription:', error);
+        console.error('Error cancelling subscription:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json(
             {
                 error: 'Failed to cancel subscription',

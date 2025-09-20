@@ -35,7 +35,7 @@
 }
 
 .absoluteHeaderFooter.header .content {
-    align-items: flex-start;
+    align-items: center;
 }
 
 .absoluteHeaderFooter.footer {
@@ -44,7 +44,7 @@
 }
 
 .absoluteHeaderFooter.footer .content {
-    align-items: flex-end;
+    align-items: center;
 }
 
 .content {
@@ -77,16 +77,22 @@
 
 .text {
     color: var(--presentation-text-color);
-    font-size: 0.85rem;
+    font-size: calc(0.7em / var(--media-scale));
+    font-family: var(--presentation-body-font);
+    padding-inline-start: calc(0.75em / var(--media-scale));
+    padding-inline-end: calc(0.45em / var(--media-scale));
+    opacity: 0.65;
+
     line-height: 1.4;
     word-break: break-word;
 }
 
 .slideNumber {
     color: var(--presentation-text-color);
-    font-size: 0.8rem;
+    font-size: calc(0.7em / var(--media-scale));
+    font-family: var(--presentation-body-font);
     font-weight: 500;
-    font-family: monospace;
+    opacity: 0.65;
 }
 
 .logo {

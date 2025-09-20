@@ -312,6 +312,10 @@ color: #374151;
     margin-top: 16px;
     padding-top: 16px;
     border-top: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .headerFooterLabel {
@@ -319,7 +323,6 @@ color: #374151;
     font-size: 14px;
     font-weight: 500;
     color: #374151;
-    margin-bottom: 8px;
 }
 
 .headerFooterButtons {
@@ -354,3 +357,14 @@ color: #374151;
     width: 16px;
     height: 16px;
 }
+
+.headerFooterButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.headerFooterCrown {
+    color: #fbbf24;
+    flex-shrink: 0;
+}
+

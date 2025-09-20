@@ -7,12 +7,6 @@ import path from 'path';
 import { PdfGenerationStatus } from '@prisma/client';
 import { getUploadPath } from './uploadPath';
 
-function encodeRFC5987(v: string) {
-    return encodeURIComponent(v)
-        .replace(/['()]/g, escape) // %27 %28 %29
-        .replace(/\*/g, '%2A');
-}
-
 // Функция для транслитерации кириллицы и очистки имени файла
 function sanitizeFileName(fileName: string): string {
     // Словарь для транслитерации кириллицы
@@ -126,7 +120,8 @@ export const generatePdfAsync = async (
     taskId: string,
     presentationId: string,
     slideIndex: number | null,
-    baseUrl: string
+    baseUrl: string,
+    hideBranding: boolean = false
 ) => {
     try {
         // Update task status to in_progress
@@ -201,7 +196,7 @@ export const generatePdfAsync = async (
         const pdfPages: Buffer[] = [];
 
         for (const i of slidesToProcess) {
-            const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true`;
+            const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true&hideBranding=${hideBranding}`;
 
             try {
                 // Navigate to slide page
@@ -278,7 +273,8 @@ export const generatePdfAsync = async (
                         );
 
                         // Add buffer to height to prevent content overflow
-                        slideHeight = Math.ceil(maxHeight + 150); // Add 150px buffer for safety
+                        slideHeight = maxHeight; // Add 150px buffer for safety
+                        // slideHeight = Math.ceil(maxHeight + 150); // Add 150px buffer for safety
 
                         logger.debug(`Slide ${i} dimensions:`, {
                             finalWidth: slideWidth,
@@ -289,8 +285,8 @@ export const generatePdfAsync = async (
 
                 // Generate PDF for this slide with proper dimensions
                 const pdf = await page.pdf({
-                    width: slideWidth,
-                    height: slideHeight,
+                    width: `${slideWidth}px`,
+                    height: `${slideHeight}px`,
                     printBackground: true,
                     margin: {
                         top: 0,

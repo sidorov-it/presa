@@ -2,48 +2,19 @@
 /* eslint-disable indent */
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useMemo } from 'react';
-import { HeaderFooterConfig, Layout, Slide } from '@/types';
+import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
 import HeaderFooter from '../../editor/HeaderFooter/HeaderFooter';
 import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
+import { getHeaderFooterLogoPadding } from '@/utils/headerFooterPadding';
 
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';
 
-const getHeaderFooterPadding = (headerFooter?: HeaderFooterConfig): number => {
-    if (headerFooter?.enabled && headerFooter.fixedHeight) {
-        // Размеры логотипов как пропорции от ширины слайда
-        // Базируемся на том, что стандартная ширина слайда 64.5em,
-        // и переводим em в пропорции (em / 64.5)
-        const logoSizeOrder = {
-            small: 5, // ≈ 0.0775
-            medium: 7.5, // ≈ 0.116
-            large: 10, // ≈ 0.155
-        };
-        let largestLogoSize: 'small' | 'medium' | 'large' | undefined = undefined;
+const DEFAULT_CONTENT_PADDING = 'var(--card-inner-padding-y)';
 
-        // Проверяем все позиции (left, center, right) на наличие логотипов
-        const positions = [headerFooter.left, headerFooter.center, headerFooter.right];
-        const logos = positions.filter(position => position?.type === 'logo' || position?.type === 'theme-logo');
-
-        if (logos.length > 0) {
-            // Находим самый большой логотип
-            if (logos.some(logo => logo.logoSize === 'large')) {
-                largestLogoSize = 'large';
-            } else if (logos.some(logo => logo.logoSize === 'medium')) {
-                largestLogoSize = 'medium';
-            } else if (logos.some(logo => logo.logoSize === 'small')) {
-                largestLogoSize = 'small';
-            }
-        }
-
-        // Если есть логотипы, используем размер самого большого, иначе 10/64.5 ≈ 0.155
-        return largestLogoSize ? logoSizeOrder[largestLogoSize] : 10 / 64.5;
-    }
-    return 0;
-};
 interface SlideViewerProps {
     slide: Slide;
     themeClassName?: string;
@@ -221,6 +192,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             margin: 'unset',
         };
 
+        // For PDF export, allow natural height to avoid clipping
+        if (isPdfExport) {
+            baseStyle.minHeight = 'auto';
+            baseStyle.height = 'auto';
+        }
+
         // Apply content alignment
         if (slide.contentAlignment) {
             baseStyle.display = 'flex';
@@ -242,11 +219,17 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
         // Применяем глобальные настройки колонтитулов к слайду
         const effectiveSlide = globalHeaderFooterConfig
-            ? applyGlobalHeaderFooterToSlide(slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig)
+            ? applyGlobalHeaderFooterToSlide(slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig, currentSlideIndex)
             : slide;
 
-        const headerPadding = getHeaderFooterPadding(effectiveSlide.header);
-        const footerPadding = getHeaderFooterPadding(effectiveSlide.footer);
+        const rawHeaderPadding = getHeaderFooterLogoPadding(effectiveSlide.header);
+        const rawFooterPadding = getHeaderFooterLogoPadding(effectiveSlide.footer);
+
+        const resolvedHeaderPadding = rawHeaderPadding ?? DEFAULT_CONTENT_PADDING;
+        const resolvedFooterPadding = rawFooterPadding ?? DEFAULT_CONTENT_PADDING;
+
+        baseStyle.paddingTop = resolvedHeaderPadding;
+        baseStyle.paddingBottom = resolvedFooterPadding;
 
         // Additional styles for image templates
         if (slide.templateType) {
@@ -257,23 +240,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
 
-            let paddingTopVw;
-            let paddingBottomVw;
-
-            if (headerPadding > 0) {
-                paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + ${headerPadding}em)`;
-            } else {
-                paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + 1em)`;
-            }
-            if (footerPadding > 0) {
-                paddingBottomVw = `calc(var(--card-width) * ${footerPadding})`;
-            } else {
-                paddingBottomVw = undefined;
-            }
-
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
             const remainingHeight = `calc(100% - 64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} - 1em)`;
+            const imageHeightValue = `calc(var(--card-width) * ${currentImageHeightRatio})`;
 
             switch (slide.templateType) {
                 case 'imageTop':
@@ -281,9 +251,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ...baseStyle,
                         position: 'relative',
                         zIndex: 2,
-                        paddingTop: paddingTopVw,
-                        paddingBottom: paddingBottomVw,
-                        height: remainingHeight,
+                        paddingTop: `calc(${imageHeightValue} + ${resolvedHeaderPadding} + 1em)`,
+                        height: isPdfExport ? 'auto' : remainingHeight,
                     };
                 case 'imageLeft':
                     return {
@@ -301,27 +270,14 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         width: remainingWidth,
                     };
                 default:
-                    baseStyle.paddingTop = `calc(48px + ${headerPadding}em)`;
-                    baseStyle.paddingBottom = `calc(48px + ${footerPadding}em)`;
                     return baseStyle;
             }
         } else {
-            // Для слайдов без template типа применяем отступы для колонтитулов
-            if (headerPadding > 0) {
-                baseStyle.paddingTop = `calc(48px + var(--card-inner-padding-y) + var(--card-width) * ${headerPadding})`;
-            } else {
-                baseStyle.paddingTop = 'calc(48px + var(--card-inner-padding-y))';
-            }
-
-            if (footerPadding > 0) {
-                baseStyle.paddingBottom = `calc(48px + var(--card-inner-padding-y) + var(--card-width) * ${footerPadding})`;
-            } else {
-                baseStyle.paddingBottom = 'calc(48px + var(--card-inner-padding-y))';
-            }
+            // Для слайдов без template типа базовые отступы уже выставлены выше
         }
 
         return baseStyle;
-    }, [slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig]);
+    }, [slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig, isPdfExport]);
 
     let height;
     let width;
@@ -407,7 +363,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                   slide,
                                   currentSlideIndex,
                                   totalSlides,
-                                  globalHeaderFooterConfig
+                                  globalHeaderFooterConfig,
+                                  currentSlideIndex
                               )
                             : slide;
 
@@ -418,6 +375,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                     type="header"
                                     currentSlideIndex={currentSlideIndex}
                                     totalSlides={totalSlides}
+                                    theme={theme}
                                 />
                             )
                         );
@@ -459,7 +417,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                                   slide,
                                   currentSlideIndex,
                                   totalSlides,
-                                  globalHeaderFooterConfig
+                                  globalHeaderFooterConfig,
+                                  currentSlideIndex
                               )
                             : slide;
                         return (

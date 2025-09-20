@@ -57,7 +57,7 @@
 }
 
 .pdfExport .slideViewerContent {
-    min-height: auto !important;
+    min-height: 0 !important;
     height: auto !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
@@ -94,10 +94,9 @@
 } */
 
 .slideWrapper {
-    /* margin-top: 20px;
-    margin-bottom: 44px;
-    margin-left: 20px;
-    margin-right: 20px; */
+    max-width: min(calc(64.5em / 1), 100vw);
+    width: min(calc(64.5em / 1), 100vw);
+
     border-radius: var(--presentation-slide-border-radius);
     min-height: 130px;
 

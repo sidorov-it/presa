@@ -106,6 +106,7 @@ export const readAndValidateJsonFile = (file: File): Promise<{ valid: boolean; d
 
                 resolve({ valid: true, data });
             } catch (error) {
+                console.error('Error reading file:', error);
                 resolve({ valid: false, error: 'Invalid JSON file' });
             }
         };

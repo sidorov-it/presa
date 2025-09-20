@@ -241,18 +241,29 @@ export interface Layout {
 // Header/Footer position content types
 export type HeaderFooterContentType = 'none' | 'text' | 'logo' | 'theme-logo' | 'slide-number';
 
+export type HeaderFooterLogoSize = 'S' | 'M' | 'L' | 'XL';
+
 export interface HeaderFooterPosition {
     type: HeaderFooterContentType;
     content?: string; // Text content or logo URL
-    logoSize?: 'small' | 'medium' | 'large';
+    logoSize?: HeaderFooterLogoSize;
 }
+
+export type HeaderFooterItem = HeaderFooterPosition;
 
 export interface HeaderFooterConfig {
     enabled: boolean;
     left: HeaderFooterPosition;
     center: HeaderFooterPosition;
     right: HeaderFooterPosition;
-    fixedHeight: boolean;
+}
+
+// Slide-specific header/footer configuration that can explicitly disable or use custom settings
+export interface SlideHeaderFooterConfig extends HeaderFooterConfig {
+    // When true, this slide explicitly overrides global settings
+    // When false, this slide explicitly disables header/footer (even if global is enabled)
+    // When undefined, slide uses global settings
+    overrideGlobal?: boolean;
 }
 
 export interface Slide {
@@ -271,8 +282,8 @@ export interface Slide {
     imageWidthRatio?: number; // Width of image as ratio to slide width (0-1) for left/right templates
     contentAlignment?: 'top' | 'center' | 'bottom';
     hidden?: boolean;
-    header?: HeaderFooterConfig;
-    footer?: HeaderFooterConfig;
+    header?: SlideHeaderFooterConfig;
+    footer?: SlideHeaderFooterConfig;
 }
 
 export interface BackgroundSettings {
@@ -284,7 +295,7 @@ export interface BackgroundSettings {
 export interface GlobalHeaderFooterConfig {
     header: HeaderFooterConfig;
     footer: HeaderFooterConfig;
-    applyTo: 'all' | 'except-first' | 'except-first-last';
+    applyTo: 'all' | 'except-first' | 'except-first-last' | 'current-slide';
 }
 
 export interface IPresentation {

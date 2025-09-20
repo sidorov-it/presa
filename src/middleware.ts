@@ -10,7 +10,7 @@ export default withAuth(
         if (
             req.nextUrl.pathname.startsWith('/dashboard') ||
             req.nextUrl.pathname.startsWith('/docs') ||
-            req.nextUrl.pathname.startsWith('/tokens')
+            req.nextUrl.pathname.startsWith('/payment')
         ) {
             if (!token) {
                 return NextResponse.redirect(new URL('/login', req.url));
@@ -30,7 +30,7 @@ export const config = {
     matcher: [
         '/dashboard/:path*',
         '/docs/:path*',
-        '/tokens/:path*',
+        '/payment/:path*',
         '/api/ai/:path*',
         '/api/presentations/:path*',
         '/api/subscriptions/:path*',

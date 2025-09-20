@@ -1,6 +1,7 @@
 import React from 'react';
 import { SubscriptionPlan } from '@/types/subscriptions';
-import { FaCrown, FaCheckCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaCreditCard } from 'react-icons/fa';
+import { ProductCard } from '@/components/ui/ProductCard/ProductCard';
 import styles from './SubscriptionCard.module.css';
 
 interface SubscriptionCardProps {
@@ -23,29 +24,6 @@ const getIntervalLabel = (interval: string): string => {
     }
 };
 
-const getIntervalDiscount = (interval: string): string | null => {
-    switch (interval) {
-        case 'quarterly':
-            return 'Скидка 10%';
-        case 'semiannual':
-            return 'Скидка 20%';
-        default:
-            return null;
-    }
-};
-
-const getPlanFeatures = (): string[] => {
-    const baseFeatures = [
-        'До 20 слайдов при генерации презентации',
-        'Без водяного знака при экспорте',
-        'Увеличенный лимит размера документов для генерации презентации ИИ',
-        'Приоритетная обработка AI-запросов',
-        'Все возможности экспорта',
-    ];
-
-    return baseFeatures;
-};
-
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     plan,
     onSubscribe,
@@ -59,22 +37,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     };
 
     const intervalLabel = getIntervalLabel(plan.interval);
-    const discount = getIntervalDiscount(plan.interval);
-    const features = getPlanFeatures();
 
     return (
-        <div
-            className={`${styles.subscriptionCard} ${plan.isPopular ? styles.popular : ''} ${isActive ? styles.active : ''}`}
-        >
-            {plan.isPopular && (
-                <div className={styles.popularBadge}>
-                    <FaCrown className={styles.crownIcon} />
-                    Популярный
-                </div>
-            )}
-
-            {discount && <div className={styles.discountBadge}>{discount}</div>}
-
+        <ProductCard isPopular={plan.isPopular} className={`${isActive ? styles.active : ''}`}>
             <div className={styles.cardHeader}>
                 <h3 className={styles.planName}>{plan.name}</h3>
                 {plan.description && <p className={styles.planDescription}>{plan.description}</p>}
@@ -87,19 +52,6 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 </div>
                 <div className={styles.interval}>{intervalLabel}</div>
             </div>
-
-            <div className={styles.featuresSection}>
-                <h4 className={styles.featuresTitle}>Что включено:</h4>
-                <ul className={styles.featuresList}>
-                    {features.map((feature, index) => (
-                        <li key={index} className={styles.featureItem}>
-                            <FaCheckCircle className={styles.checkIcon} />
-                            <span>{feature}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
             <div className={styles.actionSection}>
                 {isActive ? (
                     <div className={styles.activeStatus}>
@@ -112,10 +64,17 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                         disabled={isLoading}
                         className={`${styles.subscribeButton} ${isLoading ? styles.loading : ''}`}
                     >
-                        {isLoading ? 'Обработка...' : `Подписаться`}
+                        {isLoading ? (
+                            'Обработка...'
+                        ) : (
+                            <div className={styles.subscribeButtonContent}>
+                                <FaCreditCard />
+                                Оформить
+                            </div>
+                        )}
                     </button>
                 )}
             </div>
-        </div>
+        </ProductCard>
     );
 };

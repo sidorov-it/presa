@@ -9,6 +9,26 @@
     margin-bottom: 0;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.textContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.rightElement {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
 .title {
     font-size: 1.875rem;
     font-weight: 700;

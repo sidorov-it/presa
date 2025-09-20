@@ -81,7 +81,7 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
     set('--viewport-scale-factor', '1.125');
     set(
         '--font-size',
-        'calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * var(--zoom-level, 1) * var(--viewport-scale-factor, 1.125))'
+        'calc(1 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * var(--zoom-level, 1) * var(--viewport-scale-factor, 1.125))'
     );
     set('--media-scale', 'min(1, var(--card-font-scale, 1))');
 

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { MutableRefObject, useCallback, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import { SLIDE_TEMPLATES, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
@@ -10,8 +11,10 @@ import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import { ElementType } from '@/types/elements';
-import { HeaderFooterIcon } from '@/components/icons';
 import { useUIStateStore } from '@/store/uiStateStore';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
+import { showSubscriptionModal } from '@/utils/subscriptionModalHelpers';
+import { FaCrown } from 'react-icons/fa';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -51,7 +54,23 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
+
+    const { hasActiveSubscription, loading: subscriptionLoading } = useSubscriptionCheck();
+    const showSubscriptionCrown = !subscriptionLoading && !hasActiveSubscription;
+
+    const handleHeaderFooterClick = useCallback(() => {
+        if (subscriptionLoading) {
+            return;
+        }
+
+        if (hasActiveSubscription) {
+            useUIStateStore.getState().setCurrentSlideId(slideId);
+            useUIStateStore.getState().setGlobalHeaderFooterModalOpen(true);
+            return;
+        }
+
+        showSubscriptionModal();
+    }, [hasActiveSubscription, slideId, subscriptionLoading]);
 
     const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
@@ -421,29 +440,17 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
             </div>
 
             <div className={styles.headerFooterSection}>
-                <label className={styles.headerFooterLabel}>Заголовки и подвалы</label>
+                <span className={styles.headerFooterLabel}>Колонтитулы</span>
                 <div className={styles.headerFooterButtons}>
                     <button
-                        onClick={() => {
-                            useUIStateStore.getState().setCurrentSlideId(null);
-                            setGlobalHeaderFooterModalOpen(true);
-                        }}
+                        type="button"
+                        onClick={handleHeaderFooterClick}
                         className={styles.headerFooterButton}
-                        aria-label="Настроить глобальные заголовки и подвалы"
+                        aria-label="Настроить колонтитулы"
+                        disabled={subscriptionLoading}
                     >
-                        <HeaderFooterIcon />
-                        <span>Глобальные настройки</span>
-                    </button>
-                    <button
-                        onClick={() => {
-                            useUIStateStore.getState().setCurrentSlideId(slideId);
-                            useUIStateStore.getState().setGlobalHeaderFooterModalOpen(true);
-                        }}
-                        className={styles.headerFooterButton}
-                        aria-label="Настроить заголовки и подвалы для этого слайда"
-                    >
-                        <HeaderFooterIcon />
-                        <span>Настройки слайда</span>
+                        {showSubscriptionCrown && <FaCrown className={styles.headerFooterCrown} aria-hidden="true" />}
+                        <span>Настроить</span>
                     </button>
                 </div>
             </div>

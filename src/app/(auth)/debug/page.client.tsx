@@ -177,7 +177,7 @@ export default function DebugPageClient() {
                                 Refresh
                             </button>
                         </div>
-
+                        <div
                             style={{
                                 padding: '0.75rem',
                                 backgroundColor: '#000',

@@ -8,7 +8,7 @@ export async function up(db: Db) {
             name: 'Месячная подписка',
             description: 'Полный доступ ко всем функциям на месяц',
             interval: 'monthly',
-            price: 599,
+            price: 199,
             currency: 'RUB',
             isActive: true,
             isPopular: false,
@@ -17,7 +17,7 @@ export async function up(db: Db) {
             features: {
                 maxSlides: 20,
                 hideBranding: true,
-                maxDocumentSize: 50, // 50MB
+                maxDocumentSize: 10,
                 priority: true,
                 customExport: true,
             },
@@ -26,7 +26,7 @@ export async function up(db: Db) {
             name: 'Подписка на 3 месяца',
             description: 'Лучший выбор для регулярного использования',
             interval: 'quarterly',
-            price: 1599,
+            price: 540,
             currency: 'RUB',
             isActive: true,
             isPopular: true,
@@ -35,7 +35,7 @@ export async function up(db: Db) {
             features: {
                 maxSlides: 20,
                 hideBranding: true,
-                maxDocumentSize: 50, // 50MB
+                maxDocumentSize: 10,
                 priority: true,
                 customExport: true,
             },
@@ -44,7 +44,7 @@ export async function up(db: Db) {
             name: 'Подписка на 6 месяцев',
             description: 'Максимальная экономия для профессионалов',
             interval: 'semiannual',
-            price: 2999,
+            price: 950,
             currency: 'RUB',
             isActive: true,
             isPopular: false,
@@ -53,7 +53,7 @@ export async function up(db: Db) {
             features: {
                 maxSlides: 20,
                 hideBranding: true,
-                maxDocumentSize: 50, // 50MB
+                maxDocumentSize: 10,
                 priority: true,
                 customExport: true,
             },

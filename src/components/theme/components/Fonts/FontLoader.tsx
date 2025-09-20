@@ -6,7 +6,7 @@ interface FontLoaderProps {
     theme: Theme;
 }
 
-export default function FontLoader({ theme, container }: FontLoaderProps) {
+export default function FontLoader({ theme }: FontLoaderProps) {
     useEffect(() => {
         if (!theme) return;
 

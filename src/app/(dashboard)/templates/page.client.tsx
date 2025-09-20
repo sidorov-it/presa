@@ -88,8 +88,8 @@ const TemplatesPage = () => {
                                         <Image
                                             src={getImagePath(PreviewTemplateImages[key])}
                                             alt={template.title}
-                                            // width={100}
-                                            // height={100}
+                                            width={310}
+                                            height={160}
                                             style={{ width: '100%', height: '100%' }}
                                         />
                                     </div>

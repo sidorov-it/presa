@@ -30,24 +30,27 @@ export async function hasActiveSubscription(userId: string): Promise<boolean> {
 /**
  * Get user's active subscription with real-time status updates
  */
-export async function getUserActiveSubscription(userId: string) {
+export async function getUserSubscriptions(userId: string) {
     try {
         // First, sync subscription status
         await validateAndSyncSubscriptionStatus(userId);
 
-        const subscription = await prisma.userSubscription.findFirst({
+        const subscriptions = await prisma.userSubscription.findMany({
             where: {
                 userId,
+                status: {
+                    in: [SubscriptionStatus.active, SubscriptionStatus.cancelled, SubscriptionStatus.expired],
+                },
             },
             include: {
-                plan: true,
+                subscriptionPlan: true,
             },
             orderBy: {
                 createdAt: 'desc',
             },
         });
 
-        return subscription;
+        return subscriptions;
     } catch (error) {
         console.error('Error getting user subscription:', error);
         return null;
@@ -68,15 +71,17 @@ export async function getSubscriptionFeatures(userId: string): Promise<Subscript
                 },
             },
             include: {
-                plan: true,
+                subscriptionPlan: true,
             },
         });
 
-        if (!subscription || !subscription.plan) {
+        if (!subscription || !subscription.subscriptionPlan) {
             return null;
         }
 
-        return subscription.plan.features as SubscriptionFeatures;
+        // Properly type the features field
+        const features = subscription.subscriptionPlan.features as unknown as SubscriptionFeatures;
+        return features;
     } catch (error) {
         console.error('Error getting subscription features:', error);
         return null;
@@ -90,7 +95,7 @@ export function getDefaultFeatures(): SubscriptionFeatures {
     return {
         maxSlides: 10,
         hideBranding: false,
-        maxDocumentSize: 10, // 10MB
+        maxDocumentSize: 5,
         priority: false,
         customExport: false,
     };
@@ -102,6 +107,7 @@ export function getDefaultFeatures(): SubscriptionFeatures {
 export async function getUserFeatures(userId: string): Promise<SubscriptionFeatures> {
     try {
         const subscriptionFeatures = await getSubscriptionFeatures(userId);
+        console.log('subscriptionFeatures', subscriptionFeatures);
         return subscriptionFeatures || getDefaultFeatures();
     } catch (error) {
         console.error('Error getting user features:', error);
@@ -163,17 +169,17 @@ export async function validateAndSyncSubscriptionStatus(userId: string): Promise
 /**
  * Expire a subscription
  */
-async function expireSubscription(subscriptionId: string): Promise<void> {
+async function expireSubscription(userSubscriptionId: string): Promise<void> {
     try {
         await prisma.userSubscription.update({
-            where: { id: subscriptionId },
+            where: { id: userSubscriptionId },
             data: {
                 status: SubscriptionStatus.expired,
             },
         });
-        console.log(`Subscription ${subscriptionId} marked as expired`);
+        console.log(`Subscription ${userSubscriptionId} marked as expired`);
     } catch (error) {
-        console.error(`Error expiring subscription ${subscriptionId}:`, error);
+        console.error(`Error expiring subscription ${userSubscriptionId}:`, error);
     }
 }
 
@@ -287,7 +293,7 @@ export async function activateSubscription(subscriptionId: string, cloudpayments
     try {
         const subscription = await prisma.userSubscription.findUnique({
             where: { id: subscriptionId },
-            include: { plan: true },
+            include: { subscriptionPlan: true },
         });
 
         if (!subscription) {
@@ -301,8 +307,8 @@ export async function activateSubscription(subscriptionId: string, cloudpayments
         }
 
         const now = new Date();
-        const endDate = calculateSubscriptionEndDate(now, subscription.plan.interval);
-        const nextBillingDate = calculateNextBillingDate(now, subscription.plan.interval);
+        const endDate = calculateSubscriptionEndDate(now, subscription.subscriptionPlan.interval);
+        const nextBillingDate = calculateNextBillingDate(now, subscription.subscriptionPlan.interval);
 
         await prisma.userSubscription.update({
             where: { id: subscriptionId },
@@ -330,7 +336,7 @@ export async function extendSubscription(subscriptionId: string, paymentId: stri
     try {
         const subscription = await prisma.userSubscription.findUnique({
             where: { id: subscriptionId },
-            include: { plan: true },
+            include: { subscriptionPlan: true },
         });
 
         if (!subscription) {
@@ -339,8 +345,8 @@ export async function extendSubscription(subscriptionId: string, paymentId: stri
 
         // Calculate new end date from current end date (not from now)
         const currentEndDate = subscription.endDate;
-        const newEndDate = calculateSubscriptionEndDate(currentEndDate, subscription.plan.interval);
-        const nextBillingDate = calculateNextBillingDate(newEndDate, subscription.plan.interval);
+        const newEndDate = calculateSubscriptionEndDate(currentEndDate, subscription.subscriptionPlan.interval);
+        const nextBillingDate = calculateNextBillingDate(new Date(), subscription.subscriptionPlan.interval);
 
         await prisma.userSubscription.update({
             where: { id: subscriptionId },
@@ -348,6 +354,7 @@ export async function extendSubscription(subscriptionId: string, paymentId: stri
                 endDate: newEndDate,
                 nextBillingDate,
                 lastPaymentId: paymentId,
+                status: SubscriptionStatus.active,
             },
         });
 

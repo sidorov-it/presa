@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useSubscriptions } from '@/hooks/useSubscriptions';
+import React, { useState, useEffect } from 'react';
 import {
     FaCrown,
     FaCalendarAlt,
@@ -9,42 +8,29 @@ import {
     FaExclamationTriangle,
 } from 'react-icons/fa';
 import { SubscriptionStatus } from '@prisma/client';
+import { UserSubscription, SubscriptionPlan } from '@/types/subscriptions';
 import styles from './SubscriptionManagement.module.css';
 
 interface SubscriptionManagementProps {
     className?: string;
+    subscription: UserSubscription | null;
+    loading: boolean;
+    error: string | null;
+    refreshSubscriptionStatus: () => Promise<void>;
+    availablePlans?: SubscriptionPlan[];
 }
 
-const formatCurrency = (amount: number, currency: string): string => {
-    return new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: currency,
-    }).format(amount);
-};
-
-const getIntervalLabel = (interval: string): string => {
-    switch (interval) {
-        case 'monthly':
-            return 'Ежемесячно';
-        case 'quarterly':
-            return 'Каждые 3 месяца';
-        case 'semiannual':
-            return 'Каждые 6 месяцев';
-        default:
-            return interval;
-    }
-};
-
-const getStatusLabel = (status: string): string => {
+// Helper functions
+const getStatusLabel = (status: SubscriptionStatus): string => {
     switch (status) {
         case 'active':
             return 'Активна';
+        case 'pending':
+            return 'Ожидает оплаты';
         case 'cancelled':
             return 'Отменена';
         case 'expired':
             return 'Истекла';
-        case 'pending':
-            return 'Ожидает оплаты';
         case 'failed':
             return 'Ошибка оплаты';
         default:
@@ -52,41 +38,80 @@ const getStatusLabel = (status: string): string => {
     }
 };
 
-const getStatusColor = (status: string): string => {
+const getStatusColor = (status: SubscriptionStatus): string => {
     switch (status) {
         case 'active':
             return '#10b981';
-        case 'cancelled':
+        case 'pending':
             return '#f59e0b';
+        case 'cancelled':
+            return '#6b7280';
         case 'expired':
             return '#ef4444';
-        case 'pending':
-            return '#3b82f6';
         case 'failed':
-            return '#ef4444';
+            return '#dc2626';
         default:
             return '#6b7280';
     }
 };
 
-export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ className }) => {
-    const { userSubscription, hasActiveSubscription, loading, error, refreshSubscriptionStatus } = useSubscriptions();
-    const [isRefreshing, setIsRefreshing] = useState(false);
+const formatCurrency = (amount: number, currency: string): string => {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: currency.toUpperCase(),
+    }).format(amount);
+};
+
+const getIntervalLabel = (interval: string): string => {
+    switch (interval) {
+        case 'monthly':
+            return 'месяц';
+        case 'quarterly':
+            return '3 месяца';
+        case 'semiannual':
+            return '6 месяцев';
+        case 'daily':
+            return 'день';
+        default:
+            return interval;
+    }
+};
+
+const formatDate = (date: Date | string): string => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+};
+
+export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
+    className,
+    subscription,
+    loading,
+    error,
+    refreshSubscriptionStatus,
+}) => {
     const [isCancelling, setIsCancelling] = useState(false);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
+    // Принудительно обновляем состояние при монтировании компонента
+    useEffect(() => {
+        console.log('SubscriptionManagement: Component mounted, refreshing subscription status');
+        refreshSubscriptionStatus();
+    }, [refreshSubscriptionStatus]);
+
     const handleRefresh = async () => {
-        setIsRefreshing(true);
         await refreshSubscriptionStatus();
-        setIsRefreshing(false);
     };
 
     const handleCancelSubscription = async () => {
-        if (!userSubscription) return;
+        if (!subscription) return;
 
         setIsCancelling(true);
         try {
-            const response = await fetch(`/api/subscriptions/${userSubscription.id}/cancel`, {
+            const response = await fetch(`/api/subscriptions/${subscription.id}/cancel`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,22 +155,18 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
         );
     }
 
-    // Show subscription info for any subscription (active, cancelled, expired)
-    if (!userSubscription) {
-        return (
-            <div className={`${styles.container} ${className || ''}`}>
-                <div className={styles.noSubscription}>
-                    <FaInfoCircle className={styles.infoIcon} />
-                    <h3>У вас нет подписки</h3>
-                    <p>Оформите подписку, чтобы получить доступ к расширенным возможностям Presa.</p>
-                </div>
-            </div>
-        );
+    // Helper function to determine current subscription
+    const getCurrentSubscription = (): UserSubscription | null => {
+        return subscription;
+    };
+
+    const currentSubscription = getCurrentSubscription();
+
+    if (!currentSubscription) {
+        return null;
     }
 
-    const subscription = userSubscription;
-    const plan = subscription.plan;
-
+    const plan = currentSubscription.subscriptionPlan;
     if (!plan) {
         return (
             <div className={`${styles.container} ${className || ''}`}>
@@ -157,33 +178,36 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
         );
     }
 
-    const startDate = new Date(subscription.startDate);
-    const endDate = new Date(subscription.endDate);
-    const nextBillingDate = subscription.nextBillingDate ? new Date(subscription.nextBillingDate) : null;
-    const isExpiringSoon = endDate.getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000; // 7 days
-    const isExpired = subscription.status === SubscriptionStatus.expired || endDate.getTime() < Date.now();
-    const isCancelled = subscription.status === SubscriptionStatus.cancelled;
-    const canCancel = subscription.status === SubscriptionStatus.active && !isCancelled;
+    const startDate = new Date(currentSubscription.startDate);
+    const endDate = new Date(currentSubscription.endDate);
+    const nextBillingDate = currentSubscription.nextBillingDate ? new Date(currentSubscription.nextBillingDate) : null;
+    const isExpired = currentSubscription.status === SubscriptionStatus.expired || endDate.getTime() < Date.now();
+    const isCancelled = currentSubscription.status === SubscriptionStatus.cancelled;
+    const isFailed = currentSubscription.status === SubscriptionStatus.failed;
+    const canCancel = currentSubscription.status === SubscriptionStatus.active && !isCancelled;
+
+    const isScenario1 = subscription && subscription.status === SubscriptionStatus.active;
 
     return (
         <div className={`${styles.container} ${className || ''}`}>
-            <div className={`${styles.subscriptionCard} ${styles[subscription.status]}`}>
+            {/* Current / Upcoming Subscription Block */}
+            <div className={`${styles.subscriptionCard} ${styles[currentSubscription.status]}`}>
                 <div className={styles.subscriptionHeader}>
                     <div className={styles.subscriptionTitle}>
                         <FaCrown className={styles.crownIcon} />
                         <h2>Ваша подписка</h2>
                     </div>
                     <div
-                        className={`${styles.statusBadge} ${styles[subscription.status]}`}
-                        style={{ borderColor: getStatusColor(subscription.status) }}
+                        className={`${styles.statusBadge} ${styles[currentSubscription.status]}`}
+                        style={{ borderColor: getStatusColor(currentSubscription.status) }}
                     >
-                        {subscription.status === 'active' && <FaCheckCircle className={styles.statusIcon} />}
-                        {(subscription.status === 'cancelled' || subscription.status === 'expired') && (
+                        {currentSubscription.status === 'active' && <FaCheckCircle className={styles.statusIcon} />}
+                        {(currentSubscription.status === 'cancelled' || currentSubscription.status === 'expired') && (
                             <FaExclamationTriangle className={styles.statusIcon} />
                         )}
-                        {subscription.status === 'pending' && <FaInfoCircle className={styles.statusIcon} />}
-                        {subscription.status === 'failed' && <FaTimesCircle className={styles.statusIcon} />}
-                        {getStatusLabel(subscription.status)}
+                        {currentSubscription.status === 'pending' && <FaInfoCircle className={styles.statusIcon} />}
+                        {currentSubscription.status === 'failed' && <FaTimesCircle className={styles.statusIcon} />}
+                        {getStatusLabel(currentSubscription.status)}
                     </div>
                 </div>
 
@@ -201,164 +225,103 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({ 
                             <FaCalendarAlt className={styles.metadataIcon} />
                             <div>
                                 <span className={styles.metadataLabel}>Дата начала:</span>
-                                <span className={styles.metadataValue}>
-                                    {startDate.toLocaleDateString('ru-RU', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })}
-                                </span>
+                                <span className={styles.metadataValue}>{formatDate(startDate)}</span>
                             </div>
                         </div>
 
                         <div className={styles.metadataItem}>
                             <FaCalendarAlt className={styles.metadataIcon} />
                             <div>
-                                <span className={styles.metadataLabel}>
-                                    {isExpired || isCancelled ? 'Дата окончания:' : 'Действует до:'}
-                                </span>
-                                <span
-                                    className={`${styles.metadataValue} ${isExpiringSoon && !isExpired ? styles.expiringSoon : ''} ${isExpired ? styles.expired : ''}`}
-                                >
-                                    {endDate.toLocaleDateString('ru-RU', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                    })}
-                                </span>
+                                <span className={styles.metadataLabel}>Дата окончания:</span>
+                                <span className={styles.metadataValue}>{formatDate(endDate)}</span>
                             </div>
                         </div>
 
-                        {nextBillingDate && subscription.status === SubscriptionStatus.active && (
+                        {nextBillingDate && currentSubscription.status === 'active' && (
                             <div className={styles.metadataItem}>
                                 <FaCalendarAlt className={styles.metadataIcon} />
                                 <div>
                                     <span className={styles.metadataLabel}>Следующее списание:</span>
-                                    <span className={styles.metadataValue}>
-                                        {nextBillingDate.toLocaleDateString('ru-RU', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                        })}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-
-                        {subscription.cancelledAt && (
-                            <div className={styles.metadataItem}>
-                                <FaCalendarAlt className={styles.metadataIcon} />
-                                <div>
-                                    <span className={styles.metadataLabel}>Дата отмены:</span>
-                                    <span className={styles.metadataValue}>
-                                        {new Date(subscription.cancelledAt).toLocaleDateString('ru-RU', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                        })}
-                                    </span>
+                                    <span className={styles.metadataValue}>{formatDate(nextBillingDate)}</span>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Show features only for active subscriptions */}
-                {subscription.status === SubscriptionStatus.active && (
-                    <div className={styles.subscriptionFeatures}>
-                        <h4>Ваши возможности:</h4>
-                        <ul className={styles.featuresList}>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                До 20 слайдов в презентации
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Экспорт без водяного знака
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Увеличенный лимит загрузки документов (50 МБ)
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Приоритетная обработка AI-запросов
-                            </li>
-                            <li>
-                                <FaCheckCircle className={styles.featureIcon} />
-                                Все возможности экспорта
-                            </li>
-                        </ul>
+                {/* Scenario-specific messages and actions */}
+                {isScenario1 && canCancel && (
+                    <div className={styles.subscriptionActions}>
+                        {canCancel && (
+                            <button
+                                onClick={() => setShowCancelConfirm(true)}
+                                className={styles.cancelButton}
+                                disabled={isCancelling}
+                            >
+                                Отменить подписку
+                            </button>
+                        )}
                     </div>
                 )}
-
-                <div className={styles.subscriptionActions}>
-                    <button
-                        onClick={handleRefresh}
-                        disabled={isRefreshing}
-                        className={`${styles.refreshButton} ${isRefreshing ? styles.loading : ''}`}
-                    >
-                        {isRefreshing ? 'Обновление...' : 'Обновить статус'}
-                    </button>
-
-                    {canCancel && (
-                        <button
-                            onClick={() => setShowCancelConfirm(true)}
-                            className={styles.cancelButton}
-                            disabled={isCancelling}
-                        >
-                            Отменить подписку
-                        </button>
-                    )}
-
-                    {(isExpired || isCancelled) && (
-                        <a href="#subscription-plans" className={styles.renewButton}>
-                            Продлить подписку
-                        </a>
-                    )}
-                </div>
 
                 {/* Warning messages */}
-                {isExpiringSoon && !isExpired && subscription.status === SubscriptionStatus.active && (
+                {/* {isExpiringSoon && currentSubscription.status === SubscriptionStatus.active && (
                     <div className={styles.expirationWarning}>
-                        <FaInfoCircle className={styles.warningIcon} />
-                        <span>
-                            Ваша подписка истекает через{' '}
-                            {Math.ceil((endDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000))} дней. Продлите
-                            подписку, чтобы продолжить пользоваться всеми возможностями.
-                        </span>
+                        <FaExclamationTriangle className={styles.warningIcon} />
+                        <div>
+                            <strong>Подписка истекает скоро</strong>
+                            <br />
+                            Ваша подписка истекает {formatDate(endDate)}. Продлите её, чтобы продолжить пользоваться
+                            всеми возможностями.
+                        </div>
                     </div>
-                )}
+                )} */}
 
                 {isCancelled && (
                     <div className={styles.cancelledWarning}>
                         <FaExclamationTriangle className={styles.warningIcon} />
-                        <span>
-                            Подписка отменена. Вы можете пользоваться всеми возможностями до{' '}
-                            {endDate.toLocaleDateString('ru-RU')}.
-                        </span>
+                        <div>
+                            <strong>Подписка отменена</strong>
+                            <br />
+                            Вы можете пользоваться всеми возможностями до {formatDate(endDate)} После окочания действия
+                            подписки, вы сможете продлить её.
+                        </div>
                     </div>
                 )}
 
                 {isExpired && (
                     <div className={styles.expiredWarning}>
+                        <FaExclamationTriangle className={styles.warningIcon} />
+                        <div>
+                            <strong>Подписка истекла</strong>
+                            <br />
+                            Ваша подписка истекла {formatDate(endDate)}. Оформите новую подписку, чтобы продолжить
+                            пользоваться расширенными возможностями.
+                        </div>
+                    </div>
+                )}
+
+                {isFailed && (
+                    <div className={styles.expiredWarning}>
                         <FaTimesCircle className={styles.warningIcon} />
-                        <span>
-                            Срок действия подписки истек. Для получения доступа к расширенным возможностям оформите
-                            новую подписку.
-                        </span>
+                        <div>
+                            <strong>Ошибка оплаты</strong>
+                            <br />
+                            Произошла ошибка при обработке платежа. Попробуйте повторить оплату или обратитесь в службу
+                            поддержки.
+                        </div>
                     </div>
                 )}
             </div>
 
-            {/* Cancel Confirmation Modal */}
+            {/* Confirmation modals */}
             {showCancelConfirm && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
                         <h3>Отменить подписку?</h3>
                         <p>
-                            После отмены подписки вы сможете пользоваться всеми возможностями до{' '}
-                            {endDate.toLocaleDateString('ru-RU')}. Подписку можно будет возобновить в любое время.
+                            После отмены подписки вы сможете пользоваться всеми возможностями до {formatDate(endDate)}
+                            Подписку можно будет возобновить в любое время.
                         </p>
                         <div className={styles.modalActions}>
                             <button

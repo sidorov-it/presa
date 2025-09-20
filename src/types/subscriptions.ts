@@ -3,13 +3,13 @@ import { SubscriptionInterval, SubscriptionStatus } from '@prisma/client';
 export interface SubscriptionPlan {
     id: string;
     name: string;
-    description: string;
+    description?: string | null;
     interval: SubscriptionInterval;
     price: number;
     currency: string;
     isActive: boolean;
     isPopular?: boolean;
-    features: SubscriptionFeatures;
+    // features: SubscriptionFeatures;
 }
 
 export interface SubscriptionFeatures {
@@ -23,27 +23,26 @@ export interface SubscriptionFeatures {
 export interface UserSubscription {
     id: string;
     userId: string;
-    planId: string;
-    plan?: SubscriptionPlan;
+    subscriptionPlanId: string;
+    subscriptionPlan?: SubscriptionPlan;
     status: SubscriptionStatus;
+    nextBillingDate: Date;
     startDate: Date;
     endDate: Date;
-    nextBillingDate?: Date;
-    cloudpaymentsId?: string;
-    lastPaymentId?: string;
-    cancelledAt?: Date;
-    cancelReason?: string;
+    cloudpaymentsSubscriptionId?: string;
+    cloudpaymentsTransactionId?: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
 export interface SubscriptionPayment {
     id: string;
-    subscriptionId: string;
+    userSubscriptionId: string;
     amount: number;
     currency: string;
     status: string;
-    cloudpaymentsId?: string;
+    cloudpaymentsSubscriptionId?: string;
+    cloudpaymentsTransactionId?: string;
     paymentMethod?: string;
     billingStart?: Date;
     billingEnd?: Date;
@@ -54,15 +53,29 @@ export interface CreateSubscriptionRequest {
     planId: string;
 }
 
+export interface ChangeSubscriptionRequest {
+    newPlanId: string;
+    startImmediately?: boolean; // If true, change plan immediately; if false, schedule for end of current period
+}
+
+export interface ChangeSubscriptionResponse {
+    success: boolean;
+    userSubscriptionId?: string;
+    message?: string;
+    error?: string;
+}
+
 export interface CreateSubscriptionResponse {
     success: boolean;
-    subscriptionId?: string;
+    publicId: string;
     paymentData?: {
-        subscriptionId: string;
+        userSubscriptionId: string;
+        userId: string;
         amount: string;
         currency: string;
-        description: string;
-        cloudpaymentsData: CloudPaymentsSubscriptionData;
+        description: string; // Подписка {plan.name}
+        invoiceId: string;
+        planId: string;
         recurrentData: CloudPaymentsRecurrentData;
     };
     error?: string;
@@ -77,7 +90,7 @@ export interface CloudPaymentsSubscriptionData {
     accountId: string;
     skin: string;
     data: {
-        subscriptionId: string;
+        userSubscriptionId: string;
         planId: string;
         userId: string;
     };

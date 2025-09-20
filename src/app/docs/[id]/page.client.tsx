@@ -612,7 +612,7 @@ export default function PresentationEditorPage() {
                                 style={{ position: 'fixed', top: '50%', left: '50%', width: 1, height: 1, opacity: 0 }}
                             />
                             <div data-tour="editor">
-                                <Editor presentationId={id} tiptapRefs={tiptapRefs} />
+                                <Editor presentationId={id} tiptapRefs={tiptapRefs} theme={currentTheme} />
                             </div>
                             <div
                                 className="last-step"
