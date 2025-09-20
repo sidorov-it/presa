@@ -38,6 +38,8 @@ interface SlideViewerProps {
     globalHeaderFooterConfig?: any;
     /** Hide branding watermark for premium users */
     hideBranding?: boolean;
+    /** Has active subscription flag */
+    hasActiveSubscription?: boolean;
 }
 
 // No longer needed - we now use imageHeightRatio and imageWidthRatio directly
@@ -52,6 +54,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     isPreview = false,
     isSlidePreview = false,
     hideBranding = false,
+    hasActiveSubscription = false,
     primaryAccentColor,
     wrapperRef,
     theme,
@@ -358,6 +361,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                 >
                     {/* Apply global header/footer settings */}
                     {(() => {
+                        if (!hasActiveSubscription) {
+                            return null;
+                        }
+
                         const effectiveSlide = globalHeaderFooterConfig
                             ? applyGlobalHeaderFooterToSlide(
                                   slide,
@@ -412,6 +419,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     </div>
 
                     {(() => {
+                        if (!hasActiveSubscription) {
+                            return null;
+                        }
+
                         const effectiveSlide = globalHeaderFooterConfig
                             ? applyGlobalHeaderFooterToSlide(
                                   slide,

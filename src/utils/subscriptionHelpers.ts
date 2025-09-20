@@ -7,6 +7,28 @@ import { SubscriptionFeatures } from '@/types/subscriptions';
  * Проверяет наличие активной подписки на сервере
  * Используется в API routes и server components
  */
+export const checkUserSubscription = async (userId: string): Promise<{
+    hasActiveSubscription: boolean;
+    userId?: string;
+}> => {
+    if (!userId) {
+        return {
+            hasActiveSubscription: false,
+        };
+    }
+
+    const hasActive = await hasActiveSubscription(userId);
+
+    return {
+        hasActiveSubscription: hasActive,
+        userId: userId,
+    };
+};
+
+/**
+ * Проверяет наличие активной подписки на сервере
+ * Используется в API routes и server components
+ */
 export const checkServerSubscription = async (): Promise<{
     hasActiveSubscription: boolean;
     userId?: string;

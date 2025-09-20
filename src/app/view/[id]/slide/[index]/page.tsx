@@ -15,12 +15,12 @@ import { Slide } from '@/types';
 
 export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
-    searchParams: Promise<{ pdf?: string; hideBranding?: string }>;
+    searchParams: Promise<{ pdf?: string; hideBranding?: string; hasActiveSubscription?: string }>;
 }) {
     const params = await props.params;
     const searchParams = await props.searchParams;
     const { id, index } = params;
-    const { pdf, hideBranding } = searchParams;
+    const { pdf, hideBranding, hasActiveSubscription } = searchParams;
 
     const slideIndex = parseInt(index, 10);
     const isPdfExport = pdf === 'true';
@@ -83,6 +83,11 @@ export default async function SlidePage(props: {
         }
     }
 
+    let hasActiveSubscriptionFlag = false;
+    if (hasActiveSubscription === 'true') {
+        hasActiveSubscriptionFlag = true;
+    }
+
     return (
         <ReadOnlyProvider isReadOnly={true}>
             <ThemeStylesApplier theme={theme}>
@@ -109,6 +114,7 @@ export default async function SlidePage(props: {
                             fullPage={true}
                             isPdfExport={isPdfExport}
                             hideBranding={shouldHideBrandingFlag}
+                            hasActiveSubscription={hasActiveSubscriptionFlag}
                             currentSlideIndex={slideIndex}
                             totalSlides={visibleSlides.length}
                             globalHeaderFooterConfig={presentation.headerFooterConfig}

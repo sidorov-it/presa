@@ -196,7 +196,8 @@ export const generatePdfAsync = async (
         const pdfPages: Buffer[] = [];
 
         for (const i of slidesToProcess) {
-            const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true&hideBranding=${hideBranding}`;
+            // наличие подписки = скрытие брендинга. пока не стал усложнять с передачей отдельной перменной hasActiveSubscription
+            const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true&hideBranding=${hideBranding}&hasActiveSubscription=${hideBranding}`;
 
             try {
                 // Navigate to slide page

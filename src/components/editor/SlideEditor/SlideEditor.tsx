@@ -26,6 +26,7 @@ import HeaderFooter from '../HeaderFooter/HeaderFooter';
 // import SlideHeaderFooterModal from '../SlideHeaderFooterModal/SlideHeaderFooterModal';
 import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
 import { getHeaderFooterLogoPadding } from '@/utils/headerFooterPadding';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -47,6 +48,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
+    const { hasActiveSubscription } = useSubscriptionCheck();
 
     const openMenu = useUIStateStore.getState().openContextMenu;
 
@@ -598,7 +600,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     )}
 
                     {/* Header */}
-                    {header && (
+                    {hasActiveSubscription && header && (
                         <HeaderFooter
                             config={header}
                             type="header"
@@ -628,7 +630,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     </div>
 
                     {/* Footer */}
-                    {footer && (
+                    {hasActiveSubscription && footer && (
                         <HeaderFooter
                             config={footer}
                             type="footer"

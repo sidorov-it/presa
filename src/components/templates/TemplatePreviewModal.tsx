@@ -133,6 +133,7 @@ export default function TemplatePreviewModal({
                                     showImagePlaceholder
                                     isPreview
                                     primaryAccentColor={theme?.colors.primaryAccent || '#000'}
+                                    hasActiveSubscription={true}
                                 />
                             </ScopedThemeStylesApplier>
                         </div>

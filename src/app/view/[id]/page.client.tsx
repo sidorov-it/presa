@@ -15,12 +15,13 @@ import { getSlideLayoutVars } from '@/utils/themeUtils';
 type Props = {
     presentation: IPresentation;
     theme: Theme;
+    hasActiveSubscription: boolean;
 };
 
 // Check if we're on the client side
 // const isClient = typeof window !== 'undefined';
 
-export default function PresentationView({ presentation, theme }: Props) {
+export default function PresentationView({ presentation, theme, hasActiveSubscription }: Props) {
     const { colorMode } = useColorMode();
 
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -447,6 +448,7 @@ export default function PresentationView({ presentation, theme }: Props) {
                                 currentSlideIndex={currentSlideIndex}
                                 totalSlides={visibleSlides.length}
                                 globalHeaderFooterConfig={presentation.headerFooterConfig}
+                                hasActiveSubscription={hasActiveSubscription}
                             />
                         </motion.div>
                     </AnimatePresence>

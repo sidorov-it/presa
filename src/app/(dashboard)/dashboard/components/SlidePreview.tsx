@@ -5,6 +5,7 @@ import ScopedThemeStylesApplier from '@/components/viewer/theme/ScopedThemeStyle
 import SlideViewer from '@/components/viewer/SlideViewer/SlideViewer';
 import { getSlideLayoutVars } from '@/utils/themeUtils';
 import styles from './SlidePreview.module.css';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 
 interface SlidePreviewProps {
     presentation: IPresentation;
@@ -15,6 +16,8 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
     const firstSlide = presentation.slides[0];
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+
+    const { hasActiveSubscription } = useSubscriptionCheck();
 
     // Измеряем размеры контейнера
     useEffect(() => {
@@ -64,6 +67,7 @@ export default function SlidePreview({ presentation, theme }: SlidePreviewProps)
                         showImagePlaceholder={true}
                         primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
                         isSlidePreview={true}
+                        hasActiveSubscription={hasActiveSubscription}
                     />
                 </ScopedThemeStylesApplier>
             </div>

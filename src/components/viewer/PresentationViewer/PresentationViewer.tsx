@@ -3,6 +3,7 @@ import { Slide, GlobalHeaderFooterConfig } from '@/types';
 import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
 import { Theme } from '@/types/theme';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 interface PresentationViewerProps {
     slides: Slide[];
     showImagePlaceholder?: boolean;
@@ -10,6 +11,7 @@ interface PresentationViewerProps {
     primaryAccentColor: string;
     theme: Theme;
     globalHeaderFooterConfig?: GlobalHeaderFooterConfig;
+    hasActiveSubscription?: boolean;
 }
 
 const PresentationViewer: React.FC<PresentationViewerProps> = ({
@@ -19,6 +21,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     primaryAccentColor,
     theme,
     globalHeaderFooterConfig,
+    hasActiveSubscription = true,
 }) => {
     const visibleSlides = slides.filter(slide => !slide.hidden);
 
@@ -44,6 +47,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                             currentSlideIndex={index}
                             totalSlides={visibleSlides.length}
                             globalHeaderFooterConfig={globalHeaderFooterConfig}
+                            hasActiveSubscription={hasActiveSubscription}
                         />
                     </div>
                 ))}

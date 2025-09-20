@@ -1,12 +1,47 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ScopedPresentationThemeWrapper from '@/components/viewer/theme/ScopedPresentationThemeWrapper';
 import PresentationViewer from '@/components/viewer/PresentationViewer/PresentationViewer';
-import { Slide } from '@/types';
+import { Slide, SlideHeaderFooterConfig } from '@/types';
 import { Theme } from '@/types/theme';
 import { getSlideLayoutVars } from '@/utils/themeUtils';
 
 interface ThemePreviewProps {
     theme: Theme;
+}
+
+const getHeader = (theme: Theme) => {
+    if (theme.logo) {
+        const header: SlideHeaderFooterConfig = {
+            enabled: true,
+            left: {
+                type: "theme-logo",
+                content: ""
+            },
+            center: {
+                type: "none",
+            },
+            right: {
+                type: "none"
+            },
+            overrideGlobal: true
+        }
+        return header;
+    }
+}
+
+const footer: SlideHeaderFooterConfig = {
+    enabled: true,
+    left: {
+        type: "slide-number",
+        content: ""
+    },
+    center: {
+        type: "none",
+    },
+    right: {
+        type: "none"
+    },
+    overrideGlobal: true
 }
 
 export const ThemePreview = ({ theme }: ThemePreviewProps) => {
@@ -35,11 +70,15 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         return () => resizeObserver.disconnect();
     }, []);
 
+    const header = getHeader(theme);
+
     const sampleSlides: Slide[] = [
         {
             id: 'n9pc5wflrn',
             templateType: 'imageRight',
             contentAlignment: 'center',
+            header,
+            footer,
             layouts: [
                 {
                     id: 'dlbhzg31qs5',
@@ -218,6 +257,8 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         {
             id: '18gy5wyejq9',
             title: 'Слайд 2',
+            header,
+            footer,
             layouts: [
                 {
                     id: 'onrby0guoa',
@@ -436,6 +477,8 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         {
             id: '26zae1xqm91',
             title: 'Слайд 3',
+            header,
+            footer,
             layouts: [
                 {
                     id: 'sriklnzirp',
@@ -627,6 +670,8 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         {
             id: 'ptmzqg788lq',
             title: 'Слайд 4',
+            header,
+            footer,
             layouts: [
                 {
                     id: 't7slewqo28i',
@@ -761,6 +806,8 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
         {
             id: 'dacio7d416v',
             title: 'Слайд 5',
+            header,
+            footer,
             layouts: [
                 {
                     id: '63kztmv5uls',
@@ -918,6 +965,7 @@ export const ThemePreview = ({ theme }: ThemePreviewProps) => {
                     showImagePlaceholder={true}
                     isPreview={true}
                     primaryAccentColor={theme?.colors.primaryAccent || '#000000'}
+                    hasActiveSubscription={true}
                 />
             </ScopedPresentationThemeWrapper>
         </div>

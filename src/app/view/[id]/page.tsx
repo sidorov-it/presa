@@ -5,6 +5,7 @@ import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { Theme } from '@/types/theme';
 import { IPresentation } from '@/types';
 import ServerThemeStylesApplier from '@/components/viewer/theme/ServerThemeStylesApplier';
+import { checkUserSubscription } from '@/utils/subscriptionHelpers';
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -94,6 +95,8 @@ export default async function PresentationViewWrapper({ params }: Props) {
         });
     }
 
+    const { hasActiveSubscription } = await checkUserSubscription(presentationData.userId);
+
     // Serialize the data to plain objects to avoid symbol properties
     const serializedPresentation = JSON.parse(JSON.stringify(presentationData));
     const serializedTheme = JSON.parse(JSON.stringify(theme));
@@ -108,6 +111,7 @@ export default async function PresentationViewWrapper({ params }: Props) {
                 <PresentationView
                     presentation={serializedPresentation as IPresentation}
                     theme={serializedTheme as Theme}
+                    hasActiveSubscription={hasActiveSubscription}
                 />
             </ServerThemeStylesApplier>
         </>
