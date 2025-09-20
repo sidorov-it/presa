@@ -523,6 +523,12 @@ const applyThemeStyles = ({
         prevDesign ? buttonRadiusMap[prevDesign.buttons.buttonShape] || '4px' : undefined
     );
 
+    setCSSVariableIfChanged(
+        '--media-scale',
+        'min(1, var(--card-font-scale, 1))',
+        prevDesign ? 'min(1, var(--card-font-scale, 1))' : undefined
+    );
+
     // Link color
     // const linkColor = theme.design.buttons.linkColor || theme.colors.primaryAccent;
     // const prevLinkColor = prevDesign?.buttons.linkColor || prevColors?.primaryAccent;

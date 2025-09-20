@@ -64,47 +64,68 @@ export const authOptions: NextAuthOptions = {
             },
         }),
         CredentialsProvider({
+            id: 'credentials',
             name: 'Credentials',
+            type: 'credentials',
             credentials: {
                 email: { label: 'Email', type: 'email' },
                 password: { label: 'Password', type: 'password' },
             },
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
             async authorize(credentials) {
                 if (!credentials?.email || !credentials.password) {
+                    logger.warn('[AUTH] Missing credentials', {
+                        hasEmail: !!credentials?.email,
+                        hasPassword: !!credentials?.password,
+                    });
                     return null;
                 }
-
-                const user = await prisma.user.findUnique({
-                    where: { email: credentials.email },
-                });
-
-                if (!user) {
-                    logger.warn(`User not found: ${credentials.email}`);
+                try {
+                    const user = await prisma.user.findUnique({
+                        where: { email: credentials.email },
+                        select: {
+                            id: true,
+                            email: true,
+                            passwordHash: true,
+                            name: true,
+                            image: true,
+                            role: true,
+                            emailVerified: true,
+                            isVerified: true,
+                            createdVia: true,
+                        },
+                    });
+                    if (!user) {
+                        logger.warn('[AUTH] User not found', { email: credentials.email });
+                        return null;
+                    }
+                    if (!user.passwordHash) {
+                        logger.warn('[AUTH] Password login not allowed', { email: credentials.email });
+                        throw new Error(`OAUTH_ONLY:${user.createdVia}`);
+                    }
+                    const isPasswordMatch = await comparePassword(credentials.password, user.passwordHash);
+                    if (!isPasswordMatch) {
+                        logger.warn('[AUTH] Invalid password', { email: credentials.email });
+                        return null;
+                    }
+                    logger.info('[AUTH] User authenticated successfully', { email: user.email });
+                    return {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                        image: user.image,
+                        role: user.role,
+                        emailVerified: Boolean(user.emailVerified || user.isVerified),
+                    };
+                } catch (error) {
+                    logger.error('[AUTH] Database or comparison error', {
+                        error: error instanceof Error ? error.message : 'Unknown error',
+                        email: credentials.email,
+                    });
+                    if (error instanceof Error && error.message.startsWith('OAUTH_ONLY:')) {
+                        throw error;
+                    }
                     return null;
                 }
-
-                if (!user.passwordHash) {
-                    logger.warn(`Password login not allowed for ${credentials.email}`);
-                    throw new Error(`OAUTH_ONLY:${user.createdVia}`);
-                }
-
-                const isPasswordMatch = await comparePassword(credentials.password, user.passwordHash);
-
-                if (!isPasswordMatch) {
-                    logger.warn(`Invalid password for ${credentials.email}`);
-                    return null;
-                }
-
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    image: user.image,
-                    role: user.role,
-                    emailVerified: Boolean(user.emailVerified || user.isVerified),
-                };
             },
         }),
     ],
@@ -118,7 +139,22 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user, account }) {
+            logger.info('[SIGNIN_CALLBACK] SignIn callback triggered:', {
+                provider: account?.provider || 'unknown',
+                userEmail: user?.email || 'no-email',
+                userId: user?.id || 'no-id',
+                accountType: account?.type || 'unknown',
+                hasAccount: !!account,
+                hasUser: !!user,
+            });
+
             if (!account || account.provider === 'credentials') {
+                logger.info('[SIGNIN_CALLBACK] Credentials provider detected or no account:', {
+                    hasAccount: !!account,
+                    provider: account?.provider || 'none',
+                    userEmail: user?.email || 'no-email',
+                    userId: user?.id || 'no-id',
+                });
                 return true;
             }
 
@@ -171,7 +207,9 @@ export const authOptions: NextAuthOptions = {
                     }
 
                     // Use transaction to ensure atomicity
-                    const result = await prisma.$transaction(async tx => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    const result = await prisma.$transaction(async (tx: typeof prisma) => {
                         const newUser = await tx.user.create({
                             data: {
                                 email: user.email,
@@ -356,19 +394,66 @@ export const authOptions: NextAuthOptions = {
         warn(code) {
             logger.warn(`[NEXTAUTH_WARN] ${code}`);
         },
-        debug(code, metadata) {
-            logger.info(`[NEXTAUTH_DEBUG] ${code}:`, metadata);
+    },
+    events: {
+        async signIn(message) {
+            logger.info('[NEXTAUTH_EVENT] signIn event:', {
+                user: message.user?.email || 'no-email',
+                account: message.account?.provider || 'no-provider',
+                profile: message.profile ? 'has-profile' : 'no-profile',
+                isNewUser: message.isNewUser,
+            });
+        },
+        async session(message) {
+            logger.info('[NEXTAUTH_EVENT] session event:', {
+                hasSession: !!message.session,
+                hasToken: !!message.token,
+            });
         },
     },
 };
 
 const handler = NextAuth(authOptions);
 
+// Log NextAuth configuration on startup
+// logger.info('[NEXTAUTH_CONFIG] NextAuth configuration loaded:', {
+//     providersCount: authOptions.providers.length,
+//     providerNames: authOptions.providers.map(p => p.id || p.name || 'unknown'),
+//     sessionStrategy: authOptions.session?.strategy || 'default',
+//     debug: authOptions.debug,
+//     hasSignInPage: !!authOptions.pages?.signIn,
+//     hasErrorPage: !!authOptions.pages?.error,
+// });
+
+// // Log each provider configuration
+// authOptions.providers.forEach((provider, index) => {
+//     logger.info(`[NEXTAUTH_CONFIG] Provider ${index + 1}:`, {
+//         id: provider.id,
+//         name: provider.name,
+//         type: provider.type,
+//         hasAuthorize: !!(provider as any).authorize,
+//     });
+// });
+
 // Wrap the handler to add request logging
 const wrappedHandler = async (req: Request, context: any) => {
     const url = new URL(req.url);
     const pathname = url.pathname;
     const searchParams = url.searchParams;
+
+    // Log all auth requests with detailed information
+    logger.info(`[AUTH_REQUEST] ${req.method} ${pathname}`, {
+        method: req.method,
+        pathname,
+        searchParams: Object.fromEntries(searchParams.entries()),
+        headers: {
+            'user-agent': req.headers.get('user-agent'),
+            'content-type': req.headers.get('content-type'),
+            referer: req.headers.get('referer'),
+            'x-forwarded-for': req.headers.get('x-forwarded-for'),
+        },
+        timestamp: new Date().toISOString(),
+    });
 
     // Track callback requests specifically
     if (pathname.includes('/callback/')) {
@@ -378,6 +463,14 @@ const wrappedHandler = async (req: Request, context: any) => {
         const callbackKey = `${provider}-${state || 'no-state'}`;
         const currentCount = callbackRequestCount.get(callbackKey) || 0;
         callbackRequestCount.set(callbackKey, currentCount + 1);
+
+        logger.info(`[CALLBACK_REQUEST] OAuth callback received:`, {
+            provider,
+            state,
+            callbackKey,
+            count: currentCount + 1,
+            searchParams: Object.fromEntries(searchParams.entries()),
+        });
 
         if (currentCount > 0) {
             logger.warn(
@@ -394,11 +487,94 @@ const wrappedHandler = async (req: Request, context: any) => {
         );
     }
 
+    // Log credentials signin attempts
+    if (pathname.includes('/signin') && req.method === 'POST') {
+        try {
+            // Don't log the actual request body for security, but log the attempt
+            logger.info('[AUTH_REQUEST] Credentials signin attempt detected');
+        } catch {
+            // Ignore parsing errors
+        }
+    }
+
+    // Log callback/credentials requests with more detail
+    if (pathname.includes('/callback/credentials') && req.method === 'POST') {
+        try {
+            logger.info('[AUTH_REQUEST] Credentials callback detected');
+            const contentType = req.headers.get('content-type');
+            logger.info('[AUTH_REQUEST] Request details:', {
+                contentType,
+                hasBody: !!req.body,
+                bodyType: typeof req.body,
+            });
+
+            // Try to read and log form data (safely)
+            if (contentType?.includes('application/x-www-form-urlencoded')) {
+                try {
+                    // Clone the request to read body without consuming it
+                    const clonedReq = req.clone();
+                    const formData = await clonedReq.formData();
+                    const formEntries = Object.fromEntries(formData.entries());
+
+                    // Log form data without sensitive information
+                    logger.info('[AUTH_REQUEST] Form data received:', {
+                        hasEmail: !!formEntries.email,
+                        hasPassword: !!formEntries.password,
+                        hasCsrfToken: !!formEntries.csrfToken,
+                        hasCallbackUrl: !!formEntries.callbackUrl,
+                        email: formEntries.email || 'not-provided',
+                        passwordLength: formEntries.password ? String(formEntries.password).length : 0,
+                        csrfTokenLength: formEntries.csrfToken ? String(formEntries.csrfToken).length : 0,
+                        callbackUrl: formEntries.callbackUrl || 'not-provided',
+                        allFields: Object.keys(formEntries),
+                    });
+
+                    // Check if this looks like a valid credentials request
+                    const isValidCredentialsRequest = !!(
+                        formEntries.email &&
+                        formEntries.password &&
+                        formEntries.csrfToken
+                    );
+                    logger.info('[AUTH_REQUEST] Credentials validation:', {
+                        isValidCredentialsRequest,
+                        missingFields: {
+                            email: !formEntries.email,
+                            password: !formEntries.password,
+                            csrfToken: !formEntries.csrfToken,
+                        },
+                    });
+                } catch (formError) {
+                    logger.error('[AUTH_REQUEST] Error reading form data:', {
+                        error: formError instanceof Error ? formError.message : 'Unknown error',
+                    });
+                }
+            }
+        } catch (error) {
+            logger.error('[AUTH_REQUEST] Error processing credentials callback:', {
+                error: error instanceof Error ? error.message : 'Unknown error',
+            });
+        }
+    }
+
     try {
+        const startTime = Date.now();
         const result = await handler(req, context);
+        const endTime = Date.now();
+
+        logger.info(`[AUTH_REQUEST] ${req.method} ${pathname} completed:`, {
+            duration: endTime - startTime,
+            status: result?.status || 'unknown',
+            success: true,
+        });
+
         return result;
     } catch (error) {
-        logger.error(`[AUTH_REQUEST] ${req.method} ${pathname} failed:`, error);
+        logger.error(`[AUTH_REQUEST] ${req.method} ${pathname} failed:`, {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            errorType: typeof error,
+            errorName: error instanceof Error ? error.constructor.name : 'Unknown',
+        });
         throw error;
     }
 };

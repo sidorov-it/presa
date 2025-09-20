@@ -1,25 +1,25 @@
 /**
  * Enhanced Slide Generation with Content-Aware Processing
- * 
- * This file implements a solution to prevent double formatting issues when LLM-generated 
+ *
+ * This file implements a solution to prevent double formatting issues when LLM-generated
  * markdown content is inserted into slide slots with predefined HTML tags.
- * 
+ *
  * PROBLEM SOLVED:
- * - LLM returns markdown like "# Heading" 
+ * - LLM returns markdown like "# Heading"
  * - markdownToHtml converts to "<span class='heading-text heading-1'>Heading</span>"
  * - Slot with textType: HEADING1 would wrap it again: "<span class='heading-text heading-1'>...</span>"
  * - Result: Double nested heading tags
- * 
+ *
  * SOLUTION:
  * - getNewEditorElementFromMarkdown now detects existing HTML structure
  * - If structured content exists, it skips additional textType wrapping
  * - If plain text, it applies the slot's textType formatting
- * 
+ *
  * FLOW:
  * 1. LLM content → markdownToHtml → detect structure
  * 2. If structured: use as-is (no textType wrapping)
  * 3. If plain text: apply textType formatting
- * 
+ *
  * @updated 2024 - Enhanced content-aware processing
  */
 

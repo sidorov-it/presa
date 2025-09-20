@@ -1,5 +1,5 @@
 import React from 'react';
-import { Slide } from '@/types';
+import { Slide, GlobalHeaderFooterConfig } from '@/types';
 import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
 import { Theme } from '@/types/theme';
@@ -9,6 +9,7 @@ interface PresentationViewerProps {
     isPreview?: boolean;
     primaryAccentColor: string;
     theme: Theme;
+    globalHeaderFooterConfig?: GlobalHeaderFooterConfig;
 }
 
 const PresentationViewer: React.FC<PresentationViewerProps> = ({
@@ -17,6 +18,7 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     isPreview = false,
     primaryAccentColor,
     theme,
+    globalHeaderFooterConfig,
 }) => {
     const visibleSlides = slides.filter(slide => !slide.hidden);
 
@@ -39,6 +41,9 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                             showImagePlaceholder={showImagePlaceholder}
                             isPreview={isPreview}
                             primaryAccentColor={primaryAccentColor}
+                            currentSlideIndex={index}
+                            totalSlides={visibleSlides.length}
+                            globalHeaderFooterConfig={globalHeaderFooterConfig}
                         />
                     </div>
                 ))}

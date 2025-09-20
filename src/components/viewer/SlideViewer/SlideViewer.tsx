@@ -5,10 +5,15 @@ import React, { useCallback, useMemo } from 'react';
 import { Layout, Slide } from '@/types';
 import LayoutViewer from '../LayoutViewer/LayoutViewer';
 import ViewerTemplateImageWithPlaceholder from '../ViewerTemplateImageWithPlaceholder';
+import HeaderFooter from '../../editor/HeaderFooter/HeaderFooter';
+import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
+import { getHeaderFooterLogoPadding } from '@/utils/headerFooterPadding';
 
 import styles from '../../editor/SlideEditor/SlideEditor.module.css';
 import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';
+
+const DEFAULT_CONTENT_PADDING = 'var(--card-inner-padding-y)';
 
 interface SlideViewerProps {
     slide: Slide;
@@ -25,6 +30,14 @@ interface SlideViewerProps {
     wrapperRef?: React.Ref<HTMLDivElement>;
     isSlidePreview?: boolean;
     theme: Theme;
+    /** Current slide index for numbering (0-based) */
+    currentSlideIndex?: number;
+    /** Total number of slides */
+    totalSlides?: number;
+    /** Global header/footer configuration */
+    globalHeaderFooterConfig?: any;
+    /** Hide branding watermark for premium users */
+    hideBranding?: boolean;
 }
 
 // No longer needed - we now use imageHeightRatio and imageWidthRatio directly
@@ -38,9 +51,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     showImagePlaceholder = false,
     isPreview = false,
     isSlidePreview = false,
+    hideBranding = false,
     primaryAccentColor,
     wrapperRef,
     theme,
+    currentSlideIndex = 0,
+    totalSlides = 1,
+    globalHeaderFooterConfig,
 }) => {
     // Get slide background styling
     const getSlideStyle = useCallback(() => {
@@ -155,7 +172,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             default:
                 return {};
         }
-    }, [slide?.templateType, slide?.imageUrl, slide?.imageHeightRatio, slide?.imageWidthRatio]);
+    }, [slide.templateType, slide.imageUrl, slide.imageWidthRatio, slide.imageHeightRatio]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
@@ -174,6 +191,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             minHeight: 'var(--card-height)',
             margin: 'unset',
         };
+
+        // For PDF export, allow natural height to avoid clipping
+        if (isPdfExport) {
+            baseStyle.minHeight = 'auto';
+            baseStyle.height = 'auto';
+        }
 
         // Apply content alignment
         if (slide.contentAlignment) {
@@ -194,6 +217,20 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             }
         }
 
+        // Применяем глобальные настройки колонтитулов к слайду
+        const effectiveSlide = globalHeaderFooterConfig
+            ? applyGlobalHeaderFooterToSlide(slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig, currentSlideIndex)
+            : slide;
+
+        const rawHeaderPadding = getHeaderFooterLogoPadding(effectiveSlide.header);
+        const rawFooterPadding = getHeaderFooterLogoPadding(effectiveSlide.footer);
+
+        const resolvedHeaderPadding = rawHeaderPadding ?? DEFAULT_CONTENT_PADDING;
+        const resolvedFooterPadding = rawFooterPadding ?? DEFAULT_CONTENT_PADDING;
+
+        baseStyle.paddingTop = resolvedHeaderPadding;
+        baseStyle.paddingBottom = resolvedFooterPadding;
+
         // Additional styles for image templates
         if (slide.templateType) {
             // Calculate dimensions based on ratios
@@ -202,12 +239,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            // const paddingTopVw = `calc(64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} + 1em)`;
-            const paddingTopVw = `calc(var(--card-width) * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
             const remainingHeight = `calc(100% - 64.5em * var(--card-font-scale, 1) * ${currentImageHeightRatio} - 1em)`;
+            const imageHeightValue = `calc(var(--card-width) * ${currentImageHeightRatio})`;
 
             switch (slide.templateType) {
                 case 'imageTop':
@@ -215,8 +251,8 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                         ...baseStyle,
                         position: 'relative',
                         zIndex: 2,
-                        paddingTop: paddingTopVw,
-                        height: remainingHeight,
+                        paddingTop: `calc(${imageHeightValue} + ${resolvedHeaderPadding} + 1em)`,
+                        height: isPdfExport ? 'auto' : remainingHeight,
                     };
                 case 'imageLeft':
                     return {
@@ -236,10 +272,12 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                 default:
                     return baseStyle;
             }
+        } else {
+            // Для слайдов без template типа базовые отступы уже выставлены выше
         }
 
         return baseStyle;
-    }, [slide]);
+    }, [slide, currentSlideIndex, totalSlides, globalHeaderFooterConfig, isPdfExport]);
 
     let height;
     let width;
@@ -293,7 +331,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideContentStyle: React.CSSProperties = {
         // backgroundColor: fullPage ? 'transparent' : 'var(--presentation-slide-background)',
         borderRadius: fullPage ? 0 : 'var(--presentation-slide-border-radius)',
-        minHeight: isSlidePreview ? 'var(--card-min-height)' : fullPage ? 'var(--card-height)' : isPdfExport ? 'auto' : undefined,
+        minHeight: isSlidePreview
+            ? 'var(--card-min-height)'
+            : fullPage
+              ? 'var(--card-height)'
+              : isPdfExport
+                ? 'auto'
+                : undefined,
         height: isSlidePreview || fullPage ? 'auto' : undefined,
         overflow: isSlidePreview || fullPage || isPdfExport ? 'visible' : 'auto',
         // transform: isSlidePreview ? 'scale(1)' : 'none',
@@ -303,17 +347,40 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideClassName = `${styles.slide} ${localStyles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
     // const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
+    console.log('contentStyle', contentStyle);
     return (
         <div className={`${slideClassName} ${isSlidePreview ? localStyles.slidePreview : ''}`}>
-            <div
-                className={`${styles.slideWrapper} ${localStyles.slideWrapper}`}
-                style={slideWrapperStyle}
-            >
+            <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
                 <div
                     ref={wrapperRef}
                     className={`${styles.slideContent} ${localStyles.slideContent}`}
                     style={slideContentStyle}
                 >
+                    {/* Apply global header/footer settings */}
+                    {(() => {
+                        const effectiveSlide = globalHeaderFooterConfig
+                            ? applyGlobalHeaderFooterToSlide(
+                                  slide,
+                                  currentSlideIndex,
+                                  totalSlides,
+                                  globalHeaderFooterConfig,
+                                  currentSlideIndex
+                              )
+                            : slide;
+
+                        return (
+                            effectiveSlide?.header && (
+                                <HeaderFooter
+                                    config={effectiveSlide.header}
+                                    type="header"
+                                    currentSlideIndex={currentSlideIndex}
+                                    totalSlides={totalSlides}
+                                    theme={theme}
+                                />
+                            )
+                        );
+                    })()}
+
                     {/* Template image if needed */}
                     {slide?.templateType &&
                         slide.templateType !== 'imageBackground' &&
@@ -343,10 +410,32 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                             />
                         ))}
                     </div>
+
+                    {(() => {
+                        const effectiveSlide = globalHeaderFooterConfig
+                            ? applyGlobalHeaderFooterToSlide(
+                                  slide,
+                                  currentSlideIndex,
+                                  totalSlides,
+                                  globalHeaderFooterConfig,
+                                  currentSlideIndex
+                              )
+                            : slide;
+                        return (
+                            effectiveSlide?.footer && (
+                                <HeaderFooter
+                                    config={effectiveSlide.footer}
+                                    type="footer"
+                                    currentSlideIndex={currentSlideIndex}
+                                    totalSlides={totalSlides}
+                                    theme={theme}
+                                />
+                            )
+                        );
+                    })()}
                 </div>
 
-
-                {isPdfExport && (
+                {isPdfExport && !hideBranding && (
                     <a
                         href="https://slydle.ru"
                         target="_blank"
@@ -361,11 +450,11 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                             padding: '4px 8px',
                             borderRadius: '4px',
                             fontSize: '10px',
-                            fontFamily:
-                                '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                             fontWeight: 500,
                             textDecoration: 'none',
                             pointerEvents: 'none',
+                            zIndex: 1000,
                         }}
                         data-slydle-watermark="true"
                     >

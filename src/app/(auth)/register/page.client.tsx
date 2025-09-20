@@ -176,9 +176,7 @@ export default function RegisterPage() {
                                 className={`${styles.input} ${styles.inputLast} ${confirmPasswordError ? styles.inputError : ''}`}
                                 placeholder="Подтвердить пароль"
                             />
-                            {confirmPasswordError && (
-                                <p className={styles.fieldError}>{confirmPasswordError}</p>
-                            )}
+                            {confirmPasswordError && <p className={styles.fieldError}>{confirmPasswordError}</p>}
                         </div>
                     </div>
 
@@ -196,8 +194,8 @@ export default function RegisterPage() {
                             Создавая аккаунт, я соглашаюсь с{' '}
                             <Link href="https://slydle.ru/terms.html" className={styles.checkboxLink} target="_blank">
                                 пользовательским соглашением
-                            </Link>
-                            {' '}и даю согласие на{' '}
+                            </Link>{' '}
+                            и даю согласие на{' '}
                             <Link href="https://slydle.ru/privacy.html" className={styles.checkboxLink} target="_blank">
                                 обработку персональных данных
                             </Link>
@@ -208,11 +206,7 @@ export default function RegisterPage() {
                     {error && <div className={styles.error}>{error}</div>}
 
                     <div>
-                        <button 
-                            type="submit" 
-                            className={styles.submitButton} 
-                            disabled={isLoading || !isFormValid}
-                        >
+                        <button type="submit" className={styles.submitButton} disabled={isLoading || !isFormValid}>
                             {isLoading ? 'Создаем аккаунт...' : 'Создать аккаунт'}
                         </button>
                     </div>

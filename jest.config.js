@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const nextJest = require('next/jest');
 
 const createJestConfig = nextJest({
@@ -12,10 +13,9 @@ const customJestConfig = {
         // Handle module aliases (this will be automatically configured for you soon)
         '^@/(.*)$': '<rootDir>/src/$1',
     },
-    testEnvironment: 'jest-environment-jsdom',
+    testEnvironment: 'node',
     preset: 'ts-jest',
     testPathIgnorePatterns: [
-        '<rootDir>/src/test/',
         '<rootDir>/src/utils/spec/',
         '<rootDir>/src/utils/rewriteSlide.test.ts',
         '<rootDir>/src/services/llm/gigaChat/',

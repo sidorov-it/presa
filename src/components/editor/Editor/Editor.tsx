@@ -9,13 +9,16 @@ import { useUIStateStore } from '@/store/uiStateStore';
 import { useEditorStore } from '@/store/editorStore';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
+import GlobalHeaderFooterModal from '../GlobalHeaderFooterModal/GlobalHeaderFooterModal';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { Theme } from '@/types/theme';
 
 import styles from './Editor.module.css';
-import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface EditorProps {
     presentationId: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
+    theme: Theme;
 }
 
 // Separate content component that only re-renders when its specific props change
@@ -23,7 +26,8 @@ const EditorContent: React.FC<{
     presentationId: string;
     // activeSlideId: string | null;
     tiptapRefs: MutableRefObject<TipTapRefs>;
-}> = React.memo(({ presentationId, tiptapRefs }) => {
+    theme: Theme;
+}> = React.memo(({ presentationId, tiptapRefs, theme }) => {
     const isReadOnly = useReadOnly();
 
     return (
@@ -32,7 +36,7 @@ const EditorContent: React.FC<{
 
             <div>
                 {/* Main editing area */}
-                <Presentation presentationId={presentationId} tiptapRefs={tiptapRefs} />
+                <Presentation presentationId={presentationId} tiptapRefs={tiptapRefs} theme={theme} />
 
                 {/* Tools panel */}
                 {!isReadOnly && <ElementsPanel />}
@@ -43,7 +47,7 @@ const EditorContent: React.FC<{
     );
 });
 
-const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
+const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) => {
     // const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
     const isReadOnly = useReadOnly();
 
@@ -106,12 +110,13 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
 
             // Проверяем, что событие произошло не внутри текстового редактора
             const target = e.target as HTMLElement;
-            const isInsideTextEditor = target.closest('[data-tiptap-editor]') || 
-                                     target.closest('.ProseMirror') || 
-                                     target.closest('[contenteditable="true"]') ||
-                                     target.closest('.tiptap-editor-wrapper') ||
-                                     target.closest('.tiptap') ||
-                                     target.closest('.custom-tiptap-editor');
+            const isInsideTextEditor =
+                target.closest('[data-tiptap-editor]') ||
+                target.closest('.ProseMirror') ||
+                target.closest('[contenteditable="true"]') ||
+                target.closest('.tiptap-editor-wrapper') ||
+                target.closest('.tiptap') ||
+                target.closest('.custom-tiptap-editor');
 
             if (isInsideTextEditor) {
                 return; // Не обрабатываем события внутри текстового редактора
@@ -132,14 +137,7 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
                 return;
             }
 
-            if (
-                isReadOnly ||
-                !elementId ||
-                !slideId ||
-                !layoutId ||
-                !menuPresentationId ||
-                isTextEditor
-            ) {
+            if (isReadOnly || !elementId || !slideId || !layoutId || !menuPresentationId || isTextEditor) {
                 return;
             }
 
@@ -161,6 +159,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isReadOnly]);
+
+    const isGlobalHeaderFooterModalOpen = useUIStateStore(state => state.isGlobalHeaderFooterModalOpen);
+    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
+    const currentSlideId = useUIStateStore(state => state.currentSlideId);
 
     if (!presentationExists) {
         return notFoundUI;
@@ -190,12 +192,21 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
         <DndProvider presentationId={presentationId}>
             <div style={editorBgStyle}>
                 <EditorContent
+                    theme={theme}
                     presentationId={presentationId}
                     // activeSlideId={activeSlideId}
                     tiptapRefs={tiptapRefs}
                     // onSlideSelect={handleSlideSelect}
                 />
             </div>
+
+            {/* Global Header/Footer Modal */}
+            <GlobalHeaderFooterModal
+                isOpen={isGlobalHeaderFooterModalOpen}
+                onClose={() => setGlobalHeaderFooterModalOpen(false)}
+                presentationId={presentationId}
+                slideId={currentSlideId}
+            />
         </DndProvider>
     );
 };

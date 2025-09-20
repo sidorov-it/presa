@@ -442,7 +442,7 @@ export const getSlideLayoutVars = ({
     const cardMinHeight = `calc(min(var(--card-max-width), calc(var(--card-max-height)* ${aspectRatio})) / ${aspectRatio})`;
 
     const preparedZoomLevel = renderMode === 'view' ? zoomLevel : Math.min(1, zoomLevel);
-    const fontSize = `calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
+    const fontSize = `calc(1 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${preparedZoomLevel} * var(--viewport-scale-factor, 1.125))`;
 
     return {
         '--editor-width': useContainerScaling ? `${containerWidth}px` : '100vw',
@@ -452,8 +452,8 @@ export const getSlideLayoutVars = ({
         '--card-max-width': cardMaxWidth,
         '--card-max-height': cardMaxHeight,
         '--card-min-height': cardMinHeight,
-        '--card-inner-padding-x': 'calc(4em / var(--card-font-scale, 1))',
-        '--card-inner-padding-y': 'calc(2.75em / var(--card-font-scale, 1))',
+        '--card-inner-padding-y': 'calc(3.5em / var(--card-font-scale, 1))',
+        '--card-inner-padding-x': 'calc(2.75em / var(--card-font-scale, 1))',
         '--card-margin-height': 'calc(2.75em / var(--card-font-scale, 1))',
         '--card-inner-padding': 'var(--card-inner-padding-y) var(--card-inner-padding-x)',
         '--card-outer-padding-left':

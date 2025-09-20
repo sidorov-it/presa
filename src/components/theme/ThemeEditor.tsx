@@ -3,11 +3,13 @@ import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import Colors from './components/Colors';
 import Fonts from './components/Fonts/Fonts';
 import Design from './components/Design/Design';
+import Logo from './components/Logo';
 import { useCallback, useMemo, useState } from 'react';
 import styles from './ThemeEditor.module.css';
 import { BiSolidColorFill } from 'react-icons/bi';
 import { FaFont } from 'react-icons/fa';
 import { MdOutlineDesignServices } from 'react-icons/md';
+import { MdImage } from 'react-icons/md';
 import FontLoader from './components/Fonts/FontLoader';
 import { produce } from 'immer';
 
@@ -166,6 +168,17 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
         [onThemeChange]
     );
 
+    const handleLogoChange = useCallback(
+        (logoUrl: string | null) => {
+            onThemeChange(
+                produce((draft: Theme) => {
+                    draft.logo = logoUrl || undefined;
+                })
+            );
+        },
+        [onThemeChange]
+    );
+
     const items = useMemo(
         () => [
             {
@@ -189,8 +202,13 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                 icon: <MdOutlineDesignServices />,
                 content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
             },
+            {
+                label: 'Логотип',
+                icon: <MdImage />,
+                content: <Logo theme={theme} onLogoChange={handleLogoChange} />,
+            },
         ],
-        [theme, handleColorsChange, handleTypographyChange, handleDesignChange]
+        [theme, handleColorsChange, handleTypographyChange, handleDesignChange, handleLogoChange]
     );
 
     const [selectedTab, setSelectedTab] = useState(items[0].label);

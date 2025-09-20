@@ -261,7 +261,6 @@ export default function LoginPage() {
                             <div className={styles.socialButtonsSeparatorText}>или</div>
                         </div>
 
-
                         {isLoading && (
                             <button
                                 type="button"

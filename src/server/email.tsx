@@ -46,10 +46,7 @@ export interface NewUserInfo {
     email: string;
 }
 
-export async function sendRegistrationNotification({
-    name,
-    email,
-}: NewUserInfo): Promise<void> {
+export async function sendRegistrationNotification({ name, email }: NewUserInfo): Promise<void> {
     await sendEmail({
         to: 'sidorov.s.aleksa@gmail.com',
         subject: 'Новая регистрация пользователя',

@@ -62,4 +62,4 @@ async function GETHandler(request: NextRequest, props: { params: Promise<{ id: s
     return handleRequest(request, { params });
 }
 
-export const GET = withLogging(GETHandler); 
+export const GET = withLogging(GETHandler);

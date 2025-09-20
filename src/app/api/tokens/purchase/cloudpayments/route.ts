@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { packageId, returnUrl }: CreatePaymentRequest = await request.json();
+        const { packageId }: CreatePaymentRequest = await request.json();
         if (!packageId) {
             return NextResponse.json({ error: 'Package ID is required' }, { status: 400 });
         }
@@ -49,13 +49,16 @@ export async function POST(request: NextRequest) {
             // confirmationUrl: process.env.CLOUDPAYMENTS_PUBLIC_ID, // publicId для виджета CloudPayments
             amount: tokenPackage.price,
             currency: tokenPackage.currency,
-            description: `Покупка токенов: ${tokenPackage.name} (${tokenPackage.tokens} токенов)`
+            description: `Покупка токенов: ${tokenPackage.name} (${tokenPackage.tokens} токенов)`,
         });
     } catch (error) {
         console.error('Error creating CloudPayments payment:', error);
-        return NextResponse.json({
-            error: 'Failed to create payment',
-            details: error instanceof Error ? error.message : 'Unknown error',
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                error: 'Failed to create payment',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 }
+        );
     }
-} 
+}

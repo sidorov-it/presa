@@ -15,7 +15,7 @@ export default function VerifyEmailClient({ isAuthenticated }: VerifyEmailClient
 
     const handleContinue = async () => {
         setIsLoading(true);
-        
+
         try {
             if (isAuthenticated) {
                 // Force session refresh to update JWT with new email verification status
@@ -43,13 +43,9 @@ export default function VerifyEmailClient({ isAuthenticated }: VerifyEmailClient
             {/* <p className={styles.text}>
                 Ваш адрес электронной почты успешно подтвержден.
             </p> */}
-            <button 
-                onClick={handleContinue}
-                disabled={isLoading}
-                className={styles.continueButton}
-            >
+            <button onClick={handleContinue} disabled={isLoading} className={styles.continueButton}>
                 {isLoading ? 'Загрузка...' : 'Продолжить'}
             </button>
         </div>
     );
-} 
+}

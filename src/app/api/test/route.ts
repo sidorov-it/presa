@@ -1,4 +1,3 @@
-import { withLogging } from '@/hooks/withLoging';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
@@ -143,6 +142,7 @@ async function transformTheme(basicTheme: any): Promise<Theme> {
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function GETHandler(_request: NextRequest, _props: { params: Promise<{ default: string }> }) {
     try {
         // if (params?.default === 'true') {
@@ -172,4 +172,4 @@ async function GETHandler(_request: NextRequest, _props: { params: Promise<{ def
     }
 }
 
-export const GET = () => NextResponse.json({ }, { status: 403 });
+export const GET = () => NextResponse.json({}, { status: 403 });

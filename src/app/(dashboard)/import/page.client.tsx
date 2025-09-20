@@ -127,8 +127,8 @@ export default function ImportPage() {
                     <>
                         <div className={styles.description}>
                             <p>
-                                Загрузите файл экспортированной презентации в формате JSON. 
-                                Презентация будет добавлена в ваш список с пометкой "(Imported)".
+                                Загрузите файл экспортированной презентации в формате JSON. в ваш список с пометкой
+                                "(Imported)".
                             </p>
                         </div>
 
@@ -157,25 +157,23 @@ export default function ImportPage() {
                                         <p className={styles.dropZoneText}>
                                             Перетащите файл сюда или нажмите для выбора
                                         </p>
-                                        <p className={styles.dropZoneSubtext}>
-                                            Поддерживаются только файлы .json
-                                        </p>
+                                        <p className={styles.dropZoneSubtext}>Поддерживаются только файлы .json</p>
                                     </>
                                 ) : (
                                     <>
                                         <FaFileAlt className={styles.fileIcon} />
                                         <p className={styles.fileName}>{selectedFile.name}</p>
-                                        <p className={styles.fileSize}>
-                                            {(selectedFile.size / 1024).toFixed(1)} KB
-                                        </p>
+                                        <p className={styles.fileSize}>{(selectedFile.size / 1024).toFixed(1)} KB</p>
                                     </>
                                 )}
                             </div>
 
                             {validationResult && (
-                                <div className={`${styles.validationStatus} ${
-                                    validationResult.valid ? styles.valid : styles.invalid
-                                }`}>
+                                <div
+                                    className={`${styles.validationStatus} ${
+                                        validationResult.valid ? styles.valid : styles.invalid
+                                    }`}
+                                >
                                     {validationResult.valid ? (
                                         <>
                                             <FaCheck />
@@ -195,13 +193,22 @@ export default function ImportPage() {
                             <div className={styles.preview}>
                                 <h3>Предварительный просмотр:</h3>
                                 <div className={styles.previewContent}>
-                                    <p><strong>Название:</strong> {validationResult.data.presentation.title}</p>
+                                    <p>
+                                        <strong>Название:</strong> {validationResult.data.presentation.title}
+                                    </p>
                                     {validationResult.data.presentation.description && (
-                                        <p><strong>Описание:</strong> {validationResult.data.presentation.description}</p>
+                                        <p>
+                                            <strong>Описание:</strong> {validationResult.data.presentation.description}
+                                        </p>
                                     )}
-                                    <p><strong>Слайдов:</strong> {validationResult.data.presentation.slides.length}</p>
+                                    <p>
+                                        <strong>Слайдов:</strong> {validationResult.data.presentation.slides.length}
+                                    </p>
                                     {validationResult.data.presentation.durationMinutes && (
-                                        <p><strong>Длительность:</strong> {validationResult.data.presentation.durationMinutes} мин.</p>
+                                        <p>
+                                            <strong>Длительность:</strong>{' '}
+                                            {validationResult.data.presentation.durationMinutes} мин.
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -217,11 +224,7 @@ export default function ImportPage() {
                             </Button>
 
                             {selectedFile && (
-                                <Button
-                                    onClick={handleReset}
-                                    variant="secondary"
-                                    className={styles.resetButton}
-                                >
+                                <Button onClick={handleReset} variant="secondary" className={styles.resetButton}>
                                     Выбрать другой файл
                                 </Button>
                             )}
@@ -234,12 +237,9 @@ export default function ImportPage() {
                         </div>
                         <h2>Презентация успешно импортирована!</h2>
                         <p>{importResult.message}</p>
-                        
+
                         <div className={styles.successActions}>
-                            <Button
-                                onClick={handleOpenImportedPresentation}
-                                className={styles.openButton}
-                            >
+                            <Button onClick={handleOpenImportedPresentation} className={styles.openButton}>
                                 Открыть презентацию
                             </Button>
                             <Button
@@ -260,11 +260,7 @@ export default function ImportPage() {
                         </div>
                         <h3>Ошибка импорта</h3>
                         <p>{importResult.message}</p>
-                        <Button
-                            onClick={handleReset}
-                            variant="secondary"
-                            className={styles.tryAgainButton}
-                        >
+                        <Button onClick={handleReset} variant="secondary" className={styles.tryAgainButton}>
                             Попробовать снова
                         </Button>
                     </div>
@@ -272,4 +268,4 @@ export default function ImportPage() {
             </div>
         </div>
     );
-} 
+}

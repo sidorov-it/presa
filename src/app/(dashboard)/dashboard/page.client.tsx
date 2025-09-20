@@ -118,9 +118,13 @@ export default function DashboardPage() {
     const toggleMenu = useCallback(
         (id: string, e: React.MouseEvent) => {
             e.stopPropagation();
+            e.preventDefault();
             const isOpen = activeMenu !== id;
             setActiveMenu(isOpen ? id : null);
             if (isOpen) {
+                // удаляем старый обработчик, чтобы он не закрыл открывашееся меню
+                document.removeEventListener('click', handleDocumentClick);
+                // и добавляем новый обработчик, чтобы закрывать меню при клике вне меню
                 document.addEventListener('click', handleDocumentClick);
             }
         },

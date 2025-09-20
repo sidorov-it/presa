@@ -2,7 +2,11 @@ import { Extension, JSONContent } from '@tiptap/core';
 
 // Создаем расширение для обработки нажатия Enter и Backspace
 export const EnterHandlerExtension = (
-    onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent, preservedStyles?: any) => void,
+    onEnterPressed: (
+        contentBeforeCursor?: JSONContent,
+        contentAfterCursor?: JSONContent,
+        preservedStyles?: any
+    ) => void,
     onBackspacePressed: (isEmpty: boolean, content: string) => void,
     onDeletePressed: (isEmpty: boolean, content: string) => void,
     standardEnterBehavior: boolean = false
@@ -49,7 +53,8 @@ export const EnterHandlerExtension = (
                     const selectionEnd = hasSelection ? Math.max($head.pos, $anchor.pos) : $head.pos;
 
                     // Проверяем, выделен ли весь текст (от начала до конца документа)
-                    const isFullSelection = hasSelection && selectionStart <= 1 && selectionEnd >= state.doc.content.size - 1;
+                    const isFullSelection =
+                        hasSelection && selectionStart <= 1 && selectionEnd >= state.doc.content.size - 1;
 
                     // Сохраняем стили перед удалением текста, если выделен весь текст
                     let preservedStyles = null;
@@ -79,7 +84,7 @@ export const EnterHandlerExtension = (
 
                     // Получаем контент до выделения
                     const contentBeforeSelection = state.doc.cut(0, selectionStart).toJSON();
-                    
+
                     // Получаем контент после выделения
                     const contentAfterSelection = state.doc.cut(selectionEnd).toJSON();
 
@@ -116,10 +121,8 @@ export const EnterHandlerExtension = (
                     const htmlContent = editor.getHTML();
 
                     // Проверяем, действительно ли редактор пустой (только пустые параграфы или вообще ничего)
-                    const isActuallyEmpty = isEmpty || 
-                                          textContent.length === 0 || 
-                                          htmlContent === '<p></p>' || 
-                                          htmlContent === '';
+                    const isActuallyEmpty =
+                        isEmpty || textContent.length === 0 || htmlContent === '<p></p>' || htmlContent === '';
 
                     if (isActuallyEmpty) {
                         onBackspacePressed(true, '');
@@ -162,10 +165,8 @@ export const EnterHandlerExtension = (
                     const htmlContent = editor.getHTML();
 
                     // Проверяем, действительно ли редактор пустой (только пустые параграфы или вообще ничего)
-                    const isActuallyEmpty = isEmpty || 
-                                          textContent.length === 0 || 
-                                          htmlContent === '<p></p>' || 
-                                          htmlContent === '';
+                    const isActuallyEmpty =
+                        isEmpty || textContent.length === 0 || htmlContent === '<p></p>' || htmlContent === '';
 
                     if (isActuallyEmpty) {
                         onDeletePressed(true, '');

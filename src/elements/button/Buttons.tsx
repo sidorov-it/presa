@@ -6,8 +6,8 @@ import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
 import styles from './Buttons.module.css';
 import { generateId } from '@/utils/id';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
-import { useUIStateStore } from '@/store/uiStateStore';
-import { useShallow } from 'zustand/react/shallow';
+// import { useUIStateStore } from '@/store/uiStateStore';
+// import { useShallow } from 'zustand/react/shallow';
 import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import { getContrastingTextColor } from '@/utils/themeUtils';
 import Portal from '@/components/Portal';
@@ -32,13 +32,13 @@ export default function Buttons({ elementId, presentationId, slideId, layoutId, 
     const buttonRefs = useRef<Record<string, HTMLDivElement | null>>({});
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const [hovered, setHovered] = useState(false);
-    const isSelected = useUIStateStore(useShallow(state => state.selectedElementId === elementId));
-    const isMenuOpen = useUIStateStore(
-        useShallow(state => state.isContextMenuOpen && state.selectedElementId === elementId)
-    );
+    // const [hovered, setHovered] = useState(false);
+    // const isSelected = useUIStateStore(useShallow(state => state.selectedElementId === elementId));
+    // const isMenuOpen = useUIStateStore(
+    //     useShallow(state => state.isContextMenuOpen && state.selectedElementId === elementId)
+    // );
 
-    const itemRef = useRef<HTMLDivElement>(null);
+    // const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
 
     const setRef = (id: string) => (el: HTMLDivElement | null) => {
@@ -188,13 +188,15 @@ export default function Buttons({ elementId, presentationId, slideId, layoutId, 
     );
 
     return (
-        <div className={`${styles.container} ${isFocused ? styles.focused : ''} ${element.alignment ? styles[element.alignment] : ''}`}>
+        <div
+            className={`${styles.container} ${isFocused ? styles.focused : ''} ${element.alignment ? styles[element.alignment] : ''}`}
+        >
             {element.items.map((item, index) => {
-                const backgroundColor = item?.color;
+                // const backgroundColor = item?.color;
                 const style: React.CSSProperties = {};
-                
-                    // если filled, то backgroundColor - primary-accent, color - contrastColor
-                    // если outlined, то backgroundColor - transparent, color - primary-accent, border-color - primary-accent
+
+                // если filled, то backgroundColor - primary-accent, color - contrastColor
+                // если outlined, то backgroundColor - transparent, color - primary-accent, border-color - primary-accent
 
                 if (item.buttonStyle === 'filled') {
                     if (item?.color) {
@@ -210,9 +212,6 @@ export default function Buttons({ elementId, presentationId, slideId, layoutId, 
                     style.border = `1px solid var(--presentation-primary-accent)`;
                 }
                 style.borderRadius = 'var(--presentation-slide-border-radius)';
-
-
-
 
                 // style.backgroundColor = item.buttonStyle === 'outlined' ? 'transparent' : backgroundColor;
                 // const contrastColor = getContrastingTextColor(backgroundColor);
@@ -230,19 +229,23 @@ export default function Buttons({ elementId, presentationId, slideId, layoutId, 
                 // style['--presentation-block-text-color-subtle'] = contrastColor;
 
                 return (
-                    <div key={item.id} className={`${styles.buttonItem} ${item.buttonStyle === 'outlined' ? styles.outlined : styles.filled}`} style={style}>
+                    <div
+                        key={item.id}
+                        className={`${styles.buttonItem} ${item.buttonStyle === 'outlined' ? styles.outlined : styles.filled}`}
+                        style={style}
+                    >
                         <div className="text-normal">
                             <div
                                 className={`${styles.button} `}
                                 ref={setRef(item.id)}
                                 data-button-id={item.id}
-                            // style={{
-                            //     backgroundColor: item.buttonStyle === 'filled' ? item.color : 'transparent',
-                            //     border: item.buttonStyle === 'outlined' ? `1px solid ${item.color}` : 'none',
-                            //     color: item.buttonStyle === 'outlined' ? item.color : '#fff',
-                            //     textAlign: item.alignment,
-                            // }}
-                            // onFocus={() => openMenu(item.id)}
+                                // style={{
+                                //     backgroundColor: item.buttonStyle === 'filled' ? item.color : 'transparent',
+                                //     border: item.buttonStyle === 'outlined' ? `1px solid ${item.color}` : 'none',
+                                //     color: item.buttonStyle === 'outlined' ? item.color : '#fff',
+                                //     textAlign: item.alignment,
+                                // }}
+                                // onFocus={() => openMenu(item.id)}
                             >
                                 <Tiptap
                                     onFocus={handleFocus(item.id)}

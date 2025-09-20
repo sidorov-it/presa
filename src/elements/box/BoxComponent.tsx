@@ -43,10 +43,16 @@ export default function BoxComponent({
                 blockBgColor: element.customBackgroundColor || element.backgroundColor,
                 iconColor: (element as any).iconColor,
                 textColor: (element as any).textColor,
-
-
             }),
-        [customBackgroundColor, iconType, theme, element.customBackgroundColor, element.backgroundColor, element.iconColor, element.textColor]
+        [
+            customBackgroundColor,
+            iconType,
+            theme,
+            element.customBackgroundColor,
+            element.backgroundColor,
+            element.iconColor,
+            element.textColor,
+        ]
     );
 
     const elementConfig = getElementConfig(elementTypeId);

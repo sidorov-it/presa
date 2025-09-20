@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
@@ -21,6 +22,10 @@ import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 import AISlideGenerator from '../AISlideGenerator/AISlideGenerator';
 import SlideBottomButtons from '../SlideBottomButtons/SlideBottomButtons';
 import TemplateTestModal from '../TemplateTestModal';
+import HeaderFooter from '../HeaderFooter/HeaderFooter';
+// import SlideHeaderFooterModal from '../SlideHeaderFooterModal/SlideHeaderFooterModal';
+import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
+import { getHeaderFooterLogoPadding } from '@/utils/headerFooterPadding';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
@@ -30,11 +35,19 @@ interface SlideEditorProps {
     isLast: boolean;
 }
 
-const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tiptapRefs, presentationId, isLast }) => {
+const DEFAULT_CONTENT_PADDING = 'var(--card-inner-padding-y)';
+
+const SlideEditor: React.FC<SlideEditorProps> = ({
+    slideLayoutIds,
+    slideId,
+    tiptapRefs,
+    presentationId,
+    isLast,
+    theme,
+}) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const [showHeightIndicator, setShowHeightIndicator] = useState(false);
-    const [standardHeight, setStandardHeight] = useState(0);
+
     const openMenu = useUIStateStore.getState().openContextMenu;
 
     const slideRef = useRef<HTMLDivElement>(null);
@@ -48,6 +61,40 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
     const slide = usePresentationStore(state => state.getSlide(presentationId, slideId));
     const imageHeightRatio = slide?.imageHeightRatio;
     const imageWidthRatio = slide?.imageWidthRatio;
+    // Get slide index and total slides for numbering
+    const presentation = usePresentationStore(state => state.getPresentation(presentationId));
+    const currentSlideIndex = presentation?.slides.findIndex(s => s.id === slideId) ?? 0;
+    const totalSlides = presentation?.slides.length ?? 1;
+
+    // Apply global header/footer settings
+    const effectiveSlide = slide
+        ? applyGlobalHeaderFooterToSlide(
+              slide,
+              currentSlideIndex,
+              totalSlides,
+              presentation?.headerFooterConfig || {
+                  header: {
+                      enabled: false,
+                      left: { type: 'none' },
+                      center: { type: 'none' },
+                      right: { type: 'none' },
+                  },
+                  footer: {
+                      enabled: false,
+                      left: { type: 'none' },
+                      center: { type: 'none' },
+                      right: { type: 'none' },
+                  },
+                  applyTo: 'all',
+              },
+              currentSlideIndex
+          )
+        : null;
+
+    // Get header and footer configurations
+    const header = effectiveSlide?.header;
+    const footer = effectiveSlide?.footer;
+
     const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
     const imageUrl = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageUrl);
 
@@ -386,6 +433,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
             // Font scaling now handled by gamma.app-style system in ElementContent
         } as React.CSSProperties;
 
+        const rawHeaderPadding = getHeaderFooterLogoPadding(header);
+        const rawFooterPadding = getHeaderFooterLogoPadding(footer);
+
+        const resolvedHeaderPadding = rawHeaderPadding ?? DEFAULT_CONTENT_PADDING;
+        const resolvedFooterPadding = rawFooterPadding ?? DEFAULT_CONTENT_PADDING;
+
+        baseStyle.paddingTop = resolvedHeaderPadding;
+        baseStyle.paddingBottom = resolvedFooterPadding;
         // Apply content alignment
         if (contentAlignment) {
             baseStyle.display = 'flex';
@@ -413,20 +468,24 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
 
             // Convert ratios to CSS values
             const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
-            const paddingTopVw = `calc(64.5em * ${currentImageHeightRatio} + 1em)`;
 
             const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
             // For remaining height, we need to subtract the image height from total height
             const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio} - 1em)`;
 
             switch (templateType) {
-                case 'imageTop':
+                case 'imageTop': {
+                    const imageHeightValue = `calc(64.5em * ${currentImageHeightRatio})`;
+                    const topSpacing = resolvedHeaderPadding;
+                    const paddingTopValue = `calc(${imageHeightValue} + ${topSpacing} + 1em)`;
+
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        paddingTop: paddingTopVw,
+                        paddingTop: paddingTopValue,
                         height: remainingHeight,
                     };
+                }
                 case 'imageLeft':
                     return {
                         ...baseStyle,
@@ -455,45 +514,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
         }
 
         return baseStyle;
-    }, [contentAlignment, templateType, imageWidthRatio, imageHeightRatio, imageUrl]);
+    }, [contentAlignment, templateType, header, footer, imageWidthRatio, imageHeightRatio, imageUrl]);
 
     // Add useDnd hook
     const { handleDragStart } = useDnd();
 
     const isDropTarget = useDndStore(({ state }) => state.indicators.slideIndicator === slideId);
     const isDragging = useDndStore(({ state }) => state.dragState === 'dragging' && state.source.slideId === slideId);
-
-    // Monitor slide content height to show standard height indicator
-    useEffect(() => {
-        const checkSlideHeight = () => {
-            if (!slideRef.current || isReadOnly) return;
-
-            const slideWrapper = slideRef.current.querySelector(`.${styles.slideWrapper}`) as HTMLElement;
-            if (!slideWrapper) return;
-
-            // Calculate standard height based on slide width (16:9 aspect ratio)
-            const slideWidth = slideWrapper.offsetWidth;
-            const calculatedStandardHeight = slideWidth / 1.7777777777777777; // 16:9 ratio
-
-            const actualHeight = slideWrapper.offsetHeight;
-
-            setStandardHeight(calculatedStandardHeight);
-            setShowHeightIndicator(actualHeight > calculatedStandardHeight + 10); // 10px tolerance
-        };
-
-        // Check on mount and when content changes
-        checkSlideHeight();
-
-        // Use ResizeObserver to monitor size changes
-        const resizeObserver = new ResizeObserver(checkSlideHeight);
-        if (slideRef.current) {
-            resizeObserver.observe(slideRef.current);
-        }
-
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, [slideLayoutIds, isReadOnly]);
 
     // Cleanup body scroll on unmount
     useEffect(() => {
@@ -570,12 +597,23 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                         />
                     )}
 
+                    {/* Header */}
+                    {header && (
+                        <HeaderFooter
+                            config={header}
+                            type="header"
+                            currentSlideIndex={currentSlideIndex}
+                            totalSlides={totalSlides}
+                            theme={theme}
+                        />
+                    )}
+
                     <div
                         className={styles.slideContainer}
                         data-slide-id={slideId}
                         data-slide-container="true"
-                        onClick={handleSlideClick}
                         style={contentStyle}
+                        onClick={handleSlideClick}
                     >
                         {slideLayoutIds.map((layoutId: string) => (
                             <LayoutContent
@@ -589,10 +627,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                         ))}
                     </div>
 
-                    {/* Standard height indicator */}
-                    {/* {showHeightIndicator && !isReadOnly && (
-                        <div className={styles.standardHeightIndicator} style={{ top: `${standardHeight}px` }} />
-                    )} */}
+                    {/* Footer */}
+                    {footer && (
+                        <HeaderFooter
+                            config={footer}
+                            type="footer"
+                            currentSlideIndex={currentSlideIndex}
+                            totalSlides={totalSlides}
+                            theme={theme}
+                        />
+                    )}
                 </div>
 
                 {!isReadOnly && (
@@ -607,10 +651,13 @@ const SlideEditor: React.FC<SlideEditorProps> = ({ slideLayoutIds, slideId, tipt
                 )}
 
                 {showAIGenerator && (
-                    <div className={styles.aiGeneratorOverlay} onClick={() => {
-                        setShowAIGenerator(false);
-                        document.body.style.overflow = '';
-                    }}>
+                    <div
+                        className={styles.aiGeneratorOverlay}
+                        onClick={() => {
+                            setShowAIGenerator(false);
+                            document.body.style.overflow = '';
+                        }}
+                    >
                         <div onClick={e => e.stopPropagation()}>
                             <AISlideGenerator
                                 presentationId={presentationId}

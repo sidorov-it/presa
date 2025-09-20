@@ -81,7 +81,7 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
     set('--viewport-scale-factor', '1.125');
     set(
         '--font-size',
-        'calc(0.875 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * var(--zoom-level, 1) * var(--viewport-scale-factor, 1.125))'
+        'calc(1 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * var(--zoom-level, 1) * var(--viewport-scale-factor, 1.125))'
     );
     set('--media-scale', 'min(1, var(--card-font-scale, 1))');
 
@@ -171,9 +171,6 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         } else {
             set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
         }
-
-
-
     } else if (theme.design.blocks.blockFillColorsType === 'subtle') {
         const subtleBackground = getSubtleColor(theme.colors.slideBackground);
         set('--presentation-block-background-subtle', subtleBackground);
@@ -184,10 +181,6 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         } else {
             set('--presentation-block-text-color-subtle', getContrastTextColor(subtleBackground));
         }
-
-
-
-
     } else if (theme.design.blocks.blockFillColorsType === 'custom') {
         // For custom type, use the custom colors
         if (theme.design.blocks.blockBackgroundCustomColors.length > 0) {
@@ -230,7 +223,6 @@ export function themeToCSSVariables(theme: Theme, backgroundSettings?: Backgroun
         } else {
             set('--presentation-block-text-color', getContrastTextColor(theme.colors.primaryAccent));
         }
-
     }
 
     const blockShadowMap: Record<string, string> = {

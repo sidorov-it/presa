@@ -44,11 +44,11 @@ export default async function VerifyEmailPage({ searchParams }: { searchParams: 
     // Update user verification status
     await prisma.user.update({
         where: { id: user.id },
-        data: { 
-            verificationToken: null, 
-            verificationTokenExpires: null, 
+        data: {
+            verificationToken: null,
+            verificationTokenExpires: null,
             isVerified: true,
-            emailVerified: new Date()
+            emailVerified: new Date(),
         },
     });
 

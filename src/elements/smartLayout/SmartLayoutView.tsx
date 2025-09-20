@@ -28,7 +28,7 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
     blockFillColorsType,
     blockBackgroundCustomColors,
     primaryAccentColor,
-    backgroundBlockFillType
+    backgroundBlockFillType,
 }) => {
     const elementVariant = element.elementVariant;
 

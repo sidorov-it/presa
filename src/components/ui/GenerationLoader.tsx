@@ -48,40 +48,20 @@ const GenerationLoader: React.FC<GenerationLoaderProps> = ({ isVisible }) => {
         >
             <VStack spacing="24px" textAlign="center">
                 <Box className={styles.pulse}>
-                    <Spinner 
-                        size="xl" 
-                        color="blue.500" 
-                        thickness="4px"
-                        speed="0.8s"
-                    />
+                    <Spinner size="xl" color="blue.500" thickness="4px" speed="0.8s" />
                 </Box>
                 <VStack spacing="12px">
-                    <Text 
-                        fontSize="xl" 
-                        fontWeight="bold" 
-                        color="white"
-                    >
+                    <Text fontSize="xl" fontWeight="bold" color="white">
                         Создаем вашу презентацию
                     </Text>
                     <Box className={styles.messageContainer}>
-                        <Text 
-                            fontSize="md" 
-                            color="gray.300"
-                            minHeight="24px"
-                            key={currentMessageIndex}
-                        >
+                        <Text fontSize="md" color="gray.300" minHeight="24px" key={currentMessageIndex}>
                             {GENERATION_MESSAGES[currentMessageIndex]}
                         </Text>
                     </Box>
-                    <Text 
-                        fontSize="sm" 
-                        color="gray.400"
-                        maxWidth="400px"
-                        textAlign="center"
-                        lineHeight="1.5"
-                    >
-                        Это может занять несколько минут. Даже если вы закроете окно, 
-                        презентация появится в вашем списке по готовности.
+                    <Text fontSize="sm" color="gray.400" maxWidth="400px" textAlign="center" lineHeight="1.5">
+                        Это может занять несколько минут. Даже если вы закроете окно, презентация появится в вашем
+                        списке по готовности.
                     </Text>
                 </VStack>
             </VStack>
@@ -89,4 +69,4 @@ const GenerationLoader: React.FC<GenerationLoaderProps> = ({ isVisible }) => {
     );
 };
 
-export default GenerationLoader; 
+export default GenerationLoader;

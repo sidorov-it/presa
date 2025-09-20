@@ -1,0 +1,66 @@
+.container {
+    width: 100%;
+}
+
+.positionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.positionGroup {
+    padding: 1rem;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.positionLabel {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.textInput,
+.logoInput {
+    margin-top: 0.75rem;
+}
+
+.input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: white;
+    color: #333;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+.hint {
+    display: block;
+    margin-top: 0.25rem;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.slideNumberPreview {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #e6f7ff;
+    border-radius: 4px;
+    border: 1px solid #91d5ff;
+}
+
+.preview {
+    font-size: 0.85rem;
+    color: #1890ff;
+    font-weight: 500;
+} 

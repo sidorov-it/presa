@@ -1,4 +1,6 @@
-import { Box, Text, Table, Button, HStack, VStack, Badge } from '@chakra-ui/react';
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-nested-ternary */
+import { Box, Text, Table, HStack, VStack, Badge } from '@chakra-ui/react';
 import { LLMHistoryService } from '@/services/llm/history/llmHistoryService';
 import { isValidRequestId } from '@/utils/requestId';
 import { notFound } from 'next/navigation';

@@ -103,7 +103,7 @@ export async function loadFontsInContainer(fontUrls: string[], container: HTMLEl
                 container.appendChild(style);
             }
             loaded.add(url);
-        } catch (e) {
+        } catch {
             // fail silently
         }
     }

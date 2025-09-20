@@ -1,3 +1,5 @@
+/* eslint-disable indent */
+/* eslint-disable no-nested-ternary */
 import fs from 'fs';
 import path from 'path';
 
@@ -12,13 +14,13 @@ export interface TestScenarioInfo {
  */
 export function getAvailableScenarios(): TestScenarioInfo[] {
     const scenariosDir = path.join(process.cwd(), 'src/services/llm/mockGpt/scenarios');
-    
+
     if (!fs.existsSync(scenariosDir)) {
         return [];
     }
 
     const files = fs.readdirSync(scenariosDir).filter(file => file.endsWith('.json'));
-    
+
     return files.map(filename => {
         try {
             const filePath = path.join(scenariosDir, filename);
@@ -43,21 +45,21 @@ export function getAvailableScenarios(): TestScenarioInfo[] {
  */
 export function validateScenario(scenarioName: string): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
-    
+
     try {
         const scenarioPath = path.join(process.cwd(), 'src/services/llm/mockGpt/scenarios', `${scenarioName}.json`);
-        
+
         if (!fs.existsSync(scenarioPath)) {
             errors.push(`Scenario file not found: ${scenarioPath}`);
             return { valid: false, errors };
         }
 
         const content = JSON.parse(fs.readFileSync(scenarioPath, 'utf8'));
-        
+
         if (!content.name) {
             errors.push('Scenario must have a name');
         }
-        
+
         if (!content.responses || !Array.isArray(content.responses)) {
             errors.push('Scenario must have a responses array');
         } else {
@@ -73,11 +75,10 @@ export function validateScenario(scenarioName: string): { valid: boolean; errors
                 }
             });
         }
-        
     } catch (error) {
         errors.push(`Error parsing scenario file: ${error}`);
     }
-    
+
     return { valid: errors.length === 0, errors };
 }
 
@@ -97,11 +98,11 @@ export function createScenarioFromLogs(
     const responses = logEntries.map((entry, index) => ({
         id: `response-${index + 1}`,
         description: `Generated from log entry ${index + 1}`,
-        trigger: entry.functionCall 
+        trigger: entry.functionCall
             ? { type: 'function_name', value: entry.functionCall }
-            : entry.templateId 
-            ? { type: 'template_id', value: entry.templateId }
-            : { type: 'prompt_contains', value: entry.prompt.substring(0, 50) },
+            : entry.templateId
+              ? { type: 'template_id', value: entry.templateId }
+              : { type: 'prompt_contains', value: entry.prompt.substring(0, 50) },
         response: entry.response,
     }));
 
@@ -129,4 +130,4 @@ export function setTestEnvironment(scenarioName?: string) {
  */
 export function getTestScenarioFromEnv(): string | undefined {
     return process.env.MOCK_TEST_SCENARIO;
-} 
+}

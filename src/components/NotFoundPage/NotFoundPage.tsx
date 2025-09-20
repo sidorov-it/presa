@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import Logo from '@/components/icons/Logo/Logo';
 import styles from './style.module.css';
 

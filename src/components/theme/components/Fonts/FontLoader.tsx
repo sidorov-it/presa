@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { Theme } from '@/types/theme';
-import { FONT_URLS, getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
+import { FONT_URLS, getRequiredFontsFromTheme, loadFonts } from '@/utils/fontLoader';
 
 interface FontLoaderProps {
     theme: Theme;
 }
 
-export default function FontLoader({ theme, container }: FontLoaderProps) {
+export default function FontLoader({ theme }: FontLoaderProps) {
     useEffect(() => {
         if (!theme) return;
 

@@ -97,7 +97,7 @@ export const EmptySpanExtension = Extension.create({
                                 view.dispatch(tr);
 
                                 // Применяем стили через команды после вставки текста
-                                setTimeout(() => {
+                                // setTimeout(() => {
                                     if (this.editor) {
                                         const chain = this.editor.chain();
 
@@ -123,7 +123,7 @@ export const EmptySpanExtension = Extension.create({
 
                                         chain.run();
                                     }
-                                }, 0);
+                                // }, 0);
 
                                 return true;
                             }

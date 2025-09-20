@@ -92,6 +92,7 @@ export const getTextContent = (textType: TextType, text: string | string[], text
                 return convertAiTextToHtml(text);
             }
 
+            // eslint-disable-next-line no-case-declarations
             const pStyle = textAlign ? `style="text-align: ${textAlign};"` : '';
             // Fallback to simple paragraph handling
             return `<p ${pStyle}>${Array.isArray(text) ? text.join(' ') : text}</p>`;

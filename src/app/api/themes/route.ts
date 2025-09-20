@@ -77,6 +77,7 @@ async function POSTHandler(request: Request) {
         const createdTheme = await prisma.theme.create({
             data: {
                 name: theme.name,
+                logo: theme.logo || null,
                 colors: {
                     set: {
                         ...theme.colors,
@@ -91,7 +92,6 @@ async function POSTHandler(request: Request) {
                 },
                 isDefault: theme.isDefault ?? false,
                 isActive: theme.isActive ?? true,
-                logo: null,
                 userId: session.user.id, // Associate theme with user
             },
         });

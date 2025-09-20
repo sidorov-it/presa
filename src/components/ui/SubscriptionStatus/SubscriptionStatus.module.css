@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.premium {
+    color: #3182ce;
+}
+
+.crown {
+    color: #fbbf24;
+    flex-shrink: 0;
+}

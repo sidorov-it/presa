@@ -8,7 +8,6 @@ import { useShallow } from 'zustand/react/shallow';
 
 import styles from './Timeline.module.css';
 import TimelineHorizontalContent from './TimelineHorizontalContent';
-import getContrastTextColor from '@/utils/getContrastTextColor';
 
 export default function TimelineHorizontal({
     elementId,
@@ -436,18 +435,22 @@ export default function TimelineHorizontal({
                                 const selector = `[data-item-index="${elementId}-${indexInRow}-${isFirstLine ? 'first' : 'second'}"]`;
                                 // нужен реальный индекс элемента
                                 // если с 1 стороны, то просто индекст
-                                // если с 2 сторон, то индекс делим на 2 и 
+                                // если с 2 сторон, то индекс делим на 2 и
                                 // нужно направление
-                                const itemElement = document.querySelector(
-                                    selector
-                                );
+                                const itemElement = document.querySelector(selector);
 
-                                const ems = parseInt(timelineLineItemsRef?.current ? getComputedStyle(timelineLineItemsRef?.current).fontSize : '18px', 10) ; 
+                                const ems = parseInt(
+                                    timelineLineItemsRef?.current
+                                        ? getComputedStyle(timelineLineItemsRef?.current).fontSize
+                                        : '18px',
+                                    10
+                                );
                                 const itemBoundingRect = itemElement?.getBoundingClientRect();
                                 const left =
                                     (itemBoundingRect?.left || 0) +
                                     (itemBoundingRect?.width || 0) / 2 -
-                                    (timelineLineItemsRef.current?.getBoundingClientRect().left || 0) - ems * (1 );
+                                    (timelineLineItemsRef.current?.getBoundingClientRect().left || 0) -
+                                    ems * 1;
 
                                 positionStyle = { left: left };
                             } else {

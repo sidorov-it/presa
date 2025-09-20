@@ -281,36 +281,40 @@ const getExtensions = ({
     EnterHandlerExtension(
         (contentBeforeCursor, contentAfterCursor, preservedStyles) => {
             if (!contentBeforeCursor && !contentAfterCursor && !preservedStyles) return;
-            
+
             // Используем сохраненные стили, если они есть, иначе используем initialStyle
             const stylesToUse = preservedStyles || initialStyle;
-            
-            const htmlBeforeCursor = contentBeforeCursor ? generateHTML(
-                contentBeforeCursor,
-                getExtensions({
-                    onEnterPressed,
-                    onBackspacePressed,
-                    onDeletePressed,
-                    placeholder,
-                    onAddElement,
-                    isHideSlashMenu,
-                    initialStyle: stylesToUse,
-                })
-            ) : undefined;
-            
-            const htmlAfterCursor = contentAfterCursor ? generateHTML(
-                contentAfterCursor,
-                getExtensions({
-                    onEnterPressed,
-                    onBackspacePressed,
-                    onDeletePressed,
-                    placeholder,
-                    onAddElement,
-                    isHideSlashMenu,
-                    initialStyle: stylesToUse,
-                })
-            ) : undefined;
-            
+
+            const htmlBeforeCursor = contentBeforeCursor
+                ? generateHTML(
+                      contentBeforeCursor,
+                      getExtensions({
+                          onEnterPressed,
+                          onBackspacePressed,
+                          onDeletePressed,
+                          placeholder,
+                          onAddElement,
+                          isHideSlashMenu,
+                          initialStyle: stylesToUse,
+                      })
+                  )
+                : undefined;
+
+            const htmlAfterCursor = contentAfterCursor
+                ? generateHTML(
+                      contentAfterCursor,
+                      getExtensions({
+                          onEnterPressed,
+                          onBackspacePressed,
+                          onDeletePressed,
+                          placeholder,
+                          onAddElement,
+                          isHideSlashMenu,
+                          initialStyle: stylesToUse,
+                      })
+                  )
+                : undefined;
+
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
         },
         (isEmpty, textContent) => {

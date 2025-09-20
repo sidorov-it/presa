@@ -43,7 +43,7 @@ export default function ButtonMenu({
             presentationId,
         });
     }, [elementId, nodeAttributes.elementId, slideId, layoutId, presentationId]);
-    
+
     const handleChangeAlignment = (value: string) => {
         onAlignmentChange(value);
     };
@@ -162,11 +162,8 @@ export default function ButtonMenu({
                 </div>
             </div> */}
 
-            <ColorPicker
-                value={color}
-                onChange={value => handleChange('color', value)}
-            />
-            
+            <ColorPicker value={color} onChange={value => handleChange('color', value)} />
+
             {/* Delete Button */}
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить">
                 <svg className={styles.deleteButtonIcon} viewBox="0 0 24 24" fill="currentColor">

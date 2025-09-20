@@ -8,9 +8,11 @@ import styles from './Presentation.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import SlidesList from '../SlidesList';
 import SlideDropIndicator from '@/components/SlideDropIndicator';
+import { Theme } from '@/types/theme';
 interface PresentationProps {
     presentationId: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
+    theme: Theme;
 }
 
 // Create a SlideEditorWrapper component to handle rendering individual slides
@@ -20,11 +22,13 @@ const SlideEditorWrapper = memo(
         presentationId,
         tiptapRefs,
         isLast,
+        theme,
     }: {
         slideId: string;
         presentationId: string;
         tiptapRefs: MutableRefObject<TipTapRefs>;
         isLast: boolean;
+        theme: Theme;
     }) => {
         const slideLayoutIds = usePresentationStore(
             useShallow((state: PresentationState) => {
@@ -45,6 +49,7 @@ const SlideEditorWrapper = memo(
                 presentationId={presentationId}
                 slideId={slideId}
                 isLast={isLast}
+                theme={theme}
             />
         );
     }
@@ -52,7 +57,7 @@ const SlideEditorWrapper = memo(
 
 SlideEditorWrapper.displayName = 'SlideEditorWrapper';
 
-function Presentation({ presentationId, tiptapRefs }: PresentationProps) {
+function Presentation({ presentationId, tiptapRefs, theme }: PresentationProps) {
     const isReadOnly = useReadOnly();
 
     const slideIds = usePresentationStore(
@@ -77,6 +82,7 @@ function Presentation({ presentationId, tiptapRefs }: PresentationProps) {
                     slideId={slideId}
                     presentationId={presentationId}
                     tiptapRefs={tiptapRefs}
+                    theme={theme}
                     isLast={index === slideIds.length - 1}
                 />
             ))}

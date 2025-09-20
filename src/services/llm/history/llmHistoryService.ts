@@ -147,8 +147,8 @@ export class LLMHistoryService {
     }
 
     /** Get full history */
-    static async getAllHistory(options?: { 
-        limit?: number; 
+    static async getAllHistory(options?: {
+        limit?: number;
         offset?: number;
         requestId?: string;
         userId?: string;
@@ -223,12 +223,7 @@ export class LLMHistoryService {
     /**
      * Get unique request IDs with basic info
      */
-    static async getRequestIds(options?: {
-        limit?: number;
-        userId?: string;
-        startDate?: Date;
-        endDate?: Date;
-    }) {
+    static async getRequestIds(options?: { limit?: number; userId?: string; startDate?: Date; endDate?: Date }) {
         const where = {
             requestId: { not: null },
             ...(options?.userId ? { userId: options.userId } : {}),

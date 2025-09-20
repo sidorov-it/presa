@@ -23,9 +23,7 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
     useEffect(() => {
         if (isOpen) {
             setScenarioName(`Exported Scenario ${requestId.substring(0, 8)}`);
-            setScenarioDescription(
-                `Exported from ${requestCount} LLM requests on ${new Date().toLocaleDateString()}`
-            );
+            setScenarioDescription(`Exported from ${requestCount} LLM requests on ${new Date().toLocaleDateString()}`);
         }
     }, [isOpen, requestId, requestCount]);
 
@@ -135,18 +133,19 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>Export MockGPT Scenario</h2>
                 </div>
-                
+
                 <div className={styles.modalBody}>
                     <p className={styles.description}>
-                        Export {requestCount} LLM requests as a MockGPT test scenario. This will create a JSON file
-                        that can be used to reproduce these exact responses for testing.
+                        Export {requestCount} LLM requests as a MockGPT test scenario. This will create a JSON file that
+                        can be used to reproduce these exact responses for testing.
                     </p>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>
+                        <label htmlFor="scenario-name" className={styles.formLabel}>
                             Scenario Name *
                         </label>
                         <input
+                            id="scenario-name"
                             type="text"
                             className={styles.formInput}
                             value={scenarioName}
@@ -157,10 +156,11 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>
+                        <label htmlFor="scenario-description" className={styles.formLabel}>
                             Description
                         </label>
                         <textarea
+                            id="scenario-description"
                             className={styles.formTextarea}
                             value={scenarioDescription}
                             onChange={e => setScenarioDescription(e.target.value)}
@@ -170,26 +170,23 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
                     </div>
 
                     <div className={styles.infoBox}>
-                        <div className={styles.infoTitle}>
-                            What will be exported:
-                        </div>
+                        <div className={styles.infoTitle}>What will be exported:</div>
                         <div className={styles.infoText}>
-                            • Only successful requests with responses<br />
-                            • Function calls and their arguments<br />
-                            • Intelligent triggers (function names, template IDs, or prompt snippets)<br />
-                            • Formatted for immediate use in MockGPT testing
+                            • Only successful requests with responses
+                            <br />
+                            • Function calls and their arguments
+                            <br />
+                            • Intelligent triggers (function names, template IDs, or prompt snippets)
+                            <br />• Formatted for immediate use in MockGPT testing
                         </div>
                     </div>
                 </div>
 
                 <div className={styles.modalFooter}>
-                    <button
-                        className={`${styles.button} ${styles.buttonOutline}`}
-                        onClick={onClose}
-                    >
+                    <button className={`${styles.button} ${styles.buttonOutline}`} onClick={onClose}>
                         Cancel
                     </button>
-                    
+
                     <div className={styles.buttonGroup}>
                         <button
                             className={`${styles.button} ${styles.buttonSecondary}`}
@@ -210,4 +207,4 @@ export default function ExportScenarioModal({ requestId, isOpen, onClose, reques
             </div>
         </div>
     );
-} 
+}

@@ -35,36 +35,6 @@ interface MockGPTResponse {
 }
 
 /**
- * Extract template ID from prompt text
- */
-function extractTemplateId(prompt: string): string | null {
-    // Look for template mentions in the prompt
-    const templateMatches = prompt.match(/шаблон[а-я\s]*:?\s*([a-z-]+)/i);
-    if (templateMatches) {
-        return templateMatches[1];
-    }
-
-    // Look for common template patterns
-    const patterns = [
-        { pattern: /двухколон|two.column/i, template: 'two-columns' },
-        { pattern: /приветств|welcome/i, template: 'welcome-slide' },
-        { pattern: /финальн|final|контакт/i, template: 'final-slide-contacts' },
-        { pattern: /диаграмм|chart/i, template: 'chart' },
-        { pattern: /умн[а-я]*\s*макет|smart.layout/i, template: 'smart-layout' },
-        { pattern: /изображени[а-я]*.*текст|image.*text/i, template: 'image-text' },
-        { pattern: /текст.*изображени|text.*image/i, template: 'text-image' },
-    ];
-
-    for (const { pattern, template } of patterns) {
-        if (pattern.test(prompt)) {
-            return template;
-        }
-    }
-
-    return null;
-}
-
-/**
  * Generate trigger for a request
  */
 function generateTrigger(request: LLMRequest): MockGPTResponse['trigger'] {
@@ -86,10 +56,7 @@ function generateTrigger(request: LLMRequest): MockGPTResponse['trigger'] {
     // }
 
     // Fallback to prompt_contains with a meaningful snippet
-    const promptSnippet = request.prompt
-        .replace(/\n/g, ' ')
-        .substring(0, 50)
-        .trim();
+    const promptSnippet = request.prompt.replace(/\n/g, ' ').substring(0, 50).trim();
 
     return {
         type: 'prompt_contains',
@@ -100,7 +67,11 @@ function generateTrigger(request: LLMRequest): MockGPTResponse['trigger'] {
 /**
  * Parse response content to extract function call
  */
-function parseResponseContent(responseContent: string | null, functionCall: string | null, functionArguments: string | null) {
+function parseResponseContent(
+    responseContent: string | null,
+    functionCall: string | null,
+    functionArguments: string | null
+) {
     if (!responseContent) {
         return { elements: [] };
     }
@@ -108,7 +79,7 @@ function parseResponseContent(responseContent: string | null, functionCall: stri
     try {
         // Try to parse as JSON first
         const parsed = JSON.parse(responseContent);
-        
+
         // If it's already in the correct format, return it
         if (parsed.function_call || parsed.elements) {
             return parsed;
@@ -154,17 +125,11 @@ export function exportToMockGPTScenario(
     scenarioDescription?: string
 ): MockGPTScenario {
     // Filter only successful requests with meaningful responses
-    const validRequests = requests.filter(
-        req => req.success && (req.responseContent || req.functionCall)
-    );
+    const validRequests = requests.filter(req => req.success && (req.responseContent || req.functionCall));
 
     const responses: MockGPTResponse[] = validRequests.map((request, index) => {
         const trigger = generateTrigger(request);
-        const response = parseResponseContent(
-            request.responseContent,
-            request.functionCall,
-            request.functionArguments
-        );
+        const response = parseResponseContent(request.responseContent, request.functionCall, request.functionArguments);
 
         return {
             id: `exported-response-${index + 1}`,
@@ -198,7 +163,7 @@ export function generateScenarioFilename(scenarioName: string): string {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .trim();
-    
+
     const timestamp = new Date().toISOString().split('T')[0];
     return `${sanitizedName}-${timestamp}.json`;
-} 
+}

@@ -357,8 +357,9 @@ export default function TimelineView({
                             return (
                                 <div
                                     key={itemId}
-                                    className={`${styles.verticalTimelineItem} ${isOnLeft ? styles.leftSide : styles.rightSide
-                                        }`}
+                                    className={`${styles.verticalTimelineItem} ${
+                                        isOnLeft ? styles.leftSide : styles.rightSide
+                                    }`}
                                     style={{
                                         top: position ? `${position.top}px` : 0,
                                         height: position ? `${position.minHeight}px` : 'auto',
@@ -369,8 +370,9 @@ export default function TimelineView({
                                     {/* Connection line */}
                                     {showLines && (
                                         <div
-                                            className={`${styles.verticalConnectionLine} ${sides === 'one' || isOnLeft ? styles.toRight : styles.toLeft
-                                                }`}
+                                            className={`${styles.verticalConnectionLine} ${
+                                                sides === 'one' || isOnLeft ? styles.toRight : styles.toLeft
+                                            }`}
                                             style={{ backgroundColor: timelineColor }}
                                         />
                                     )}
@@ -388,7 +390,7 @@ export default function TimelineView({
                                                 layoutId={layoutId}
                                                 isInnerTiptap={true}
                                                 placeholder="Заголовок"
-                                            // onContentChange={null}
+                                                // onContentChange={null}
                                             />
                                         </div>
                                         <Tiptap
@@ -402,7 +404,7 @@ export default function TimelineView({
                                             layoutId={layoutId}
                                             isInnerTiptap={true}
                                             placeholder="Текст"
-                                        // onContentChange={() => {}}
+                                            // onContentChange={() => {}}
                                         />
                                     </div>
                                 </div>
@@ -539,8 +541,10 @@ export default function TimelineView({
         const itemStyle = getItemStyle(index, isSecondLine);
 
         return (
-            <div key={itemId} className={styles.itemContainer} data-smart-layout-item-id={itemId}
-
+            <div
+                key={itemId}
+                className={styles.itemContainer}
+                data-smart-layout-item-id={itemId}
                 data-item-index={`${element.id}-${index}-${isSecondLine ? 'second' : 'first'}`}
                 style={{
                     ...itemStyle,
@@ -568,7 +572,7 @@ export default function TimelineView({
                             isInnerTiptap={true}
                             layoutId={layoutId}
                             placeholder="Заголовок"
-                            onContentChange={() => { }}
+                            onContentChange={() => {}}
                         />
                     </div>
                     <Tiptap
@@ -582,7 +586,7 @@ export default function TimelineView({
                         isInnerTiptap={true}
                         layoutId={layoutId}
                         placeholder="Текст"
-                        onContentChange={() => { }}
+                        onContentChange={() => {}}
                     />
                 </div>
             </div>

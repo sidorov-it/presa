@@ -661,8 +661,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                             <div
                                 onClick={handleClickElement(elementId)}
                                 key={`${elementId}-${idx}-${cell.id}`}
-                                className={`${hasMultipleCells ? styles.elementContainer : ''} ${isTable ? styles.tableElementContainer : ''
-                                    }`}
+                                className={`${hasMultipleCells ? styles.elementContainer : ''} ${
+                                    isTable ? styles.tableElementContainer : ''
+                                }`}
                                 data-is-first-element={idx === 0 ? 'true' : 'false'}
                                 data-is-last-element={idx === elementsIds.length - 1 ? 'true' : 'false'}
                             >
@@ -681,72 +682,64 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
                                     hasMultipleCells={hasMultipleCells}
                                 />
                             </div>
-                        )
+                        );
                     })}
                 </div>
             </div>
-            {
-                !isReadOnly && hasMultipleCells && !isTable && !isLastCell && (
-                    <div
-                        ref={resizeBorderRef}
-                        className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
-                        onMouseDown={handleResizeStart}
-                    />
-                )
-            }
+            {!isReadOnly && hasMultipleCells && !isTable && !isLastCell && (
+                <div
+                    ref={resizeBorderRef}
+                    className={`${styles.resizableBorder} ${isResizing ? styles.resizableBorderDragged : ''}`}
+                    onMouseDown={handleResizeStart}
+                />
+            )}
 
-            {
-                !isReadOnly && hasMultipleCells && !isTable && isLastCell && (layoutIsFocused || layoutIsHovered) && (
-                    <button className={styles.addColumnIcon} onClick={handleAddColumn} title="Add column">
-                        <HiPlus style={{ width: '1rem', height: '1rem' }} />
-                    </button>
-                )
-            }
+            {!isReadOnly && hasMultipleCells && !isTable && isLastCell && (layoutIsFocused || layoutIsHovered) && (
+                <button className={styles.addColumnIcon} onClick={handleAddColumn} title="Add column">
+                    <HiPlus style={{ width: '1rem', height: '1rem' }} />
+                </button>
+            )}
 
-            {
-                !isReadOnly && isShowRowDragHandler && (
-                    <DragHandler
-                        className={styles.tableRowDragHandle}
-                        slideId={slideId}
-                        isActive={isRowMenuOpen}
-                        ariaLabel="Перетащить эту строку"
-                        dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
-                        handleClick={handleOpenRowMenu}
-                        handleKeyDown={() => { }}
-                        handleDragStart={e =>
-                            handleDragStart(e, {
-                                elementId: '',
-                                rowIndex: rowIndex,
-                                tableId: layoutId,
-                                dragElementType: 'table-row',
-                            })
-                        }
-                    />
-                )
-            }
-            {
-                !isReadOnly && isShowColumnDragHandler && (
-                    <DragHandler
-                        className={styles.columnDragHandle}
-                        slideId={slideId}
-                        isActive={isColumnMenuOpen}
-                        ariaLabel="Перетащить этот столбец"
-                        dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
-                        handleClick={handleOpenColumnMenu}
-                        handleKeyDown={() => { }}
-                        handleDragStart={e =>
-                            handleDragStart(e, {
-                                elementId: '',
-                                columnIndex: columnIndex,
-                                tableId: layoutId,
-                                dragElementType: 'table-column',
-                            })
-                        }
-                        title="Drag to reorder column (columns can only be moved within the same table)"
-                    />
-                )
-            }
-        </div >
+            {!isReadOnly && isShowRowDragHandler && (
+                <DragHandler
+                    className={styles.tableRowDragHandle}
+                    slideId={slideId}
+                    isActive={isRowMenuOpen}
+                    ariaLabel="Перетащить эту строку"
+                    dataAttributes={{ 'data-row-drag-handle': `${layoutId}-${rowIndex}` }}
+                    handleClick={handleOpenRowMenu}
+                    handleKeyDown={() => {}}
+                    handleDragStart={e =>
+                        handleDragStart(e, {
+                            elementId: '',
+                            rowIndex: rowIndex,
+                            tableId: layoutId,
+                            dragElementType: 'table-row',
+                        })
+                    }
+                />
+            )}
+            {!isReadOnly && isShowColumnDragHandler && (
+                <DragHandler
+                    className={styles.columnDragHandle}
+                    slideId={slideId}
+                    isActive={isColumnMenuOpen}
+                    ariaLabel="Перетащить этот столбец"
+                    dataAttributes={{ 'data-column-drag-handle': `${layoutId}-${columnIndex}` }}
+                    handleClick={handleOpenColumnMenu}
+                    handleKeyDown={() => {}}
+                    handleDragStart={e =>
+                        handleDragStart(e, {
+                            elementId: '',
+                            columnIndex: columnIndex,
+                            tableId: layoutId,
+                            dragElementType: 'table-column',
+                        })
+                    }
+                    title="Drag to reorder column (columns can only be moved within the same table)"
+                />
+            )}
+        </div>
     );
 };
 

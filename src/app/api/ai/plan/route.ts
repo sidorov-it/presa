@@ -54,4 +54,4 @@ async function POSTHandler(request: NextRequest) {
     );
 }
 
-export const POST = withLogging(POSTHandler); 
+export const POST = withLogging(POSTHandler);
