@@ -9,9 +9,7 @@ import BrowserWarning from '@/components/BrowserWarning';
 import EarlyTestBanner from '@/components/EarlyTestBanner/EarlyTestBanner';
 import { Suspense } from 'react';
 import { EarlyTestBannerProvider } from '@/contexts/EarlyTestBannerContext';
-// import Footer from '@/components/ui/Footer';
-
-// const inter = Inter({ subsets: ['latin', 'cyrillic'] });
+import { SubscriptionModalProvider } from '@/components/providers/SubscriptionModalProvider';
 
 export const metadata: Metadata = {
     title: 'Presa – создание презентаций с ИИ',
@@ -46,11 +44,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <NextAuthProvider>
                     <EarlyTestBannerProvider>
                         <Provider>
-                            <BrowserWarning />
-                            <EarlyTestBanner />
-                            {children}
-                            <SideMenuRenderer />
-                            {/* <Footer /> */}
+                            <SubscriptionModalProvider>
+                                <BrowserWarning />
+                                <EarlyTestBanner />
+                                {children}
+                                <SideMenuRenderer />
+                                {/* <Footer /> */}
+                            </SubscriptionModalProvider>
                         </Provider>
                     </EarlyTestBannerProvider>
                     {process.env.NODE_ENV === 'production' && (

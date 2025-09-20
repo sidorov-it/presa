@@ -25,6 +25,18 @@ const TemplateButton: React.FC<TemplateButtonProps> = ({
     // Handle click outside to close popup
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+
+            // Check if click is inside subscription modal (rendered globally)
+            const isInsideSubscriptionModal =
+                target?.closest('[data-subscription-modal]') ||
+                target?.closest('.subscriptionModalOverlay') ||
+                target?.closest('.subscriptionModal');
+
+            if (isInsideSubscriptionModal) {
+                return; // Don't close popup if clicking inside subscription modal
+            }
+
             if (
                 popupRef.current &&
                 buttonRef.current &&
