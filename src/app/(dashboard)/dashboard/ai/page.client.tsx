@@ -290,12 +290,16 @@ const AiPresentationPage = () => {
             return;
         }
 
-        if (file.size > 10 * 1024 * 1024) {
-            // 10MB limit
-            toast.error('Размер файла не должен превышать 10 МБ');
+        const maxSize = hasActiveSubscription ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+            // 5MB limit
+            setError(`Размер файла превышает разрешенный лимит в ${maxSize / 1024 / 1024} МБ`);
+            setUploadedFile(file); // Устанавливаем файл, но показываем ошибку
             return;
         }
 
+        setError(''); // Очищаем ошибку если файл подходящего размера
         setUploadedFile(file);
     };
 
@@ -321,6 +325,11 @@ const AiPresentationPage = () => {
             return;
         }
 
+        if (uploadedFile.size > 5 * 1024 * 1024) {
+            setError('Размер файла превышает разрешенный лимит в 5 МБ');
+            return;
+        }
+
         setError('');
         setIsLoading(true);
 
@@ -333,7 +342,14 @@ const AiPresentationPage = () => {
                 body: formData,
             });
 
-            if (!res.ok) throw new Error('Ошибка загрузки документа');
+            if (!res.ok) {
+                if (res.status === 403) {
+                    const data = await res.json();
+                    setError(`Максимальный размер файла: ${data.maxSizeAllowed} МБ`);
+                    return;
+                }
+                throw new Error('Ошибка загрузки документа');
+            }
 
             const data = await res.json();
 
@@ -799,7 +815,14 @@ const AiPresentationPage = () => {
                                     <Text fontSize="sm" color="gray.600">
                                         {(uploadedFile.size / 1024 / 1024).toFixed(2)} МБ
                                     </Text>
-                                    <Button variant="outline" onClick={() => setUploadedFile(null)} size="sm">
+                                    <Button 
+                                        variant="outline" 
+                                        onClick={() => {
+                                            setUploadedFile(null);
+                                            setError('');
+                                        }} 
+                                        size="sm"
+                                    >
                                         Удалить файл
                                     </Button>
                                 </Stack>
@@ -810,7 +833,7 @@ const AiPresentationPage = () => {
                                         Перетащите файл сюда или выберите
                                     </Text>
                                     <Text fontSize="sm" color="gray.600">
-                                        Поддерживаются PDF, DOCX, PPTX, TXT (до 10 МБ)
+                                        Поддерживаются PDF, DOCX, PPTX, TXT (до {hasActiveSubscription ? '10' : '5'} МБ)
                                     </Text>
                                     <Box as="label" cursor="pointer">
                                         <Button as="span" colorScheme="blue">
@@ -837,7 +860,7 @@ const AiPresentationPage = () => {
                         <Button
                             onClick={handleDocumentUpload}
                             colorScheme="blue"
-                            disabled={isLoading || !uploadedFile}
+                            disabled={isLoading || !uploadedFile || !!error}
                             marginTop="24px"
                             width="100%"
                             size="lg"

@@ -17,7 +17,7 @@ export async function up(db: Db) {
             features: {
                 maxSlides: 20,
                 hideBranding: true,
-                maxDocumentSize: 50, // 50MB
+                maxDocumentSize: 10,
                 priority: true,
                 customExport: true,
             },
@@ -35,7 +35,7 @@ export async function up(db: Db) {
             features: {
                 maxSlides: 20,
                 hideBranding: true,
-                maxDocumentSize: 50, // 50MB
+                maxDocumentSize: 10,
                 priority: true,
                 customExport: true,
             },
@@ -53,7 +53,7 @@ export async function up(db: Db) {
             features: {
                 maxSlides: 20,
                 hideBranding: true,
-                maxDocumentSize: 50, // 50MB
+                maxDocumentSize: 10,
                 priority: true,
                 customExport: true,
             },

@@ -10,7 +10,6 @@ import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
 import getContrastTextColor from '@/utils/getContrastTextColor';
 import { ElementType } from '@/types/elements';
-import { HeaderFooterIcon } from '@/components/icons';
 import { useUIStateStore } from '@/store/uiStateStore';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
@@ -51,7 +50,6 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
 
     const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
@@ -431,7 +429,6 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         className={styles.headerFooterButton}
                         aria-label="Настроить колонтитулы"
                     >
-                        <HeaderFooterIcon />
                         <span>Настроить</span>
                     </button>
                 </div>

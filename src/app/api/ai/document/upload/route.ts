@@ -53,8 +53,9 @@ async function POSTHandler(request: NextRequest) {
                 {
                     error: `File size exceeds ${maxFileSizeInMB}MB limit for your subscription plan`,
                     maxSizeAllowed: maxFileSizeInMB,
+                    maxSizeError: true,
                 },
-                { status: 400 }
+                { status: 403 }
             );
         }
 

@@ -95,7 +95,7 @@ export function getDefaultFeatures(): SubscriptionFeatures {
     return {
         maxSlides: 10,
         hideBranding: false,
-        maxDocumentSize: 10, // 10MB
+        maxDocumentSize: 5,
         priority: false,
         customExport: false,
     };
