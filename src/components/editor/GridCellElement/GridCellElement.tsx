@@ -382,7 +382,9 @@ const GridCellElement: React.FC<GridCellElementProps> = ({
         alignmentClassName = styles.bottom;
     }
 
-    const className = `${styles.gridCellElement} ${hasMultipleCells ? styles.multiCell : ''}  ${isTable ? styles.tableCell : ''}`;
+    const className = `${styles.gridCellElement} ${
+        hasMultipleCells && !isTable ? styles.multiCell : ''
+    }  ${isTable ? styles.tableCell : ''}`;
 
     const handleClickCellDragHandle = useCallback(() => {
         useUIStateStore.getState().openContextMenu({

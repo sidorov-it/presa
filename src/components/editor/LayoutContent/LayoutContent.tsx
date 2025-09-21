@@ -419,7 +419,9 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                             key={row.id}
                             // data-layout-id={layout.id}
                             data-row-id={row.id}
-                            className={`${styles.layoutContent} ${layout.isTable ? styles.tableLayoutContent : ''} ${hasMultipleCellsInRow ? styles.multiCellLayout : ''} ${className}`}
+                            className={`${styles.layoutContent} ${layout.isTable ? styles.tableLayoutContent : ''} ${
+                                hasMultipleCellsInRow && !layout.isTable ? styles.multiCellLayout : ''
+                            } ${className}`}
                             style={{
                                 gridTemplateAreas,
                                 gridTemplateColumns,
@@ -486,10 +488,16 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                                 // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                                 <div
                                     key={index}
-                                    className={`${styles.tableColumnResizeBorder} ${isResizingColumn && resizeColumnIndexRef.current === index ? styles.tableColumnResizeBorderActive : ''}`}
+                                    className={`${styles.tableColumnResizeBorder} ${
+                                        isResizingColumn && resizeColumnIndexRef.current === index
+                                            ? styles.tableColumnResizeBorderActive
+                                            : ''
+                                    }`}
                                     onMouseDown={e => handleResizeStartTableColumn(e, index)}
                                     style={{
-                                        left: `calc((100% - var(--grid-padding)) / 100 * ${left})`,
+                                        left: `calc((100% - 25px) / 100 * ${left} + 25px)`,
+
+                                        // marginLeft: '25px',
                                     }}
                                 />
                             );

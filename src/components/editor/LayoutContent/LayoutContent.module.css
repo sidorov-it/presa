@@ -112,7 +112,7 @@
 
 .addRowButton {
     bottom: -4px;
-    left: 25px;
+    left: 48px;
     height: 24px;
     width: 100%;
     transform: translate(0, 100%);
@@ -124,7 +124,7 @@
 
 .addColumnButton {
     top: 0;
-    right: -6px;
+    right: -27px;
     height: 100%;
     width: 24px;
 }
@@ -132,12 +132,12 @@
 .tableColumnResizeBorder {
     position: absolute;
     top: 0;
-    right: -3px;
     width: 4px;
     height: 100%;
     cursor: col-resize;
     z-index: 30;
     background-color: transparent;
+    transform: translateX(-50%);
 }
 
 .tableColumnResizeBorderActive, .tableColumnResizeBorder:hover {
