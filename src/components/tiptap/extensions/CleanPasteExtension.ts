@@ -1,5 +1,6 @@
 import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
+import { DOMParser as ProseMirrorDOMParser } from 'prosemirror-model';
 
 const ALLOWED_TAGS = ['b', 'strong', 'i', 'em', 'u', 'strike', 's', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'];
 const ALLOWED_STYLES = ['color'];
@@ -84,54 +85,61 @@ function sanitizeNode(node: HTMLElement) {
     });
 }
 
+function sanitizeHtml(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    doc.body.querySelectorAll('[data-pm-slice]').forEach(wrapperNode => {
+        if (!wrapperNode.parentNode) return;
+        const parent = wrapperNode.parentNode as HTMLElement;
+        while (wrapperNode.firstChild) {
+            parent.insertBefore(wrapperNode.firstChild, wrapperNode);
+        }
+        parent.removeChild(wrapperNode);
+    });
+
+    sanitizeNode(doc.body);
+
+    return doc.body.innerHTML;
+}
+
 export const CleanPasteExtension = Extension.create<{
     editor?: any;
 }>({
     name: 'cleanPaste',
     addProseMirrorPlugins() {
-        const editor = this.editor;
         return [
             new Plugin({
                 props: {
-                    handlePaste(view, event, _slice) {
+                    handlePaste(view, event) {
                         const html = event.clipboardData?.getData('text/html');
-                        if (html) {
-                            console.log('Original HTML:', html);
-                            const doc = new DOMParser().parseFromString(html, 'text/html');
-
-                            const wrapper = doc.body.querySelector('[data-pm-slice]');
-
-                            if (wrapper) {
-                                const parent = wrapper.parentNode as HTMLElement;
-
-                                // Переносим всех детей элемента к родителю, перед самим элементом
-                                while (wrapper.firstChild) {
-                                    parent.insertBefore(wrapper.firstChild, wrapper);
-                                }
-
-                                // Удаляем сам элемент
-                                parent.removeChild(wrapper);
-                            }
-
-                            sanitizeNode(doc.body);
-
-                            const cleanHtml = doc.body.innerHTML;
-                            console.log('Sanitized HTML:', cleanHtml);
-                            if (editor && typeof editor.commands?.insertContent === 'function') {
-                                console.log('Using editor.commands.insertContent');
-                                if (editor.isEmpty) {
-                                    editor.commands.setContent(cleanHtml);
-                                } else {
-                                    editor.commands.insertContent(cleanHtml);
-                                }
-                            } else {
-                                console.log('Fallback to document.execCommand');
-                                // fallback: insert as plain text
-                                document.execCommand('insertHTML', false, cleanHtml);
-                            }
-                            return true;
+                        if (!html) {
+                            return false;
                         }
-                        return false;
+
+                        const cleanHtml = sanitizeHtml(html);
+                        if (!cleanHtml) {
+                            return false;
+                        }
+
+                        event.preventDefault();
+
+                        const parser =
+                            (view.someProp('clipboardParser') as ProseMirrorDOMParser | null) ??
+                            (view.someProp('domParser') as ProseMirrorDOMParser | null);
+
+                        if (!parser) {
+                            return false;
+                        }
+
+                        const container = document.createElement('div');
+                        container.innerHTML = cleanHtml;
+
+                        const slice = parser.parseSlice(container, { preserveWhitespace: 'full' });
+                        const transaction = view.state.tr.replaceSelection(slice).setMeta('transaction', true);
+                        view.dispatch(transaction.scrollIntoView());
+
+                        return true;
                     },
                 },
             }),

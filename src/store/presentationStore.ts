@@ -27,6 +27,7 @@ import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures
 import { fillSlots } from '@/elements/commonRegisrty';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { ElementType } from '@/types/elements';
+import logger from './loggerMiddleware';
 
 export interface PresentationMeta {
     id: string;
@@ -361,7 +362,7 @@ const getTiptapRefsIds = (elements: BaseElement[]) => {
 // Create the store with properly configured middleware
 export const usePresentationStore = create<PresentationState>()(
     devtools(
-        (set, get) => ({
+        logger((set, get) => ({
             presentations: [],
             currentPresentationMeta: null,
             currentPresentationTitle: 'Новая презентация',
@@ -3858,7 +3859,7 @@ export const usePresentationStore = create<PresentationState>()(
             clearCurrentPresentationMeta: () => {
                 set({ currentPresentationMeta: null, currentPresentationTitle: 'Новая презентация' });
             },
-        }),
+        })),
         {
             name: 'presentation-store',
             enabled: true,

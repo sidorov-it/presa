@@ -133,7 +133,6 @@ const logger = (config: any) => (set: any, get: any, api: any) => {
                         if (key === 'checkSlideContextMenuIsOpen') {
                             return value(...args);
                         }
-                        console.log(`[Zustand] Calling action: ${key} with args:`, args);
                         return value(...args);
                     },
                 ];
