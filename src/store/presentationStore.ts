@@ -362,7 +362,7 @@ const getTiptapRefsIds = (elements: BaseElement[]) => {
 // Create the store with properly configured middleware
 export const usePresentationStore = create<PresentationState>()(
     devtools(
-        logger((set, get) => ({
+        (set, get) => ({
             presentations: [],
             currentPresentationMeta: null,
             currentPresentationTitle: 'Новая презентация',
@@ -3316,7 +3316,7 @@ export const usePresentationStore = create<PresentationState>()(
 
             getBackgroundSettings: (presentationId: string) => {
                 const presentation = get().getPresentation(presentationId);
-                return presentation?.backgroundSettings || {};
+                return presentation?.backgroundSettings;
             },
             setBackgroundSettings: (
                 presentationId: string,
@@ -3859,7 +3859,7 @@ export const usePresentationStore = create<PresentationState>()(
             clearCurrentPresentationMeta: () => {
                 set({ currentPresentationMeta: null, currentPresentationTitle: 'Новая презентация' });
             },
-        })),
+        }),
         {
             name: 'presentation-store',
             enabled: true,

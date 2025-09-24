@@ -3,11 +3,29 @@
 // eslint-disable-next-line no-undef
 const isProd = process.env.NODE_ENV === 'production';
 
+const baseCsp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mc.yandex.ru https://mc.yandex.com https://widget.cloudpayments.ru",
+    "connect-src 'self' https://mc.yandex.ru https://mc.yandex.com",
+    "img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com",
+    'frame-src https://mc.yandex.ru https://mc.yandex.com',
+    'worker-src blob:',
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+].join('; ');
+
+const devExtras = [
+    'connect-src http://localhost:3000 ws://localhost:3000', // HMR/DevTools
+];
+
+const csp = [...baseCsp, ...(isProd ? [] : devExtras)].join('; ');
+
 const securityHeaders = [
     {
         key: 'Content-Security-Policy',
-        value: "script-src 'self' https://widget.cloudpayments.ru https://app.slydle.ru 'unsafe-inline' 'unsafe-eval';",
+        value: csp,
     },
+    { key: 'X-Content-Type-Options', value: 'nosniff' },
 ];
 
 /** @type {import('next').NextConfig} */
@@ -36,7 +54,7 @@ const nextConfig = {
                 headers: [
                     {
                         key: 'Content-Security-Policy',
-                        value: "script-src 'self' https://app.slydle.ru https://widget.cloudpayments.ru 'unsafe-inline' 'unsafe-eval'",
+                        value: csp,
                     },
                     {
                         key: 'X-Content-Type-Options',

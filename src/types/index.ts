@@ -287,8 +287,8 @@ export interface Slide {
 }
 
 export interface BackgroundSettings {
-    backgroundColor?: string;
-    backgroundImage?: string;
+    backgroundColor?: string | null;
+    backgroundImage?: string | null;
 }
 
 // Интерфейс презентации

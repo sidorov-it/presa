@@ -2,26 +2,23 @@
 
 import React from 'react';
 import { ColorMode, useColorMode } from '@/components/ui/color-mode';
-import { BackgroundSettings } from '@/types';
 import { Theme } from '@/types/theme';
 import { useThemeApplication } from '@/hooks/useThemeApplication';
 import FontLoader from '@/components/theme/components/Fonts/FontLoader';
+import { usePresentationStore } from '@/store/presentationStore';
 
 interface ThemeStylesApplierProps {
     theme: Theme | null;
-    backgroundSettings?: BackgroundSettings;
+    presentationId?: string;
     children: React.ReactNode;
     className?: string;
     colorMode?: ColorMode;
 }
 
-const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({
-    theme,
-    backgroundSettings,
-    children,
-    className = '',
-}) => {
+const ThemeStylesApplier: React.FC<ThemeStylesApplierProps> = ({ theme, children, className = '', presentationId }) => {
     const { colorMode, setColorMode } = useColorMode();
+
+    const backgroundSettings = usePresentationStore(store => store.getBackgroundSettings(presentationId!));
 
     const { containerRef } = useThemeApplication({
         theme,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
 import { usePresentationStore } from '@/store/presentationStore';
@@ -14,15 +14,18 @@ interface ThemeSelectPanelProps {
     presentationId?: string;
 }
 
-const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presentationId }) => {
-    const { themes, defaultThemes, allThemes, currentTheme, loadThemes, setCurrentTheme } = useThemeStore();
+const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = memo(({ onCloseMenu, presentationId }) => {
+    const { themes, defaultThemes, allThemes, currentTheme, loadThemes, setCurrentTheme, themesLoaded } = useThemeStore();
     const setTheme = usePresentationStore(state => state.setTheme);
 
     const [tabIndex, setTabIndex] = useState(2);
 
     useEffect(() => {
-        loadThemes().catch(err => console.error('Failed to load themes:', err));
-    }, [loadThemes]);
+        // Only load themes if they haven't been loaded yet
+        if (!themesLoaded) {
+            loadThemes().catch(err => console.error('Failed to load themes:', err));
+        }
+    }, [loadThemes, themesLoaded]);
 
     useEffect(() => {
         if (currentTheme?.id) {
@@ -129,6 +132,8 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = ({ onCloseMenu, presen
             </ChakraTabs.Root>
         </div>
     );
-};
+});
+
+ThemeSelectPanel.displayName = 'ThemeSelectPanel';
 
 export default ThemeSelectPanel;
