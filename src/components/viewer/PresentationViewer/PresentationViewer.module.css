@@ -72,8 +72,3 @@
   page-break-after: avoid;
   break-after: avoid;
 }
-
-:global(@page) {
-  size: 1034px 582px;
-  margin: 0;
-}

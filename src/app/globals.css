@@ -1288,3 +1288,10 @@ button {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+/* PDF Export Page Settings */
+@page {
+    size: 1034px 582px;
+    margin: 0;
+  }
+  

@@ -24,8 +24,10 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         const slideIndexParam = searchParams.get('slideIndex');
         const slideIndex = slideIndexParam ? parseInt(slideIndexParam, 10) : null;
         const strategyParam = searchParams.get('strategy');
-        const requestedStrategy: PdfExportStrategy =
-            strategyParam === SINGLE_PAGE_TEST_STRATEGY ? SINGLE_PAGE_TEST_STRATEGY : DEFAULT_PDF_EXPORT_STRATEGY;
+        // const requestedStrategy: PdfExportStrategy =
+        //     strategyParam === SINGLE_PAGE_TEST_STRATEGY ? SINGLE_PAGE_TEST_STRATEGY : DEFAULT_PDF_EXPORT_STRATEGY;
+        const requestedStrategy: PdfExportStrategy = SINGLE_PAGE_TEST_STRATEGY;
+
         const exportStrategy = slideIndex !== null ? DEFAULT_PDF_EXPORT_STRATEGY : requestedStrategy;
 
         // Fetch presentation from database
