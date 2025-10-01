@@ -1,3 +1,5 @@
+import { DEFAULT_PDF_EXPORT_STRATEGY, PdfExportStrategy } from '@/types/pdfExport';
+
 export interface PdfExportProgress {
     status: 'pending' | 'in_progress' | 'completed' | 'failed';
     progress: number;
@@ -16,8 +18,39 @@ export interface PdfExportResult {
     error?: string;
 }
 
-export const startPdfExport = async (presentationId: string, slideIndex?: number): Promise<string> => {
-    const url = `/api/presentations/${presentationId}/export/pdf${slideIndex !== undefined ? `?slideIndex=${slideIndex}` : ''}`;
+export interface StartPdfExportOptions {
+    slideIndex?: number;
+    strategy?: PdfExportStrategy;
+}
+
+const buildStartPdfExportUrl = (presentationId: string, options?: StartPdfExportOptions): string => {
+    const searchParams = new URLSearchParams();
+
+    if (options?.slideIndex !== undefined) {
+        searchParams.set('slideIndex', String(options.slideIndex));
+    }
+
+    if (options?.strategy && options.strategy !== DEFAULT_PDF_EXPORT_STRATEGY) {
+        searchParams.set('strategy', options.strategy);
+    }
+
+    const query = searchParams.toString();
+    return `/api/presentations/${presentationId}/export/pdf${query ? `?${query}` : ''}`;
+};
+
+export const startPdfExport = async (
+    presentationId: string,
+    optionsOrSlideIndex?: number | StartPdfExportOptions
+): Promise<string> => {
+    let options: StartPdfExportOptions | undefined;
+
+    if (typeof optionsOrSlideIndex === 'number') {
+        options = { slideIndex: optionsOrSlideIndex };
+    } else {
+        options = optionsOrSlideIndex;
+    }
+
+    const url = buildStartPdfExportUrl(presentationId, options);
 
     const response = await fetch(url, {
         method: 'POST',
@@ -46,14 +79,31 @@ export const checkPdfExportStatus = async (presentationId: string, taskId: strin
     return await response.json();
 };
 
+export type ExportPresentationToPdfOptions = StartPdfExportOptions;
+
 export const exportPresentationToPdfAsync = async (
     presentationId: string,
-    slideIndex?: number,
+    optionsOrSlideIndex?: number | ExportPresentationToPdfOptions | ((progress: PdfExportProgress) => void),
     onProgress?: (progress: PdfExportProgress) => void
 ): Promise<PdfExportResult> => {
     try {
+        let startOptions: StartPdfExportOptions | undefined;
+        let progressCallback: ((progress: PdfExportProgress) => void) | undefined = onProgress;
+
+        if (typeof optionsOrSlideIndex === 'number') {
+            startOptions = { slideIndex: optionsOrSlideIndex };
+        } else if (typeof optionsOrSlideIndex === 'function') {
+            progressCallback = optionsOrSlideIndex;
+        } else if (optionsOrSlideIndex) {
+            startOptions = optionsOrSlideIndex;
+        }
+
+        if (typeof onProgress === 'function') {
+            progressCallback = onProgress;
+        }
+
         // Start export
-        const taskId = await startPdfExport(presentationId, slideIndex);
+        const taskId = await startPdfExport(presentationId, startOptions);
 
         // Poll for status
         return new Promise((resolve, reject) => {
@@ -62,8 +112,8 @@ export const exportPresentationToPdfAsync = async (
                     const status = await checkPdfExportStatus(presentationId, taskId);
 
                     // Call progress callback if provided
-                    if (onProgress) {
-                        onProgress(status);
+                    if (progressCallback) {
+                        progressCallback(status);
                     }
 
                     if (status.status === 'completed') {

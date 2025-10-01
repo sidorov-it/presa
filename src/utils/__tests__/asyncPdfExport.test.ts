@@ -1,4 +1,5 @@
-import { startPdfExport, checkPdfExportStatus } from './asyncPdfExport';
+import { startPdfExport, checkPdfExportStatus } from '../asyncPdfExport';
+import { SINGLE_PAGE_TEST_STRATEGY } from '@/types/pdfExport';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -45,6 +46,29 @@ describe('asyncPdfExport', () => {
                     'Content-Type': 'application/json',
                 },
             });
+
+            expect(taskId).toBe('test-task-id');
+        });
+
+        it('should start PDF export with experimental strategy', async () => {
+            const mockResponse = {
+                ok: true,
+                json: async () => ({ taskId: 'test-task-id', message: 'PDF generation started' }),
+            };
+
+            (fetch as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+            const taskId = await startPdfExport('test-presentation-id', { strategy: SINGLE_PAGE_TEST_STRATEGY });
+
+            expect(fetch).toHaveBeenCalledWith(
+                '/api/presentations/test-presentation-id/export/pdf?strategy=single-page-test',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             expect(taskId).toBe('test-task-id');
         });

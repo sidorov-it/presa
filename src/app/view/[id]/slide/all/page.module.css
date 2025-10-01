@@ -1,0 +1,21 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  background-color: #f8f9fa;
+}
+
+.pdfMode {
+  background-color: #ffffff;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+}
+
+.pdfMode :global(body),
+.pdfMode :global(html) {
+  background-color: #ffffff;
+}

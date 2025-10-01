@@ -6,6 +6,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { generatePdfAsync } from '@/utils/pdfGeneration';
 import { shouldHideBranding } from '@/utils/subscriptions';
+import { DEFAULT_PDF_EXPORT_STRATEGY, PdfExportStrategy, SINGLE_PAGE_TEST_STRATEGY } from '@/types/pdfExport';
 
 const handleRequest = async (request: NextRequest, props: { params: { id: string } }) => {
     try {
@@ -22,6 +23,10 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         const { searchParams } = new URL(request.url);
         const slideIndexParam = searchParams.get('slideIndex');
         const slideIndex = slideIndexParam ? parseInt(slideIndexParam, 10) : null;
+        const strategyParam = searchParams.get('strategy');
+        const requestedStrategy: PdfExportStrategy =
+            strategyParam === SINGLE_PAGE_TEST_STRATEGY ? SINGLE_PAGE_TEST_STRATEGY : DEFAULT_PDF_EXPORT_STRATEGY;
+        const exportStrategy = slideIndex !== null ? DEFAULT_PDF_EXPORT_STRATEGY : requestedStrategy;
 
         // Fetch presentation from database
         const presentation = await prisma.presentation.findUnique({
@@ -63,6 +68,9 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
                 presentationId: presentationId,
                 slideIndex: slideIndex,
                 totalSlides: slideIndex !== null ? 1 : visibleSlides.length,
+                metadata: {
+                    strategy: exportStrategy,
+                },
             },
         });
 
@@ -74,7 +82,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://app.slydle.ru';
 
         // Start async PDF generation (don't await)
-        generatePdfAsync(task.id, presentationId, slideIndex, baseUrl, hideBranding).catch(error => {
+        generatePdfAsync(task.id, presentationId, slideIndex, baseUrl, hideBranding, exportStrategy).catch(error => {
             logger.error('Async PDF generation failed:', error);
         });
 
