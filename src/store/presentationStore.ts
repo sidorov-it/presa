@@ -16,10 +16,12 @@ import {
     SmartLayoutType,
     SmartLayoutElement,
     GeneratedContent,
+    PresentationUpdateDiffRequest,
 } from '@/types';
 import getColumnWidths from '@/utils/getColumnWidths';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import debounce from 'lodash/debounce';
+import cloneDeep from 'lodash/cloneDeep';
 import { generateId } from '@/utils/id';
 import { MutableRefObject } from 'react';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
@@ -27,7 +29,7 @@ import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures
 import { fillSlots } from '@/elements/commonRegisrty';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { ElementType } from '@/types/elements';
-import logger from './loggerMiddleware';
+import { diff, type Diff } from 'deep-diff';
 
 export interface PresentationMeta {
     id: string;
@@ -37,6 +39,7 @@ export interface PresentationMeta {
 
 export interface PresentationState {
     presentations: IPresentation[];
+    lastSavedSnapshots: Record<string, IPresentation>;
     currentPresentationMeta: PresentationMeta | null;
     currentPresentationTitle: string;
     isLoading: boolean;
@@ -364,6 +367,7 @@ export const usePresentationStore = create<PresentationState>()(
     devtools(
         (set, get) => ({
             presentations: [],
+            lastSavedSnapshots: {},
             currentPresentationMeta: null,
             currentPresentationTitle: 'Новая презентация',
             isLoading: false,
@@ -381,22 +385,70 @@ export const usePresentationStore = create<PresentationState>()(
                 const presentation = get().getPresentation(id);
                 if (!presentation) return;
 
+                const snapshot = get().lastSavedSnapshots[id];
+
+                if (!snapshot) {
+                    console.warn('No snapshot found for presentation save operation', id);
+                    return;
+                }
+
+                const changes = (diff(snapshot, presentation) ?? []) as Diff<IPresentation>[];
+
+                if (changes.length === 0) {
+                    return;
+                }
+
                 try {
                     set({ savingStatus: 'saving' });
+
+                    const payload: PresentationUpdateDiffRequest = { diff: changes };
 
                     const response = await fetch(`/api/presentations/${id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(presentation),
+                        body: JSON.stringify(payload),
                     });
 
                     if (!response.ok) {
                         throw new Error('Failed to save presentation');
                     }
 
-                    set({ savingStatus: 'saved', unsavedChanges: false });
+                    const updatedPresentation: IPresentation = await response.json();
+
+                    set(state => {
+                        const updatedPresentations = state.presentations.map(item =>
+                            item.id === id ? updatedPresentation : item
+                        );
+
+                        const isCurrentPresentation = state.currentPresentationMeta?.id === id;
+
+                        let currentPresentationMeta = state.currentPresentationMeta;
+                        let currentPresentationTitle = state.currentPresentationTitle;
+
+                        if (isCurrentPresentation && state.currentPresentationMeta) {
+                            currentPresentationMeta = {
+                                ...state.currentPresentationMeta,
+                                themeId: updatedPresentation.themeId ?? null,
+                                backgroundSettings: updatedPresentation.backgroundSettings,
+                            };
+                            currentPresentationTitle = updatedPresentation.title;
+                        }
+
+                        return {
+                            presentations: updatedPresentations,
+                            currentPresentationMeta,
+                            currentPresentationTitle,
+                            lastSavedSnapshots: {
+                                ...state.lastSavedSnapshots,
+                                [id]: cloneDeep(updatedPresentation),
+                            },
+                            savingStatus: 'saved',
+                            unsavedChanges: false,
+                        };
+                    });
+
                     setTimeout(() => {
                         set({ savingStatus: 'idle' });
                     }, 2000);
@@ -441,6 +493,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                     set(state => ({
                         presentations: [...state.presentations, presentation],
+                        lastSavedSnapshots: {
+                            ...state.lastSavedSnapshots,
+                            [presentation.id]: cloneDeep(presentation),
+                        },
                     }));
 
                     // Инициализируем историю для новой презентации
@@ -465,11 +521,20 @@ export const usePresentationStore = create<PresentationState>()(
                         throw new Error('Failed to load presentations');
                     }
 
-                    const presentations = await response.json();
+                    const presentations = (await response.json()) as IPresentation[];
 
-                    set({
-                        presentations,
-                        isLoading: false,
+                    set(state => {
+                        const updatedSnapshots = { ...state.lastSavedSnapshots };
+
+                        presentations.forEach(presentation => {
+                            updatedSnapshots[presentation.id] = cloneDeep(presentation);
+                        });
+
+                        return {
+                            presentations,
+                            isLoading: false,
+                            lastSavedSnapshots: updatedSnapshots,
+                        };
                     });
                 } catch (error) {
                     console.error('Error loading presentations:', error);
@@ -507,6 +572,10 @@ export const usePresentationStore = create<PresentationState>()(
                             backgroundSettings: presentation.backgroundSettings,
                         },
                         currentPresentationTitle: presentation.title,
+                        lastSavedSnapshots: {
+                            ...state.lastSavedSnapshots,
+                            [presentation.id]: cloneDeep(presentation),
+                        },
                     }));
 
                     // Инициализируем историю для загруженной презентации
@@ -573,9 +642,14 @@ export const usePresentationStore = create<PresentationState>()(
                 // Clear history for the presentation being deleted
                 useHistoryStore.getState().clearHistory(id);
 
-                set(state => ({
-                    presentations: state.presentations.filter(presentation => presentation.id !== id),
-                }));
+                set(state => {
+                    const { [id]: _removedSnapshot, ...restSnapshots } = state.lastSavedSnapshots;
+
+                    return {
+                        presentations: state.presentations.filter(presentation => presentation.id !== id),
+                        lastSavedSnapshots: restSnapshots,
+                    };
+                });
             },
 
             getPresentation: id => {
@@ -3501,7 +3575,19 @@ export const usePresentationStore = create<PresentationState>()(
             },
             setFullState: (state: { presentations: IPresentation[] }) => {
                 if (state && Array.isArray(state.presentations)) {
-                    set({ presentations: JSON.parse(JSON.stringify(state.presentations)) });
+                    const presentationsClone = cloneDeep(state.presentations);
+                    const snapshots = { ...get().lastSavedSnapshots };
+
+                    presentationsClone.forEach(presentation => {
+                        if (!snapshots[presentation.id]) {
+                            snapshots[presentation.id] = cloneDeep(presentation);
+                        }
+                    });
+
+                    set({
+                        presentations: presentationsClone,
+                        lastSavedSnapshots: snapshots,
+                    });
                 }
             },
 
