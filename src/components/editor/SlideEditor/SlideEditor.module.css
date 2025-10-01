@@ -162,6 +162,8 @@
 
 /* PDF Export Styles */
 .pdfExport {
+    --pdf-slide-width: 1034px;
+    --pdf-slide-height: calc(var(--pdf-slide-width) / 1.7777777777777777);
     min-height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777);
     /* height: calc(min(calc(64.5em / 1), 100vw) / 1.7777777777777777) !important; */
     width: 100% !important;
@@ -171,7 +173,8 @@
 }
 
 .pdfExport .slideWrapper {
-    width: 1034px;
+    width: var(--pdf-slide-width);
+    min-height: var(--pdf-slide-height);
     /* min-height: auto !important;
     height: auto !important;
     overflow: visible !important;
@@ -186,7 +189,7 @@
 }
 
 .pdfExport .slideContent {
-    min-height: auto !important;
+    min-height: var(--pdf-slide-height) !important;
     height: auto !important;
     /* overflow: visible !important; */
     /* border: none !important;
@@ -198,7 +201,7 @@
     box-shadow: var(--presentation-slide-shadow);
 
     position: static;
-    width: 1034px;
+    width: var(--pdf-slide-width);
     box-sizing: content-box;
 }
 
@@ -212,6 +215,7 @@
     /* display: block !important; */
     /* width: 100% !important; */
     box-sizing: border-box !important;
+    min-height: var(--pdf-slide-height);
 }
 
 /* Ensure text elements expand properly in PDF */
