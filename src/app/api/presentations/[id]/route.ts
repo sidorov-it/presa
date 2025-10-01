@@ -7,6 +7,10 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { parsePresentation } from '@/utils/json';
+import cloneDeep from 'lodash/cloneDeep';
+import { applyChange, type Diff } from 'deep-diff';
+import type { Prisma } from '@prisma/client';
+import type { IPresentation, PresentationUpdateDiffRequest } from '@/types';
 
 // Get a specific presentation
 async function GETHandler(request: Request, props: { params: Promise<{ id: string }> }) {
@@ -40,18 +44,61 @@ async function GETHandler(request: Request, props: { params: Promise<{ id: strin
 async function PUTHandler(request: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
-        const id = params.id;
-        const data = await request.json();
+        const session = await getServerSession(authOptions);
 
-        // Try to update using the helper function that avoids transactions
-        const {
-            id: _id,
-            userId: _userId,
-            ...updateData
-        } = {
-            ...data,
+        if (!session?.user) {
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
+
+        const id = params.id;
+        const body = (await request.json()) as PresentationUpdateDiffRequest;
+
+        if (!Array.isArray(body?.diff)) {
+            return NextResponse.json({ error: 'Invalid diff payload' }, { status: 400 });
+        }
+
+        const presentationRecord = await prisma.presentation.findFirst({
+            where: { id, userId: session.user.id, isDeleted: false },
+        });
+
+        if (!presentationRecord) {
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
+        }
+
+        if (body.diff.length === 0) {
+            return NextResponse.json(parsePresentation(presentationRecord));
+        }
+
+        const currentPresentation = parsePresentation(presentationRecord) as unknown as IPresentation;
+        const sourcePresentation = cloneDeep(currentPresentation);
+        const updatedPresentation = cloneDeep(currentPresentation);
+
+        body.diff.forEach(change => {
+            applyChange(updatedPresentation, sourcePresentation, change as Diff<IPresentation>);
+        });
+
+        const backgroundSettingsUpdate =
+            updatedPresentation.backgroundSettings === undefined
+                ? undefined
+                : { set: updatedPresentation.backgroundSettings ?? null };
+
+        const headerFooterConfigUpdate =
+            updatedPresentation.headerFooterConfig === undefined
+                ? undefined
+                : { set: updatedPresentation.headerFooterConfig ?? null };
+
+        const updateData: Prisma.PresentationUpdateInput = {
+            title: updatedPresentation.title,
+            description: updatedPresentation.description ?? null,
+            durationMinutes: updatedPresentation.durationMinutes ?? null,
+            goal: updatedPresentation.goal ?? null,
+            audience: updatedPresentation.audience ?? null,
+            tone: updatedPresentation.tone ?? null,
+            slides: updatedPresentation.slides as Prisma.InputJsonValue,
+            themeId: updatedPresentation.themeId ?? null,
+            backgroundSettings: backgroundSettingsUpdate,
+            headerFooterConfig: headerFooterConfigUpdate,
             updatedAt: new Date(),
-            slides: data.slides ?? undefined,
         };
 
         const presentation = await prisma.presentation.update({
@@ -59,7 +106,6 @@ async function PUTHandler(request: NextRequest, props: { params: Promise<{ id: s
             data: updateData,
         });
 
-        // Use the utility function to parse the slides JSON in the response
         return NextResponse.json(parsePresentation(presentation));
     } catch (error) {
         logger.error('Error updating presentation:', error);

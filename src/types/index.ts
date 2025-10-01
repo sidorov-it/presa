@@ -1,3 +1,4 @@
+import type { Diff } from 'deep-diff';
 import { EditorWithMethods } from '@/components/tiptap/extensions/ArrowNavigationExtension';
 import { IconType } from 'react-icons/lib';
 import { TemplateElement } from './templates';
@@ -314,6 +315,10 @@ export interface IPresentation {
     goal?: string;
     audience?: string;
     tone?: string;
+}
+
+export interface PresentationUpdateDiffRequest {
+    diff: Diff<IPresentation>[];
 }
 
 // Definition for registry element configuration
