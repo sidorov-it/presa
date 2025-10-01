@@ -4,8 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
-import { generatePdfAsync } from '@/utils/pdfGeneration';
+import { generatePdfAsync, PdfExportStrategy } from '@/utils/pdfGeneration';
 import { shouldHideBranding } from '@/utils/subscriptions';
+import { Prisma } from '@prisma/client';
 
 const handleRequest = async (request: NextRequest, props: { params: { id: string } }) => {
     try {
@@ -22,6 +23,10 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         const { searchParams } = new URL(request.url);
         const slideIndexParam = searchParams.get('slideIndex');
         const slideIndex = slideIndexParam ? parseInt(slideIndexParam, 10) : null;
+        const strategyParam = searchParams.get('strategy');
+        const requestedStrategy: PdfExportStrategy =
+            strategyParam === 'single-page-test' ? 'single-page-test' : 'per-slide';
+        const exportStrategy = slideIndex !== null ? 'per-slide' : requestedStrategy;
 
         // Fetch presentation from database
         const presentation = await prisma.presentation.findUnique({
@@ -57,12 +62,17 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         }
 
         // Create PDF generation task in database
+        const taskMetadata: Prisma.InputJsonValue = {
+            strategy: exportStrategy,
+        };
+
         const task = await prisma.pdfGenerationTask.create({
             data: {
                 userId: session.user.id,
                 presentationId: presentationId,
                 slideIndex: slideIndex,
                 totalSlides: slideIndex !== null ? 1 : visibleSlides.length,
+                metadata: taskMetadata,
             },
         });
 
@@ -74,7 +84,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
         const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://app.slydle.ru';
 
         // Start async PDF generation (don't await)
-        generatePdfAsync(task.id, presentationId, slideIndex, baseUrl, hideBranding).catch(error => {
+        generatePdfAsync(task.id, presentationId, slideIndex, baseUrl, hideBranding, exportStrategy).catch(error => {
             logger.error('Async PDF generation failed:', error);
         });
 

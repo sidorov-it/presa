@@ -1,0 +1,20 @@
+.pageContainer {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.pageContainerPdf {
+  background-color: #ffffff;
+  padding: 1rem 0;
+}
+
+.viewerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

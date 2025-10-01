@@ -16,6 +16,12 @@
   background-attachment: fixed;
 }
 
+.presentationViewerContainerPdf {
+  background-color: #ffffff;
+  overflow: visible;
+  padding: 0;
+}
+
 .presentationViewerAllSlidesContainer {
   display: flex;
   flex-direction: column;
@@ -23,6 +29,11 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.presentationViewerAllSlidesContainerPdf {
+  gap: 0;
+  align-items: center;
 }
 
 .presentationViewerSlideWrapper {
@@ -37,4 +48,27 @@
   /* height: calc(64em / 16 * 9 ); */
   min-height: calc(64em / 16 * 9 );
   font-size: var(--font-size);
+}
+
+.presentationViewerSlideWrapperPdf {
+  width: var(--pdf-slide-width, 1034px);
+  max-width: var(--pdf-slide-width, 1034px);
+  margin: 0 auto;
+  min-height: calc(var(--pdf-slide-width, 1034px) / 1.7777777778);
+  height: calc(var(--pdf-slide-width, 1034px) / 1.7777777778);
+  break-after: page;
+  page-break-after: always;
+  background: transparent;
+  overflow: visible;
+  display: block;
+}
+
+.presentationViewerSlideWrapperPdf:last-child {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+:global(@page) {
+  size: 1034px 582px;
+  margin: 0;
 }
