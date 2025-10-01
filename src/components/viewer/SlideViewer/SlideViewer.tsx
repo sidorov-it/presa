@@ -295,8 +295,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     } else if (isPreview) {
         height = 'auto';
     } else if (fullPage) {
-        // width = 'var(--card-width)';
-        minHeight = 'calc(1034px  / 1.7777)';
+        minHeight = 'var(--card-height)';
         height = 'auto';
     } else if (isPdfExport) {
         height = 'auto';
@@ -350,7 +349,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideClassName = `${styles.slide} ${localStyles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
     // const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
-    console.log('contentStyle', contentStyle);
     return (
         <div className={`${slideClassName} ${isSlidePreview ? localStyles.slidePreview : ''}`}>
             <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>

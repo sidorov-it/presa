@@ -19,13 +19,16 @@
     /* padding: 0 !important; */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    min-height: auto;
+    height: auto;
 }
 
 .slideViewerWrapper {
     width: 100%;
     max-width: 100%;
-    min-height: 100vh;
     position: relative;
+    min-height: var(--card-height);
+    height: auto;
 }
 
 .slideViewerWrapper::before {

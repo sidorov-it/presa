@@ -98,20 +98,22 @@
 
 .slidePage {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    --card-width: min(100vw, calc(100vh* 1.7777777777777777));
-    --card-height: calc(var(--card-width) / 1.7777777777777777);
+    --viewer-vertical-gap: clamp(24px, 6vh, 64px);
+    --viewer-viewport-height: calc(100vh - 2 * var(--viewer-vertical-gap));
+    --editor-width: 1032px; /* Standard editor width */
+    --card-width: min(100vw, calc(var(--viewer-viewport-height) * 1.7777777778));
+    --card-height: min(var(--viewer-viewport-height), calc(var(--card-width) / 1.7777777778));
     /* --card-font-scale: calc(var(--card-width) / 1032); Scale fonts based on slide width */
     --card-font-scale: 1; /* Scale fonts based on slide width */
-    --editor-width: 1032px; /* Standard editor width */
-    --card-min-height: calc(min(var(--card-width), var(--editor-width)) / 1.7777777777777777);
-    --card-max-width: var(--editor-width);
+    --card-min-height: calc(min(var(--card-width), var(--editor-width)) / 1.7777777778);
+    --card-max-width: min(var(--editor-width), var(--card-width));
     --media-scale: min(1, var(--card-font-scale, 1));
     box-sizing: border-box;
-    margin: 64px 0;
+    padding-block: var(--viewer-vertical-gap);
 }
 
 .navControls {
