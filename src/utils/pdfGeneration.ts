@@ -207,6 +207,15 @@ export const generatePdfAsync = async (
         let finalPdfBuffer: Buffer | null = null;
 
         if (shouldUseSinglePageStrategy) {
+            const singlePageMargins = {
+                horizontal: 32,
+                vertical: 32,
+            };
+            let perSlideContentHeights: number[] = [];
+            let pdfPaperWidth = PDF_PAGE_WIDTH_PX + singlePageMargins.horizontal * 2;
+            let pdfContentWidth = PDF_PAGE_WIDTH_PX;
+            let pdfContentHeight = PDF_PAGE_HEIGHT_PX;
+
             const allSlidesUrl = `${baseUrl}/view/${presentationId}/slide/all?pdf=true&hideBranding=${hideBranding}&hasActiveSubscription=${hideBranding}`;
             logger.debug(`Generating PDF for task ${taskId} using single-page strategy`, { url: allSlidesUrl });
 
@@ -226,45 +235,65 @@ export const generatePdfAsync = async (
 
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const slideDimensions = await page.evaluate<{ maxWidth: number; maxHeight: number }>(() => {
+            const slideDimensions = await page.evaluate(() => {
                 const slides = Array.from(document.querySelectorAll('[data-pdf-slide]')) as HTMLElement[];
-                return slides.reduce(
-                    (acc, slide) => {
-                        const rect = slide.getBoundingClientRect();
-                        const widthCandidates = [
-                            rect.width,
-                            slide.scrollWidth,
-                            slide.offsetWidth,
-                            slide.clientWidth,
-                        ].filter(value => Number.isFinite(value) && value > 0);
-                        const heightCandidates = [
-                            rect.height,
-                            slide.scrollHeight,
-                            slide.offsetHeight,
-                            slide.clientHeight,
-                        ].filter(value => Number.isFinite(value) && value > 0);
+                return slides.map(slide => {
+                    const rect = slide.getBoundingClientRect();
+                    const widthCandidates = [
+                        rect.width,
+                        slide.scrollWidth,
+                        slide.offsetWidth,
+                        slide.clientWidth,
+                    ].filter(value => Number.isFinite(value) && value > 0);
+                    const heightCandidates = [
+                        rect.height,
+                        slide.scrollHeight,
+                        slide.offsetHeight,
+                        slide.clientHeight,
+                    ].filter(value => Number.isFinite(value) && value > 0);
 
-                        const width = widthCandidates.length ? Math.max(...widthCandidates) : acc.maxWidth;
-                        const height = heightCandidates.length ? Math.max(...heightCandidates) : acc.maxHeight;
-
-                        return {
-                            maxWidth: Math.max(acc.maxWidth, width),
-                            maxHeight: Math.max(acc.maxHeight, height),
-                        };
-                    },
-                    { maxWidth: 0, maxHeight: 0 }
-                );
+                    return {
+                        width: widthCandidates.length ? Math.max(...widthCandidates) : 0,
+                        height: heightCandidates.length ? Math.max(...heightCandidates) : 0,
+                    };
+                });
             });
 
-            const measuredWidth = Math.ceil(slideDimensions.maxWidth || 0);
-            const measuredHeight = Math.ceil(slideDimensions.maxHeight || 0);
+            const normalizedDimensions = Array.isArray(slideDimensions)
+                ? slideDimensions.map(dimension => {
+                      const width = Math.ceil(dimension?.width ?? 0);
+                      const height = Math.ceil(dimension?.height ?? 0);
 
-            const pdfWidthPx = Math.max(measuredWidth, PDF_PAGE_WIDTH_PX);
-            const minHeightForRatio = Math.ceil(pdfWidthPx / SLIDE_ASPECT_RATIO);
-            const pdfHeightPx = Math.max(measuredHeight, minHeightForRatio);
+                      return {
+                          width: Number.isFinite(width) && width > 0 ? width : PDF_PAGE_WIDTH_PX,
+                          height: Number.isFinite(height) && height > 0 ? height : PDF_PAGE_HEIGHT_PX,
+                      };
+                  })
+                : [];
 
-            const viewportWidth = Math.max(pdfWidthPx + 64, PDF_PAGE_WIDTH_PX + 96);
-            const viewportHeight = Math.max(pdfHeightPx + 40, PDF_PAGE_HEIGHT_PX + 40);
+            if (normalizedDimensions.length > 0) {
+                pdfContentWidth = Math.max(
+                    PDF_PAGE_WIDTH_PX,
+                    ...normalizedDimensions.map(dimension => dimension.width)
+                );
+
+                const minHeightForRatio = Math.ceil(pdfContentWidth / SLIDE_ASPECT_RATIO);
+
+                perSlideContentHeights = normalizedDimensions.map(dimension =>
+                    Math.max(dimension.height, minHeightForRatio)
+                );
+
+                pdfContentHeight = perSlideContentHeights.reduce(
+                    (maxHeight, height) => Math.max(maxHeight, height),
+                    minHeightForRatio
+                );
+            }
+
+            pdfPaperWidth = pdfContentWidth + singlePageMargins.horizontal * 2;
+            const pdfPaperHeight = pdfContentHeight + singlePageMargins.vertical * 2;
+
+            const viewportWidth = Math.max(pdfPaperWidth + 64, PDF_PAGE_WIDTH_PX + 96);
+            const viewportHeight = Math.max(pdfPaperHeight + 40, PDF_PAGE_HEIGHT_PX + 40);
 
             await page.setViewport({
                 width: viewportWidth,
@@ -273,27 +302,58 @@ export const generatePdfAsync = async (
             });
 
             logger.debug('Single-page PDF slide dimensions resolved', {
-                measuredWidth,
-                measuredHeight,
-                pdfWidthPx,
-                pdfHeightPx,
-                minHeightForRatio,
+                pdfContentWidth,
+                pdfContentHeight,
+                perSlideContentHeights,
             });
 
             const pdfBuffer = await page.pdf({
-                width: `${pdfWidthPx}px`,
-                height: `${pdfHeightPx}px`,
+                width: `${pdfPaperWidth}px`,
+                height: `${pdfPaperHeight}px`,
                 printBackground: true,
                 margin: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
+                    top: singlePageMargins.vertical,
+                    right: singlePageMargins.horizontal,
+                    bottom: singlePageMargins.vertical,
+                    left: singlePageMargins.horizontal,
                 },
                 preferCSSPageSize: false,
             });
 
-            finalPdfBuffer = Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+            const rawSinglePageBuffer = Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+
+            if (perSlideContentHeights.length > 0) {
+                const pdfDocument = await PDFDocument.load(rawSinglePageBuffer);
+                const pages = pdfDocument.getPages();
+
+                if (pages.length === perSlideContentHeights.length) {
+                    pages.forEach((pageInstance, pageIndex) => {
+                        const targetHeight =
+                            perSlideContentHeights[pageIndex] + singlePageMargins.vertical * 2;
+
+                        pageInstance.setMediaBox(0, 0, pdfPaperWidth, targetHeight);
+                        pageInstance.setCropBox(0, 0, pdfPaperWidth, targetHeight);
+                        pageInstance.setBleedBox(0, 0, pdfPaperWidth, targetHeight);
+                        pageInstance.setTrimBox(0, 0, pdfPaperWidth, targetHeight);
+                        pageInstance.setArtBox(0, 0, pdfPaperWidth, targetHeight);
+                    });
+
+                    const resizedPdfBytes = await pdfDocument.save();
+                    finalPdfBuffer = Buffer.from(resizedPdfBytes);
+                } else {
+                    logger.warn(
+                        `Mismatch between rendered slides (${perSlideContentHeights.length}) and PDF pages (${pages.length}) in single-page export. Skipping dynamic page height adjustments.`,
+                        {
+                            perSlideContentHeights: perSlideContentHeights.length,
+                            pageCount: pages.length,
+                        }
+                    );
+
+                    finalPdfBuffer = rawSinglePageBuffer;
+                }
+            } else {
+                finalPdfBuffer = rawSinglePageBuffer;
+            }
 
             await prisma.pdfGenerationTask.update({
                 where: { id: taskId },
