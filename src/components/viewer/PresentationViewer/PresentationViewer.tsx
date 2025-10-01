@@ -3,7 +3,6 @@ import { Slide, GlobalHeaderFooterConfig } from '@/types';
 import SlideViewer from '../SlideViewer/SlideViewer';
 import styles from './PresentationViewer.module.css';
 import { Theme } from '@/types/theme';
-import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 interface PresentationViewerProps {
     slides: Slide[];
     showImagePlaceholder?: boolean;
@@ -12,6 +11,8 @@ interface PresentationViewerProps {
     theme: Theme;
     globalHeaderFooterConfig?: GlobalHeaderFooterConfig;
     hasActiveSubscription?: boolean;
+    isPdfExport?: boolean;
+    hideBranding?: boolean;
 }
 
 const PresentationViewer: React.FC<PresentationViewerProps> = ({
@@ -22,6 +23,8 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
     theme,
     globalHeaderFooterConfig,
     hasActiveSubscription = true,
+    isPdfExport = false,
+    hideBranding = false,
 }) => {
     const visibleSlides = slides.filter(slide => !slide.hidden);
 
@@ -29,14 +32,20 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
         return <div>No slides to display</div>;
     }
 
+    const containerClassName = `${styles.presentationViewerContainer} ${isPdfExport ? styles.presentationViewerContainerPdf : ''}`;
+    const slidesContainerClassName = `${styles.presentationViewerAllSlidesContainer} ${isPdfExport ? styles.presentationViewerAllSlidesContainerPdf : ''}`;
+    const slideWrapperClassName = `${styles.presentationViewerSlideWrapper} ${isPdfExport ? styles.presentationViewerSlideWrapperPdf : ''}`;
+    const pdfCssVariables = isPdfExport ? ({ '--pdf-slide-width': '1034px' } as React.CSSProperties) : undefined;
+
     return (
-        <div className={styles.presentationViewerContainer}>
-            <div className={styles.presentationViewerAllSlidesContainer}>
+        <div className={containerClassName} data-pdf-export={isPdfExport ? 'true' : undefined} style={pdfCssVariables}>
+            <div className={slidesContainerClassName}>
                 {visibleSlides.map((slide: Slide, index: number) => (
                     <div
                         key={slide.id}
                         id={`slide-${index + 1}`}
-                        className={`${styles.presentationViewerSlideWrapper} presentationViewerSlideWrapper`}
+                        className={`${slideWrapperClassName} presentationViewerSlideWrapper`}
+                        data-pdf-slide={index + 1}
                     >
                         <SlideViewer
                             theme={theme}
@@ -48,6 +57,8 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
                             totalSlides={visibleSlides.length}
                             globalHeaderFooterConfig={globalHeaderFooterConfig}
                             hasActiveSubscription={hasActiveSubscription}
+                            isPdfExport={isPdfExport}
+                            hideBranding={hideBranding}
                         />
                     </div>
                 ))}

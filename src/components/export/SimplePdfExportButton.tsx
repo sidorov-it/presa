@@ -3,15 +3,25 @@ import { LuDownload, LuLoader } from 'react-icons/lu';
 import Tooltip from '@/components/tooltip/Tooltip';
 import styles from './SimplePdfExportButton.module.css';
 import { toast } from 'sonner';
-import { exportPresentationToPdfAsync, downloadPdfFile, PdfExportProgress } from '@/utils/asyncPdfExport';
+import {
+    exportPresentationToPdfAsync,
+    downloadPdfFile,
+    PdfExportProgress,
+    PdfExportStrategy,
+} from '@/utils/asyncPdfExport';
 
 interface SimplePdfExportButtonProps {
     presentationId: string;
     className?: string;
     slideIndex?: number;
+    exportStrategy?: PdfExportStrategy;
 }
 
-const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({ presentationId, slideIndex }) => {
+const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({
+    presentationId,
+    slideIndex,
+    exportStrategy,
+}) => {
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState<PdfExportProgress | null>(null);
 
@@ -28,11 +38,15 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({ presentat
         const toastId = toast.loading('Начинаем генерацию PDF...');
 
         try {
-            const result = await exportPresentationToPdfAsync(presentationId, slideIndex, progress => {
-                setExportProgress(progress);
+            const result = await exportPresentationToPdfAsync(presentationId, {
+                slideIndex,
+                strategy: exportStrategy,
+                onProgress: progress => {
+                    setExportProgress(progress);
 
-                // Обновляем toast с новым прогрессом
-                toast.loading(`Создаем pdf ${progress.progress}%`, { id: toastId });
+                    // Обновляем toast с новым прогрессом
+                    toast.loading(`Создаем pdf ${progress.progress}%`, { id: toastId });
+                },
             });
 
             if (result.success) {
