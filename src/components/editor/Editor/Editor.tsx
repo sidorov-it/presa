@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, MutableRefObject } from 'react';
+import { memo, MutableRefObject, useEffect, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';
@@ -27,7 +27,7 @@ const EditorContent: React.FC<{
     // activeSlideId: string | null;
     tiptapRefs: MutableRefObject<TipTapRefs>;
     theme: Theme;
-}> = React.memo(({ presentationId, tiptapRefs, theme }) => {
+}> = memo(({ presentationId, tiptapRefs, theme }) => {
     const isReadOnly = useReadOnly();
 
     return (
@@ -168,13 +168,33 @@ const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) =>
         return notFoundUI;
     }
 
-    // Формируем стили для фона
+    // Формируем стили для фона с учетом настроек темы и презентации
+    const getBackgroundStyle = () => {
+        // Если есть переопределение для презентации, используем его
+        if (backgroundSettings?.backgroundColor || backgroundSettings?.backgroundImage) {
+            return {
+                backgroundColor: backgroundSettings.backgroundColor || undefined,
+                backgroundImage: backgroundSettings.backgroundImage
+                    ? `url(${backgroundSettings.backgroundImage})`
+                    : undefined,
+                backgroundSize: backgroundSettings.backgroundImage ? 'cover' : undefined,
+                backgroundPosition: backgroundSettings.backgroundImage ? 'center' : undefined,
+                backgroundAttachment: backgroundSettings.backgroundImage ? 'fixed' : undefined,
+            };
+        }
+
+        // Иначе используем настройки из темы
+        if (theme?.colors?.slideBackground) {
+            return {
+                backgroundColor: theme.colors.slideBackground,
+            };
+        }
+
+        return {};
+    };
+
     const editorBgStyle: React.CSSProperties = {
-        backgroundColor: backgroundSettings?.backgroundColor || undefined,
-        backgroundImage: backgroundSettings?.backgroundImage ? `url(${backgroundSettings.backgroundImage})` : undefined,
-        backgroundSize: backgroundSettings?.backgroundImage ? 'cover' : undefined,
-        backgroundPosition: backgroundSettings?.backgroundImage ? 'center' : undefined,
-        backgroundAttachment: backgroundSettings?.backgroundImage ? 'fixed' : undefined,
+        ...getBackgroundStyle(),
         minHeight: 'calc(100vh - 75px - 38px)',
         transition: 'background 0.3s',
     };
@@ -213,4 +233,4 @@ const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) =>
 
 EditorContent.displayName = 'EditorContent';
 
-export default React.memo(Editor);
+export default memo(Editor);

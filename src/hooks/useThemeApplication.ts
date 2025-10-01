@@ -12,6 +12,7 @@ interface UseThemeApplicationOptions {
     colorMode?: ColorMode;
     defaultThemes?: Theme[];
     externalRef?: React.RefObject<HTMLDivElement>;
+    previousBackgroundSettings?: BackgroundSettings;
 }
 
 // Helper function to create a hash of theme properties for comparison
@@ -80,6 +81,7 @@ const applyThemeStyles = ({
     backgroundSettings,
     setColorMode,
     previousTheme,
+    previousBackgroundSettings,
 }: {
     container: HTMLDivElement;
     theme: Theme;
@@ -87,6 +89,7 @@ const applyThemeStyles = ({
     backgroundSettings?: BackgroundSettings;
     setColorMode?: (mode: 'light' | 'dark') => void;
     previousTheme?: Theme | null;
+    previousBackgroundSettings?: BackgroundSettings;
 }) => {
     // Generate CSS variables using the unified generator
     const result = generateCSSVariablesFromTheme({
@@ -130,11 +133,9 @@ const applyThemeStyles = ({
         ? backgroundSettings?.backgroundImage
         : theme.colors.pageBackground?.imageUrl?.trim() || '';
 
-    const prevImageUrl = previousTheme
-        ? (backgroundSettings?.backgroundImage !== 'none'
-            ? backgroundSettings?.backgroundImage
-            : previousTheme.colors.pageBackground?.imageUrl?.trim() || '')
-        : '';
+    const prevImageUrl = previousBackgroundSettings?.backgroundImage !== 'none'
+        ? previousBackgroundSettings?.backgroundImage
+        : previousTheme?.colors.pageBackground?.imageUrl?.trim() || '';
 
     if (currentImageUrl !== prevImageUrl) {
         if (currentImageUrl) {
@@ -214,6 +215,7 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
     const { theme, backgroundSettings, setColorMode, defaultThemes, externalRef, colorMode } = options;
     const appliedThemeHashRef = useRef<string | null>(null);
     const previousThemeRef = useRef<Theme | null>(null);
+    const previousBackgroundSettingsRef = useRef<BackgroundSettings | null>(null);
     const internalRef = useRef<HTMLDivElement>(null);
     const isApplyingRef = useRef(false);
 
@@ -256,9 +258,11 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
                     setColorMode,
                     colorMode,
                     previousTheme: previousThemeRef.current,
+                    previousBackgroundSettings: previousBackgroundSettingsRef.current || undefined,
                 });
                 appliedThemeHashRef.current = themeHash;
                 previousThemeRef.current = { ...activeTheme }; // Store deep copy
+                previousBackgroundSettingsRef.current = backgroundSettings ? { ...backgroundSettings } : null;
             } catch (error) {
                 console.error('Error applying theme', error);
             } finally {
@@ -299,6 +303,7 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
             }
             appliedThemeHashRef.current = null;
             previousThemeRef.current = null;
+            previousBackgroundSettingsRef.current = null;
             isApplyingRef.current = false;
             // Cancel any pending debounced calls
             debouncedApplyTheme.cancel?.();

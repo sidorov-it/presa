@@ -4,6 +4,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import React, { useState, useEffect, useRef } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
+import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
 import ColorPicker from '@/components/ui/ColorPicker';
 
@@ -23,11 +24,19 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
     presentationId,
 }) => {
     const initialSettings = usePresentationStore(useShallow(state => state.getBackgroundSettings(presentationId)));
+    const getCurrentThemeSlideBackground = useThemeStore(state => state.getCurrentThemeSlideBackground);
+    const currentTheme = useThemeStore(state => state.currentTheme);
+
+    const themeBackgroundColor = getCurrentThemeSlideBackground();
+    const themeBackgroundImage =
+        currentTheme?.colors?.pageBackground?.type === 'image' ? currentTheme.colors.pageBackground.imageUrl : '';
 
     const [backgroundColor, setBackgroundColor] = useState<string>(
-        initialSettings?.backgroundColor || defaultSlideBackground || '#ffffff'
+        initialSettings?.backgroundColor || themeBackgroundColor || defaultSlideBackground || '#ffffff'
     );
-    const [backgroundImage, setBackgroundImage] = useState<string>(initialSettings?.backgroundImage || '');
+    const [backgroundImage, setBackgroundImage] = useState<string>(
+        initialSettings?.backgroundImage || themeBackgroundImage || ''
+    );
 
     // Фокус-ловушка
     const modalRef = useRef<HTMLDivElement>(null);
@@ -41,12 +50,20 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
 
     useEffect(() => {
         if (isOpen) {
-            setBackgroundColor(initialSettings?.backgroundColor || defaultSlideBackground);
-            setBackgroundImage(initialSettings?.backgroundImage || '');
-        }
-    }, [isOpen, initialSettings, defaultSlideBackground]);
+            const currentThemeBg = getCurrentThemeSlideBackground();
+            const currentThemeImage =
+                currentTheme?.colors?.pageBackground?.type === 'image'
+                    ? currentTheme.colors.pageBackground.imageUrl
+                    : '';
 
-    const handleSave = () => {
+            setBackgroundColor(
+                initialSettings?.backgroundColor || currentThemeBg || defaultSlideBackground || '#ffffff'
+            );
+            setBackgroundImage(initialSettings?.backgroundImage || currentThemeImage || '');
+        }
+    }, [isOpen, initialSettings, defaultSlideBackground, getCurrentThemeSlideBackground, currentTheme]);
+
+    const handleApply = () => {
         usePresentationStore.getState().setBackgroundSettings(presentationId, {
             backgroundColor,
             backgroundImage: backgroundImage.trim() || undefined,
@@ -55,13 +72,41 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
     };
 
     const handleReset = () => {
-        setBackgroundColor('#ffffff00');
-        setBackgroundImage('');
+        const currentThemeBg = getCurrentThemeSlideBackground();
+        const currentThemeImage =
+            currentTheme?.colors?.pageBackground?.type === 'image' ? currentTheme.colors.pageBackground.imageUrl : '';
+
+        setBackgroundColor(currentThemeBg || defaultSlideBackground || '#ffffff');
+        setBackgroundImage(currentThemeImage || '');
         usePresentationStore.getState().setBackgroundSettings(presentationId, {
             backgroundColor: undefined,
-            backgroundImage: 'none',
+            backgroundImage: undefined,
         });
         onClose();
+    };
+
+    const handleCancel = () => {
+        onClose();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const formData = new FormData();
+            formData.append('file', event.target.files[0]);
+
+            fetch('/api/assets/upload', {
+                method: 'POST',
+                body: formData,
+            }).then(response => {
+                response.json().then(data => {
+                    setBackgroundImage(data.url);
+                });
+            });
+        }
+    };
+
+    const handleClearImage = () => {
+        setBackgroundImage('');
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -101,31 +146,74 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
                     </label>
                     <ColorPicker value={backgroundColor} onChange={setBackgroundColor} className="" allowAlpha={true} />
                 </div>
-                <div style={{ marginBottom: '1.5rem' }}>
-                    <label className={styles.backgroundSettingsModalContentColorPickerLabel} htmlFor="bg-image-url">
-                        Ссылка на изображение (URL)
+                <div className={styles.imagePickerSection}>
+                    <label className={styles.backgroundSettingsModalContentColorPickerLabel} htmlFor="bg-image-upload">
+                        Изображение фона
                     </label>
-                    <input
-                        id="bg-image-url"
-                        type="url"
-                        className={styles.backgroundSettingsModalContentColorPickerInput}
-                        value={backgroundImage && backgroundImage !== 'none' ? backgroundImage : ''}
-                        onChange={e => setBackgroundImage(e.target.value)}
-                        placeholder="https://example.com/image.png"
-                        aria-label="Ссылка на изображение для фона"
-                    />
+
+                    {backgroundImage ? (
+                        <div className={styles.imagePreview}>
+                            <img src={backgroundImage} alt="Предпросмотр фона" className={styles.previewImage} />
+                            <div className={styles.imageActions}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    id="bg-image-upload"
+                                    style={{ display: 'none' }}
+                                />
+                                <label htmlFor="bg-image-upload" className={styles.replaceButton}>
+                                    Заменить
+                                </label>
+                                <button
+                                    type="button"
+                                    className={styles.clearButton}
+                                    onClick={handleClearImage}
+                                    aria-label="Удалить изображение"
+                                >
+                                    Удалить
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.noImagePlaceholder}>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                id="bg-image-upload"
+                                style={{ display: 'none' }}
+                            />
+                            <label htmlFor="bg-image-upload" className={styles.uploadButton}>
+                                Выбрать изображение
+                            </label>
+                        </div>
+                    )}
                 </div>
                 <div className={styles.backgroundSettingsModalContentColorPickerButtons}>
                     <button
                         type="button"
                         className={styles.backgroundSettingsModalContentColorPickerButtonsButton}
+                        onClick={handleCancel}
+                        aria-label="Отменить изменения"
+                    >
+                        Отменить
+                    </button>
+                    <button
+                        type="button"
+                        className={styles.backgroundSettingsModalContentColorPickerButtonsButton}
                         onClick={handleReset}
-                        aria-label="Сбросить фон"
+                        aria-label="Сбросить настройки презентации"
                     >
                         Сбросить
                     </button>
-                    <button type="button" className={styles.saveButton} onClick={handleSave} aria-label="Сохранить фон">
-                        Сохранить
+                    <button
+                        type="button"
+                        className={styles.saveButton}
+                        onClick={handleApply}
+                        aria-label="Применить настройки"
+                    >
+                        Применить
                     </button>
                 </div>
                 <button

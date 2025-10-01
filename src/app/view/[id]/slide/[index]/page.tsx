@@ -90,7 +90,7 @@ export default async function SlidePage(props: {
 
     return (
         <ReadOnlyProvider isReadOnly={true}>
-            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings || {}}>
+            <ThemeStylesApplier theme={theme} backgroundSettings={presentation.backgroundSettings || undefined}>
                 <ViewerProvider>
                     <div
                         className="slide-page-container"

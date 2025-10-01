@@ -15,7 +15,8 @@ interface ThemeSelectPanelProps {
 }
 
 const ThemeSelectPanel: React.FC<ThemeSelectPanelProps> = memo(({ onCloseMenu, presentationId }) => {
-    const { themes, defaultThemes, allThemes, currentTheme, loadThemes, setCurrentTheme, themesLoaded } = useThemeStore();
+    const { themes, defaultThemes, allThemes, currentTheme, loadThemes, setCurrentTheme, themesLoaded } =
+        useThemeStore();
     const setTheme = usePresentationStore(state => state.setTheme);
 
     const [tabIndex, setTabIndex] = useState(2);

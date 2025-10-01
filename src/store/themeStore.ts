@@ -124,7 +124,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
         if (get().themesLoaded) {
             return;
         }
-        
+
         try {
             const response = await fetch('/api/themes');
             if (!response.ok) {
