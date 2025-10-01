@@ -48,6 +48,21 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
     const progressHoldTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const scrollDirectionRef = useRef<'next' | 'prev' | null>(null);
     const slideWrapperRef = useRef<HTMLDivElement>(null);
+    const slidePageRef = useRef<HTMLDivElement>(null);
+    const isAtEdgeRef = useRef(false);
+    const edgeDirectionRef = useRef<'next' | 'prev' | null>(null);
+    const [debugInfo, setDebugInfo] = useState({
+        isAtEdge: false,
+        direction: null as 'next' | 'prev' | null,
+        scrollTop: 0,
+        scrollHeight: 0,
+        clientHeight: 0,
+        isScrollable: false,
+        scrollProgress: 0,
+        accumulatedDistance: 0,
+        isBlocked: false,
+        source: 'window' as 'window' | 'container',
+    });
 
     // Cleanup function to clear timeouts when component unmounts
     useEffect(() => {
@@ -137,15 +152,45 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
         };
     }, [currentSlideIndex, handleNextSlide, handlePrevSlide, presentation]);
 
+    const getScrollMetrics = useCallback(() => {
+        const container = slidePageRef.current;
+        const threshold = 0.5; // allow for sub-pixel differences
+
+        if (container) {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const isScrollable = scrollHeight - clientHeight > threshold;
+
+            if (isScrollable) {
+                return {
+                    scrollTop,
+                    scrollHeight,
+                    clientHeight,
+                    isScrollable: true,
+                    source: 'container' as const,
+                };
+            }
+        }
+
+        const scrollElement = document.documentElement;
+        const scrollTop = window.pageYOffset || scrollElement.scrollTop;
+        const scrollHeight = scrollElement.scrollHeight;
+        const clientHeight = window.innerHeight;
+        const isScrollable = scrollHeight - clientHeight > threshold;
+
+        return {
+            scrollTop,
+            scrollHeight,
+            clientHeight,
+            isScrollable,
+            source: 'window' as const,
+        };
+    }, []);
+
     // Check if we're at the edge of scrollable content
     const checkEdgePosition = useCallback(() => {
-        // Check document/window scroll instead of wrapper scroll
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollHeight = document.documentElement.scrollHeight;
-        const clientHeight = window.innerHeight;
-        const isScrollable = scrollHeight > clientHeight;
-
         const EDGE_THRESHOLD = 3;
+        const { scrollTop, scrollHeight, clientHeight, isScrollable, source } = getScrollMetrics();
+
         const atTop = scrollTop <= EDGE_THRESHOLD;
         const atBottom = scrollTop + clientHeight >= scrollHeight - EDGE_THRESHOLD;
 
@@ -155,7 +200,7 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
         if (!isScrollable) {
             // If content is not scrollable, we're always "at edge" for both directions
             isAtEdge = true;
-            direction = null; // Can go either direction
+            direction = null;
         } else if (atTop) {
             isAtEdge = true;
             direction = 'prev';
@@ -179,15 +224,17 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
             isScrollable,
             accumulatedDistance: accumulatedScrollDistanceRef.current,
             isBlocked: isScrollBlocked.current,
+            source,
         }));
-    }, []);
+    }, [getScrollMetrics]);
 
     // Reset scroll position and unblock when slide changes
     useEffect(() => {
         // Always scroll to top when slide changes
-        console.log('scroll to top');
         setTimeout(() => {
-            window.scrollTo(0, 0);
+            const container = slidePageRef.current;
+            container?.scrollTo({ top: 0 });
+            window.scrollTo({ top: 0 });
         }, 300);
 
         // Unblock scroll after a short delay to allow slide transition to complete
@@ -201,21 +248,6 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
             clearTimeout(unblockTimer);
         };
     }, [currentSlideIndex, checkEdgePosition]);
-
-    // Use refs for real-time edge detection (avoid state update delays)
-    const isAtEdgeRef = useRef(false);
-    const edgeDirectionRef = useRef<'next' | 'prev' | null>(null);
-    const [debugInfo, setDebugInfo] = useState({
-        isAtEdge: false,
-        direction: null as 'next' | 'prev' | null,
-        scrollTop: 0,
-        scrollHeight: 0,
-        clientHeight: 0,
-        isScrollable: false,
-        scrollProgress: 0,
-        accumulatedDistance: 0,
-        isBlocked: false,
-    });
 
     // Single wheel event handler for both normal scrolling and slide transitions
     useEffect(() => {
@@ -340,8 +372,12 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
             setTimeout(checkEdgePosition, 50);
         });
 
-        // Observe the document body instead of wrapper
+        // Observe both the document body and the slide container
         resizeObserver.observe(document.body);
+        const container = slidePageRef.current;
+        if (container) {
+            resizeObserver.observe(container);
+        }
 
         // Also listen to window resize events
         const handleResize = () => {
@@ -357,6 +393,8 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
 
         window.addEventListener('scroll', handleScroll, { passive: true });
 
+        container?.addEventListener('scroll', handleScroll, { passive: true });
+
         // Check initial position after a delay to ensure content is loaded
         const timeoutId = setTimeout(checkEdgePosition, 200);
 
@@ -364,6 +402,10 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
             resizeObserver.disconnect();
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('scroll', handleScroll);
+            container?.removeEventListener('scroll', handleScroll);
+            if (container) {
+                resizeObserver.unobserve(container);
+            }
             clearTimeout(timeoutId);
         };
     }, [checkEdgePosition, currentSlideIndex]);
@@ -434,6 +476,7 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
                         <motion.div
                             key={currentSlideIndex}
                             className={styles.slidePage}
+                            ref={slidePageRef}
                             initial={{ opacity: 0, y: scrollDirection === 'next' ? 50 : -50 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: scrollDirection === 'next' ? -50 : 50 }}
@@ -517,6 +560,9 @@ export default function PresentationView({ presentation, theme, hasActiveSubscri
                             </div>
                             <div>
                                 <strong>Scrollable:</strong> {debugInfo.isScrollable ? 'YES' : 'NO'}
+                            </div>
+                            <div>
+                                <strong>Scroll Source:</strong> {debugInfo.source}
                             </div>
                             <div>
                                 <strong>Scroll:</strong> {debugInfo.scrollTop}/

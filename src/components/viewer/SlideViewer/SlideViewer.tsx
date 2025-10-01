@@ -14,6 +14,7 @@ import localStyles from './SlideViewer.module.css';
 import { Theme } from '@/types/theme';
 
 const DEFAULT_CONTENT_PADDING = 'var(--card-inner-padding-y)';
+const PDF_SLIDE_HEIGHT = 'calc(var(--pdf-slide-width, 1034px) / 1.7777777777777777)';
 
 interface SlideViewerProps {
     slide: Slide;
@@ -197,7 +198,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
 
         // For PDF export, allow natural height to avoid clipping
         if (isPdfExport) {
-            baseStyle.minHeight = 'auto';
+            baseStyle.minHeight = PDF_SLIDE_HEIGHT;
             baseStyle.height = 'auto';
         }
 
@@ -295,12 +296,13 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     } else if (isPreview) {
         height = 'auto';
     } else if (fullPage) {
-        // width = 'var(--card-width)';
-        minHeight = 'calc(1034px  / 1.7777)';
+        width = 'var(--card-width)';
+        maxWidth = 'var(--card-width)';
+        minHeight = 'var(--card-height)';
         height = 'auto';
     } else if (isPdfExport) {
         height = 'auto';
-        minHeight = 'calc(1034px  / 1.7777)';
+        minHeight = PDF_SLIDE_HEIGHT;
     }
 
     // Slide wrapper style including theme CSS variables
@@ -339,7 +341,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
             : fullPage
               ? 'var(--card-height)'
               : isPdfExport
-                ? 'auto'
+                ? PDF_SLIDE_HEIGHT
                 : undefined,
         height: isSlidePreview || fullPage ? 'auto' : undefined,
         overflow: isSlidePreview || fullPage || isPdfExport ? 'visible' : 'auto',
@@ -350,7 +352,6 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
     const slideClassName = `${styles.slide} ${localStyles.slide} ${themeClassName} ${isPdfExport ? styles.pdfExport : ''}`;
     // const outerStyle = fullPage ? { padding: 0, width: '100%', height: '100%' } : undefined;
 
-    console.log('contentStyle', contentStyle);
     return (
         <div className={`${slideClassName} ${isSlidePreview ? localStyles.slidePreview : ''}`}>
             <div className={`${styles.slideWrapper} ${localStyles.slideWrapper}`} style={slideWrapperStyle}>
