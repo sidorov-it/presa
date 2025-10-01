@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { PdfGenerationStatus } from '@prisma/client';
 import { getUploadPath } from './uploadPath';
+import { DEFAULT_PDF_EXPORT_STRATEGY, PdfExportStrategy, SINGLE_PAGE_TEST_STRATEGY } from '@/types/pdfExport';
 
 // Функция для транслитерации кириллицы и очистки имени файла
 function sanitizeFileName(fileName: string): string {
@@ -116,13 +117,21 @@ function sanitizeFileName(fileName: string): string {
     return sanitized;
 }
 
+const PDF_PAGE_WIDTH_PX = 1034;
+const SLIDE_ASPECT_RATIO = 16 / 9;
+const PDF_PAGE_HEIGHT_PX = Math.round(PDF_PAGE_WIDTH_PX / SLIDE_ASPECT_RATIO);
+
 export const generatePdfAsync = async (
     taskId: string,
     presentationId: string,
     slideIndex: number | null,
     baseUrl: string,
-    hideBranding: boolean = false
+    hideBranding: boolean = false,
+    exportStrategy: PdfExportStrategy = DEFAULT_PDF_EXPORT_STRATEGY
 ) => {
+    let browser: puppeteer.Browser | null = null;
+    let page: puppeteer.Page | null = null;
+
     try {
         // Update task status to in_progress
         await prisma.pdfGenerationTask.update({
@@ -169,7 +178,7 @@ export const generatePdfAsync = async (
         }
 
         // Launch Puppeteer browser
-        const browser = await puppeteer.launch({
+        browser = await puppeteer.launch({
             headless: process.env.NODE_ENV === 'development' ? false : true,
             args: [
                 '--no-sandbox',
@@ -183,162 +192,255 @@ export const generatePdfAsync = async (
             ],
         });
 
-        const page = await browser.newPage();
+        page = await browser.newPage();
 
         // Set large initial viewport to ensure content fits
         await page.setViewport({
-            width: 1034 + 16 * 6,
-            height: 580 + 40, // Increased height to accommodate variable content
-            deviceScaleFactor: 1, // Set to 1 to avoid scaling issues in PDF
+            width: PDF_PAGE_WIDTH_PX + 16 * 6,
+            height: PDF_PAGE_HEIGHT_PX + 40,
+            deviceScaleFactor: 1,
         });
 
-        // Create PDF with individual pages for each slide
-        const pdfPages: Buffer[] = [];
+        const shouldUseSinglePageStrategy =
+            exportStrategy === SINGLE_PAGE_TEST_STRATEGY && slideIndex === null;
 
-        for (const i of slidesToProcess) {
-            // наличие подписки = скрытие брендинга. пока не стал усложнять с передачей отдельной перменной hasActiveSubscription
-            const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true&hideBranding=${hideBranding}&hasActiveSubscription=${hideBranding}`;
+        let finalPdfBuffer: Buffer | null = null;
 
-            try {
-                // Navigate to slide page
-                await page.goto(slideUrl, {
-                    waitUntil: 'networkidle0',
-                    timeout: 30000,
-                });
+        if (shouldUseSinglePageStrategy) {
+            const allSlidesUrl = `${baseUrl}/view/${presentationId}/slide/all?pdf=true&hideBranding=${hideBranding}&hasActiveSubscription=${hideBranding}`;
+            logger.debug(`Generating PDF for task ${taskId} using single-page strategy`, { url: allSlidesUrl });
 
-                // Wait for content to fully load and render
-                await new Promise(resolve => setTimeout(resolve, 2000));
+            await page.goto(allSlidesUrl, {
+                waitUntil: 'networkidle0',
+                timeout: 30000,
+            });
 
-                // Wait for slide content to be rendered
-                await page.waitForSelector('.presentation-viewer-provider, [class*="presentation-viewer-provider"]', {
-                    timeout: 15000,
-                });
+            await page.waitForSelector('[data-pdf-slide]', { timeout: 15000 });
+            await page
+                .waitForFunction(
+                    expectedCount => document.querySelectorAll('[data-pdf-slide]').length >= expectedCount,
+                    { timeout: 15000 },
+                    visibleSlides.length
+                )
+                .catch(() => undefined);
 
-                // Get the actual slide content dimensions more accurately
-                const slideElement = await page.$(
-                    '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
-                );
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-                let slideWidth = 1032 + 16 * 6; // Standard slide width
-                let slideHeight = 580; // Default slide height
+            const slideDimensions = await page.evaluate<{ maxWidth: number; maxHeight: number }>(() => {
+                const slides = Array.from(document.querySelectorAll('[data-pdf-slide]')) as HTMLElement[];
+                return slides.reduce(
+                    (acc, slide) => {
+                        const rect = slide.getBoundingClientRect();
+                        const widthCandidates = [
+                            rect.width,
+                            slide.scrollWidth,
+                            slide.offsetWidth,
+                            slide.clientWidth,
+                        ].filter(value => Number.isFinite(value) && value > 0);
+                        const heightCandidates = [
+                            rect.height,
+                            slide.scrollHeight,
+                            slide.offsetHeight,
+                            slide.clientHeight,
+                        ].filter(value => Number.isFinite(value) && value > 0);
 
-                if (slideElement) {
-                    // Use evaluate to get more accurate dimensions in CSS pixels
-                    const dimensions = await page.evaluate(() => {
-                        const element = document.querySelector(
-                            '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
-                        );
-                        if (!element) return null;
-
-                        const rect = element.getBoundingClientRect();
-
-                        // Get actual rendered dimensions including padding and border
-                        const actualWidth = element.scrollWidth || rect.width;
-                        const actualHeight = element.scrollHeight || rect.height;
-
-                        // Also check document dimensions in case element is clipped
-                        const documentHeight = Math.max(
-                            document.body.scrollHeight,
-                            document.body.offsetHeight,
-                            document.documentElement.clientHeight,
-                            document.documentElement.scrollHeight,
-                            document.documentElement.offsetHeight
-                        );
+                        const width = widthCandidates.length ? Math.max(...widthCandidates) : acc.maxWidth;
+                        const height = heightCandidates.length ? Math.max(...heightCandidates) : acc.maxHeight;
 
                         return {
-                            width: actualWidth,
-                            height: actualHeight,
-                            scrollWidth: element.scrollWidth,
-                            scrollHeight: element.scrollHeight,
-                            clientWidth: element.clientWidth,
-                            clientHeight: element.clientHeight,
-                            offsetWidth: (element as HTMLElement).offsetWidth,
-                            offsetHeight: (element as HTMLElement).offsetHeight,
-                            rectWidth: rect.width,
-                            rectHeight: rect.height,
-                            documentHeight: documentHeight,
-                            windowHeight: window.innerHeight,
+                            maxWidth: Math.max(acc.maxWidth, width),
+                            maxHeight: Math.max(acc.maxHeight, height),
                         };
+                    },
+                    { maxWidth: 0, maxHeight: 0 }
+                );
+            });
+
+            const measuredWidth = Math.ceil(slideDimensions.maxWidth || 0);
+            const measuredHeight = Math.ceil(slideDimensions.maxHeight || 0);
+
+            const pdfWidthPx = Math.max(measuredWidth, PDF_PAGE_WIDTH_PX);
+            const minHeightForRatio = Math.ceil(pdfWidthPx / SLIDE_ASPECT_RATIO);
+            const pdfHeightPx = Math.max(measuredHeight, minHeightForRatio);
+
+            const viewportWidth = Math.max(pdfWidthPx + 64, PDF_PAGE_WIDTH_PX + 96);
+            const viewportHeight = Math.max(pdfHeightPx + 40, PDF_PAGE_HEIGHT_PX + 40);
+
+            await page.setViewport({
+                width: viewportWidth,
+                height: viewportHeight,
+                deviceScaleFactor: 1,
+            });
+
+            logger.debug('Single-page PDF slide dimensions resolved', {
+                measuredWidth,
+                measuredHeight,
+                pdfWidthPx,
+                pdfHeightPx,
+                minHeightForRatio,
+            });
+
+            const pdfBuffer = await page.pdf({
+                width: `${pdfWidthPx}px`,
+                height: `${pdfHeightPx}px`,
+                printBackground: true,
+                margin: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                },
+                preferCSSPageSize: false,
+            });
+
+            finalPdfBuffer = Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+
+            await prisma.pdfGenerationTask.update({
+                where: { id: taskId },
+                data: {
+                    completedSlides: visibleSlides.length,
+                },
+            });
+
+            logger.debug(
+                `Generated PDF in single-page mode for task ${taskId}, slides processed: ${visibleSlides.length}`
+            );
+        } else {
+            // Create PDF with individual pages for each slide
+            const pdfPages: Buffer[] = [];
+
+            for (const i of slidesToProcess) {
+                const slideUrl = `${baseUrl}/view/${presentationId}/slide/${i}?pdf=true&hideBranding=${hideBranding}&hasActiveSubscription=${hideBranding}`;
+
+                try {
+                    await page.goto(slideUrl, {
+                        waitUntil: 'networkidle0',
+                        timeout: 30000,
                     });
 
-                    if (dimensions) {
-                        slideWidth = Math.ceil(dimensions.width);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
 
-                        // Use the maximum height from all available measurements
-                        const maxHeight = Math.max(
-                            dimensions.height,
-                            dimensions.scrollHeight,
-                            dimensions.offsetHeight,
-                            dimensions.rectHeight,
-                            dimensions.documentHeight
-                        );
+                    await page.waitForSelector('.presentation-viewer-provider, [class*="presentation-viewer-provider"]', {
+                        timeout: 15000,
+                    });
 
-                        // Add buffer to height to prevent content overflow
-                        slideHeight = maxHeight; // Add 150px buffer for safety
-                        // slideHeight = Math.ceil(maxHeight + 150); // Add 150px buffer for safety
+                    const slideElement = await page.$(
+                        '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
+                    );
 
-                        logger.debug(`Slide ${i} dimensions:`, {
-                            finalWidth: slideWidth,
-                            finalHeight: slideHeight,
+                    let slideWidth = PDF_PAGE_WIDTH_PX + 16 * 6;
+                    let slideHeight = PDF_PAGE_HEIGHT_PX;
+
+                    if (slideElement) {
+                        const dimensions = await page.evaluate(() => {
+                            const element = document.querySelector(
+                                '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
+                            );
+                            if (!element) return null;
+
+                            const rect = element.getBoundingClientRect();
+
+                            const actualWidth = element.scrollWidth || rect.width;
+                            const actualHeight = element.scrollHeight || rect.height;
+
+                            const documentHeight = Math.max(
+                                document.body.scrollHeight,
+                                document.body.offsetHeight,
+                                document.documentElement.clientHeight,
+                                document.documentElement.scrollHeight,
+                                document.documentElement.offsetHeight
+                            );
+
+                            return {
+                                width: actualWidth,
+                                height: actualHeight,
+                                scrollWidth: element.scrollWidth,
+                                scrollHeight: element.scrollHeight,
+                                clientWidth: element.clientWidth,
+                                clientHeight: element.clientHeight,
+                                offsetWidth: (element as HTMLElement).offsetWidth,
+                                offsetHeight: (element as HTMLElement).offsetHeight,
+                                rectWidth: rect.width,
+                                rectHeight: rect.height,
+                                documentHeight: documentHeight,
+                                windowHeight: window.innerHeight,
+                            };
                         });
+
+                        if (dimensions) {
+                            slideWidth = Math.ceil(dimensions.width);
+
+                            const maxHeight = Math.max(
+                                dimensions.height,
+                                dimensions.scrollHeight,
+                                dimensions.offsetHeight,
+                                dimensions.rectHeight,
+                                dimensions.documentHeight
+                            );
+
+                            slideHeight = maxHeight;
+
+                            logger.debug(`Slide ${i} dimensions:`, {
+                                finalWidth: slideWidth,
+                                finalHeight: slideHeight,
+                            });
+                        }
                     }
+
+                    const pdf = await page.pdf({
+                        width: `${slideWidth}px`,
+                        height: `${slideHeight}px`,
+                        printBackground: true,
+                        margin: {
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 0,
+                        },
+                        preferCSSPageSize: false,
+                        scale: 1,
+                        format: undefined,
+                        pageRanges: '1',
+                    });
+
+                    const pdfBuffer = Buffer.isBuffer(pdf) ? pdf : Buffer.from(pdf);
+                    pdfPages.push(pdfBuffer);
+
+                    await prisma.pdfGenerationTask.update({
+                        where: { id: taskId },
+                        data: {
+                            completedSlides: pdfPages.length,
+                        },
+                    });
+
+                    logger.debug(
+                        `Generated PDF for slide ${i}, total completed: ${pdfPages.length}/${slidesToProcess.length}`
+                    );
+                } catch (error) {
+                    logger.error(`Error generating PDF for slide ${i}:`, error instanceof Error ? error.message : error);
                 }
-
-                // Generate PDF for this slide with proper dimensions
-                const pdf = await page.pdf({
-                    width: `${slideWidth}px`,
-                    height: `${slideHeight}px`,
-                    printBackground: true,
-                    margin: {
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                    },
-                    preferCSSPageSize: false, // Set to false to force custom page size
-                    scale: 1,
-                    format: undefined, // Don't use standard page format
-                    pageRanges: '1', // Only first page to prevent page breaks
-                });
-
-                const pdfBuffer = Buffer.from(pdf);
-                pdfPages.push(pdfBuffer);
-
-                // Update progress in database
-                await prisma.pdfGenerationTask.update({
-                    where: { id: taskId },
-                    data: {
-                        completedSlides: pdfPages.length,
-                    },
-                });
-
-                logger.debug(
-                    `Generated PDF for slide ${i}, total completed: ${pdfPages.length}/${slidesToProcess.length}`
-                );
-            } catch (error) {
-                logger.error(`Error generating PDF for slide ${i}:`, error instanceof Error ? error.message : error);
-                // Continue with other slides even if one fails
             }
+
+            if (pdfPages.length === 0) {
+                throw new Error('Failed to generate PDF pages');
+            }
+
+            const combinedPdf = await PDFDocument.create();
+
+            for (const pdfBuffer of pdfPages) {
+                const pdfDocument = await PDFDocument.load(pdfBuffer);
+                const pages = await combinedPdf.copyPages(pdfDocument, pdfDocument.getPageIndices());
+                pages.forEach(pageToAdd => combinedPdf.addPage(pageToAdd));
+            }
+
+            const pdfBytes = await combinedPdf.save();
+            finalPdfBuffer = Buffer.from(pdfBytes);
         }
 
-        await browser.close();
-
-        if (pdfPages.length === 0) {
-            throw new Error('Failed to generate PDF pages');
+        if (!finalPdfBuffer) {
+            throw new Error('Failed to generate PDF buffer');
         }
 
-        // Combine all PDF pages into a single PDF
-        const combinedPdf = await PDFDocument.create();
-
-        for (const pdfBuffer of pdfPages) {
-            const pdf = await PDFDocument.load(pdfBuffer);
-            const pages = await combinedPdf.copyPages(pdf, pdf.getPageIndices());
-            pages.forEach((page: any) => combinedPdf.addPage(page));
-        }
-
-        const pdfBytes = await combinedPdf.save();
-
-        // Generate filename
         const baseFileName = presentation.title || 'presentation';
         const sanitizedFileName = sanitizeFileName(baseFileName);
         const fileName =
@@ -346,11 +448,9 @@ export const generatePdfAsync = async (
                 ? `${sanitizedFileName}-slide-${slideIndex}-${taskId}.pdf`
                 : `${sanitizedFileName}-${taskId}.pdf`;
 
-        // Save PDF to public directory
         const filePath = path.join(publicPdfDir, fileName);
-        fs.writeFileSync(filePath, new Uint8Array(pdfBytes));
+        fs.writeFileSync(filePath, finalPdfBuffer);
 
-        // Update task with completion status
         await prisma.pdfGenerationTask.update({
             where: { id: taskId },
             data: {
@@ -358,7 +458,7 @@ export const generatePdfAsync = async (
                 completedAt: new Date(),
                 fileName: fileName,
                 filePath: `/pdfs/${fileName}`,
-                fileSize: pdfBytes.length,
+                fileSize: finalPdfBuffer.length,
             },
         });
 
@@ -366,7 +466,6 @@ export const generatePdfAsync = async (
     } catch (error) {
         logger.error(`PDF generation failed for task ${taskId}:`, error);
 
-        // Update task with error status
         await prisma.pdfGenerationTask.update({
             where: { id: taskId },
             data: {
@@ -374,5 +473,21 @@ export const generatePdfAsync = async (
                 errorMessage: error instanceof Error ? error.message : 'Unknown error',
             },
         });
+    } finally {
+        if (page) {
+            try {
+                await page.close();
+            } catch (closeError) {
+                logger.warn('Failed to close Puppeteer page after PDF generation', closeError);
+            }
+        }
+
+        if (browser) {
+            try {
+                await browser.close();
+            } catch (closeError) {
+                logger.warn('Failed to close Puppeteer browser after PDF generation', closeError);
+            }
+        }
     }
 };
