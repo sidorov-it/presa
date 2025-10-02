@@ -7,6 +7,9 @@ import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useUIStateStore } from '@/store/uiStateStore';
 import { useEditorStore } from '@/store/editorStore';
+import { useClipboardStore } from '@/store/clipboardStore';
+import { generateId } from '@/utils/id';
+import getColumnWidths from '@/utils/getColumnWidths';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 import GlobalHeaderFooterModal from '../GlobalHeaderFooterModal/GlobalHeaderFooterModal';
@@ -66,6 +69,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) =>
         const { setCurrentPresentationId } = useUIStateStore.getState();
         setCurrentPresentationId(presentationId);
     }, [presentationId]);
+
+    const isGlobalHeaderFooterModalOpen = useUIStateStore(state => state.isGlobalHeaderFooterModalOpen);
+    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
+    const currentSlideId = useUIStateStore(state => state.currentSlideId);
 
     // Memoize not found UI
     const notFoundUI = useMemo(
@@ -160,9 +167,136 @@ const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) =>
         };
     }, [isReadOnly]);
 
-    const isGlobalHeaderFooterModalOpen = useUIStateStore(state => state.isGlobalHeaderFooterModalOpen);
-    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
-    const currentSlideId = useUIStateStore(state => state.currentSlideId);
+    useEffect(() => {
+        const handleCopyPaste = (e: KeyboardEvent) => {
+            const isModifier = e.metaKey || e.ctrlKey;
+            if (!isModifier) return;
+
+            const key = e.key.toLowerCase();
+            const clipboard = useClipboardStore.getState();
+
+            if (key === 'c') {
+                const {
+                    elementId,
+                    slideId,
+                    layoutId,
+                    presentationId: menuPresentationId,
+                    isTextEditor,
+                } = useMenuStore.getState();
+                const activeEditor = useEditorStore.getState().activeEditor;
+
+                if (
+                    activeEditor ||
+                    isReadOnly ||
+                    !elementId ||
+                    !slideId ||
+                    !layoutId ||
+                    !menuPresentationId ||
+                    isTextEditor
+                ) {
+                    return;
+                }
+
+                e.preventDefault();
+                const element = usePresentationStore
+                    .getState()
+                    .getElement(menuPresentationId, slideId, layoutId, elementId);
+                if (element) {
+                    clipboard.setElement(JSON.parse(JSON.stringify(element)));
+                }
+                return;
+            }
+
+            if (key === 'v') {
+                const element = clipboard.element;
+                if (!element) return;
+
+                e.preventDefault();
+
+                const activeEditorId = useEditorStore.getState().activeEditorId;
+                const { elementId, slideId: menuSlideId, presentationId: menuPresentationId, isTextEditor } =
+                    useMenuStore.getState();
+
+                const presId = menuPresentationId || presentationId;
+
+                if (activeEditorId && activeSlideId) {
+                    insertAfter(activeEditorId, activeSlideId, presId);
+                } else if (elementId && !isTextEditor && menuSlideId) {
+                    insertAfter(elementId, menuSlideId, presId);
+                } else if (!elementId && activeSlideId) {
+                    usePresentationStore.getState().addLayoutWithElement(presId, activeSlideId, element);
+                }
+            }
+        };
+
+        const insertAfter = (
+            referenceElementId: string,
+            slideId: string,
+            presId: string
+        ) => {
+            const targetPresentationId = presId;
+            const slide = usePresentationStore
+                .getState()
+                .getSlide(targetPresentationId, slideId);
+            if (!slide) return;
+            const layout = slide.layouts.find(l =>
+                l.elements.some(el => el.id === referenceElementId)
+            );
+            if (!layout) return;
+            const refElement = layout.elements.find(el => el.id === referenceElementId);
+            if (!refElement) return;
+
+            const newElement = { ...clipboard.element!, id: generateId() };
+
+            if (layout.gridStructure.columns > 1) {
+                const updatedElements = [...layout.elements];
+                const index = updatedElements.findIndex(el => el.id === referenceElementId);
+                newElement.cellId = refElement.cellId;
+                updatedElements.splice(index + 1, 0, newElement);
+                usePresentationStore
+                    .getState()
+                    .updateLayout(targetPresentationId, slideId, layout.id, {
+                        elements: updatedElements,
+                    });
+            } else {
+                const cellId = generateId();
+                newElement.cellId = cellId;
+                const newLayout = {
+                    id: generateId(),
+                    gridStructure: {
+                        columns: 1,
+                        columnWidths: getColumnWidths(1),
+                        rows: [
+                            {
+                                id: generateId(),
+                                cells: [
+                                    {
+                                        id: cellId,
+                                        row: 0,
+                                        column: 1,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    type: layout.type,
+                    elements: [newElement],
+                    style: layout.style,
+                };
+                const layouts = [...slide.layouts];
+                const index = layouts.findIndex(l => l.id === layout.id);
+                layouts.splice(index + 1, 0, newLayout);
+                usePresentationStore
+                    .getState()
+                    .updateSlide(targetPresentationId, slideId, { layouts }, true);
+            }
+        };
+
+        window.addEventListener('keydown', handleCopyPaste);
+        return () => {
+            window.removeEventListener('keydown', handleCopyPaste);
+        };
+    }, [activeSlideId, isReadOnly]);
 
     if (!presentationExists) {
         return notFoundUI;
