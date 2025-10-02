@@ -146,7 +146,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     left: 0,
                     right: 0,
                     height: imageHeightVw,
-                    zIndex: 1,
+                    zIndex: 100,
                     maxWidth: 'calc(64.5em / var(--card-font-scale, 1))',
                 };
             }
@@ -158,7 +158,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     left: 0,
                     bottom: 0,
                     width: imageWidthPercent,
-                    zIndex: 1,
+                    zIndex: 100,
                 };
             case 'imageRight':
                 return {
@@ -168,7 +168,7 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
                     right: 0,
                     bottom: 0,
                     width: imageWidthPercent,
-                    zIndex: 1,
+                    zIndex: 100,
                 };
             case 'imageBackground':
                 // This is handled by slide background
@@ -320,10 +320,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({
         maxWidth: maxWidth ?? width,
         minHeight: minHeight ?? height,
         height,
-        ...(fullPage && { overflow: 'visible' }),
+        // ...(fullPage && { overflow: 'visible' }),
         // Дополнительные стили для PDF экспорта
         ...(isPdfExport && {
-            overflow: 'visible',
+            overflow: 'hidden',
             // padding: '20px',
         }),
     };

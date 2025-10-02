@@ -12,7 +12,7 @@ const baseCsp = [
     'worker-src blob:',
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-].join('; ');
+];
 
 const devExtras = [
     'connect-src http://localhost:3000 ws://localhost:3000', // HMR/DevTools

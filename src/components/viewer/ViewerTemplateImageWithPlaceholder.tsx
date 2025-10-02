@@ -14,8 +14,21 @@ const ViewerTemplateImageWithPlaceholder: React.FC<ViewerTemplateImageWithPlaceh
     imageStyle,
     showPlaceholder = false,
 }) => {
-    if (!templateType || templateType === 'imageBackground' || !imageStyle) {
-        return null;
+    const borderRaduisStyles: React.CSSProperties = {};
+
+    switch (templateType) {
+        case 'imageTop':
+            borderRaduisStyles.borderTopLeftRadius = 'var(--presentation-slide-border-radius)';
+            borderRaduisStyles.borderTopRightRadius = 'var(--presentation-slide-border-radius)';
+            break;
+        case 'imageLeft':
+            borderRaduisStyles.borderTopLeftRadius = 'var(--presentation-slide-border-radius)';
+            borderRaduisStyles.borderBottomLeftRadius = 'var(--presentation-slide-border-radius)';
+            break;
+        case 'imageRight':
+            borderRaduisStyles.borderTopRightRadius = 'var(--presentation-slide-border-radius)';
+            borderRaduisStyles.borderBottomRightRadius = 'var(--presentation-slide-border-radius)';
+            break;
     }
 
     // If we have an image URL, show the image
@@ -25,6 +38,7 @@ const ViewerTemplateImageWithPlaceholder: React.FC<ViewerTemplateImageWithPlaceh
                 style={{
                     ...imageStyle,
                     backgroundImage: `url(${imageUrl})`,
+                    ...borderRaduisStyles,
                 }}
                 aria-hidden="true"
             />
