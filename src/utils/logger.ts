@@ -6,6 +6,7 @@ export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 class Logger {
     private currentDate: string;
     private stream: fs.WriteStream;
+    private readonly logDir: string;
     private readonly order: Record<LogLevel, number> = {
         error: 0,
         warn: 1,
@@ -14,9 +15,10 @@ class Logger {
     };
 
     constructor(
-        private logDir: string = 'logs',
+        logDir: string,
         private level: LogLevel = 'debug'
     ) {
+        this.logDir = logDir;
         this.currentDate = this.formatDate(new Date());
         if (!fs.existsSync(this.logDir)) {
             fs.mkdirSync(this.logDir, { recursive: true });
@@ -85,7 +87,20 @@ class Logger {
     }
 }
 
-const logger = new Logger(process.env.LOG_DIR || 'logs', (process.env.LOG_LEVEL as LogLevel) || 'info');
+const resolveLogDirectory = (dirFromEnv?: string) => {
+    const trimmed = dirFromEnv?.trim();
+    if (!trimmed) {
+        return path.resolve(process.cwd(), '..', 'logs');
+    }
+
+    if (path.isAbsolute(trimmed)) {
+        return trimmed;
+    }
+
+    return path.resolve(process.cwd(), '..', trimmed);
+};
+
+const logger = new Logger(resolveLogDirectory(process.env.LOG_DIR), (process.env.LOG_LEVEL as LogLevel) || 'info');
 
 process.on('uncaughtException', err => {
     logger.error(`Uncaught exception: ${(err as Error).stack || String(err)}`);
