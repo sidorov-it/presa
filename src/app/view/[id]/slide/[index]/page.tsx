@@ -101,10 +101,14 @@ export default async function SlidePage(props: {
                             display: 'flex',
                             alignItems: isPdfExport ? 'flex-start' : 'center',
                             justifyContent: 'center',
-                            backgroundColor: isPdfExport ? 'white' : '#f8f9fa',
                             overflow: isPdfExport ? 'visible' : 'hidden',
                             paddingTop: isPdfExport ? '20px' : '0',
                             paddingBottom: isPdfExport ? '20px' : '0',
+                            backgroundImage: 'var(--presentation-page-background-image)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundAttachment: 'fixed',
                         }}
                     >
                         <SlideViewer

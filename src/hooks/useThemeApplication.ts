@@ -112,6 +112,12 @@ const applyThemeStyles = ({
         }
     };
 
+    // Helper function to remove CSS variable from both container and document
+    const removeCSSVariable = (property: string) => {
+        container.style.removeProperty(property);
+        document.documentElement.style.removeProperty(property);
+    };
+
     // Apply all CSS variables with change detection
     Object.entries(result.variables).forEach(([property, value]) => {
         // Get previous value for comparison
@@ -119,35 +125,56 @@ const applyThemeStyles = ({
         if (previousTheme) {
             const prevResult = generateCSSVariablesFromTheme({
                 theme: previousTheme,
-                backgroundSettings,
+                backgroundSettings: previousBackgroundSettings,
                 previousTheme: null
             });
             oldValue = prevResult.variables[property];
         }
 
-        setCSSVariableIfChanged(property, value, oldValue);
+        // If the new value is undefined or empty, remove the variable
+        if (value === undefined || value === '') {
+            if (oldValue !== undefined && oldValue !== '') {
+                removeCSSVariable(property);
+            }
+        } else {
+            setCSSVariableIfChanged(property, value, oldValue);
+        }
     });
 
     // Handle background image changes separately for better control
-    const currentImageUrl = backgroundSettings?.backgroundImage !== 'none'
-        ? backgroundSettings?.backgroundImage
-        : theme.colors.pageBackground?.imageUrl?.trim() || '';
+    let currentImageUrl;
+    if (backgroundSettings?.backgroundImage === 'none') {
+        currentImageUrl = '';
+    } else if (backgroundSettings?.backgroundImage !== 'none') {
+        currentImageUrl = backgroundSettings?.backgroundImage;
+    } else {
+        currentImageUrl = theme.colors.pageBackground?.imageUrl?.trim() || '';
+    }
+
+    // const currentImageUrl = backgroundSettings?.backgroundImage !== 'none'
+    //     ? backgroundSettings?.backgroundImage
+    //     : theme.colors.pageBackground?.imageUrl?.trim() || '';
 
     const prevImageUrl = previousBackgroundSettings?.backgroundImage !== 'none'
         ? previousBackgroundSettings?.backgroundImage
         : previousTheme?.colors.pageBackground?.imageUrl?.trim() || '';
 
     if (currentImageUrl !== prevImageUrl) {
-        if (currentImageUrl) {
+        if (currentImageUrl === 'none' || currentImageUrl === '') {
+            removeCSSVariable('--presentation-page-background-image');
+            removeCSSVariable('--presentation-page-background-size');
+            removeCSSVariable('--presentation-page-background-position');
+            removeCSSVariable('--presentation-page-background-repeat');
+            removeCSSVariable('--presentation-page-background-attachment');
+            container.style.backgroundImage = 'none';
+        } else if (currentImageUrl) {
             container.style.setProperty('--presentation-page-background-image', `url(${currentImageUrl})`);
+            document.documentElement.style.setProperty('--presentation-page-background-image', `url(${currentImageUrl})`);
             container.style.backgroundImage = `url(${currentImageUrl})`;
             container.style.backgroundSize = 'cover';
             container.style.backgroundPosition = 'center';
             container.style.backgroundRepeat = 'no-repeat';
             container.style.backgroundAttachment = 'fixed';
-        } else {
-            container.style.removeProperty('--presentation-page-background-image');
-            container.style.backgroundImage = 'none';
         }
     }
 
