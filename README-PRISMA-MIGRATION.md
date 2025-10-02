@@ -247,7 +247,7 @@ Prisma needs to perform transactions, which requires your MongoDB server to be r
 
 5. Update your `.env.local` file:
    ```
-   DATABASE_URL="mongodb://localhost:27017/presa3?replicaSet=rs0"
+   DATABASE_URL="mongodb://localhost:27017/slydle?replicaSet=rs0"
    ```
 
 #### Option 2: Using MongoDB Atlas
@@ -261,7 +261,7 @@ For production environments, consider using MongoDB Atlas which provides managed
 5. Get your connection string
 6. Update your `.env.local` file:
    ```
-   DATABASE_URL="mongodb+srv://username:password@cluster0.mongodb.net/presa3?retryWrites=true&w=majority"
+   DATABASE_URL="mongodb+srv://username:password@cluster0.mongodb.net/slydle?retryWrites=true&w=majority"
    ```
 
 #### Option 3: Disable Transactions (Not Recommended)

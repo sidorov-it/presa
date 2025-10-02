@@ -16,10 +16,12 @@ import {
     SmartLayoutType,
     SmartLayoutElement,
     GeneratedContent,
+    PresentationUpdateDiffRequest,
 } from '@/types';
 import getColumnWidths from '@/utils/getColumnWidths';
 import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import debounce from 'lodash/debounce';
+import cloneDeep from 'lodash/cloneDeep';
 import { generateId } from '@/utils/id';
 import { MutableRefObject } from 'react';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
@@ -27,25 +29,38 @@ import { getPredefinedGridStructures } from '@/utils/getPredefinedGridStructures
 import { fillSlots } from '@/elements/commonRegisrty';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { ElementType } from '@/types/elements';
+import { diff, type Diff } from 'deep-diff';
+
+export interface PresentationMeta {
+    id: string;
+    themeId: string | null;
+    backgroundSettings?: BackgroundSettings;
+}
 
 export interface PresentationState {
     presentations: IPresentation[];
+    lastSavedSnapshots: Record<string, IPresentation>;
+    currentPresentationMeta: PresentationMeta | null;
+    currentPresentationTitle: string;
     isLoading: boolean;
     isSaving: boolean;
     savingStatus: 'idle' | 'saving' | 'saved' | 'error';
     unsavedChanges: boolean;
     error: string | null;
     version: number;
-    incrementVersion: () => void;
+    // incrementVersion: () => void;
 
     recordAction: (
-        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+        action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any },
+        isForceRecodrTransaction?: boolean
     ) => void;
 
     // Работа с презентациями
     createPresentation: (title: string) => Promise<string>;
     loadPresentation: (id: string) => Promise<IPresentation | null>;
     loadPresentationsList: () => Promise<void>;
+    setCurrentPresentationMeta: (meta: PresentationMeta) => void;
+    setCurrentPresentationTitle: (title: string) => void;
     updatePresentation: (id: string, data: Partial<IPresentation>) => void;
     deletePresentation: (id: string) => void;
     getPresentation: (id?: string) => IPresentation | undefined;
@@ -92,7 +107,12 @@ export interface PresentationState {
     deleteColumnFromTable: (presentationId: string, slideId: string, layoutId: string, columnIndex: number) => void;
     deleteRowFromTable: (presentationId: string, slideId: string, layoutId: string, rowIndex: number) => void;
 
-    deleteLayout: (presentationId: string, slideId: string, layoutId: string) => void;
+    deleteLayout: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        isForceRecodrTransaction?: boolean
+    ) => void;
 
     updateAlignLayout: (
         presentationId: string,
@@ -133,7 +153,13 @@ export interface PresentationState {
         isTextElement?: boolean;
         isExcludeFromHistory?: boolean;
     }) => void;
-    deleteElement: (presentationId: string, slideId: string, layoutId: string, elementId: string) => void;
+    deleteElement: (
+        presentationId: string,
+        slideId: string,
+        layoutId: string,
+        elementId: string,
+        isForceRecodrTransaction?: boolean
+    ) => void;
     duplicateElement: (presentationId: string, slideId: string, elementId: string) => void;
     addColumn: (
         presentationId: string,
@@ -177,7 +203,14 @@ export interface PresentationState {
 
     addTableLayout: (presentationId: string, slideId: string, tableLayout: Layout) => void;
 
-    addLayoutWithElement: (presentationId: string, slideId: string, element: BaseElement) => void;
+    addLayoutWithElement: (
+        presentationId: string,
+        slideId: string,
+        element: BaseElement
+    ) => {
+        layoutId: string;
+        elementId: string;
+    };
 
     getTableElements: (presentationId: string, slideId: string, layoutId: string) => BaseElement[];
     getTableColumnElements: (
@@ -310,6 +343,8 @@ export interface PresentationState {
         content: GeneratedContent[],
         tiptapRefs: MutableRefObject<TipTapRefs>
     ) => void;
+
+    clearCurrentPresentationMeta: () => void;
 }
 
 const getTiptapRefsIds = (elements: BaseElement[]) => {
@@ -332,6 +367,9 @@ export const usePresentationStore = create<PresentationState>()(
     devtools(
         (set, get) => ({
             presentations: [],
+            lastSavedSnapshots: {},
+            currentPresentationMeta: null,
+            currentPresentationTitle: 'Новая презентация',
             isLoading: false,
             isSaving: false,
             savingStatus: 'idle',
@@ -339,30 +377,78 @@ export const usePresentationStore = create<PresentationState>()(
             error: null,
             version: 1,
 
-            incrementVersion: () => {
-                set(state => ({ version: state.version + 1, unsavedChanges: true }));
-            },
+            // incrementVersion: () => {
+            //     set(state => ({ version: state.version + 1, unsavedChanges: true }));
+            // },
 
             saveChanges: debounce(async (id: string) => {
                 const presentation = get().getPresentation(id);
                 if (!presentation) return;
 
+                const snapshot = get().lastSavedSnapshots[id];
+
+                if (!snapshot) {
+                    console.warn('No snapshot found for presentation save operation', id);
+                    return;
+                }
+
+                const changes = (diff(snapshot, presentation) ?? []) as Diff<IPresentation>[];
+
+                if (changes.length === 0) {
+                    return;
+                }
+
                 try {
                     set({ savingStatus: 'saving' });
+
+                    const payload: PresentationUpdateDiffRequest = { diff: changes };
 
                     const response = await fetch(`/api/presentations/${id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(presentation),
+                        body: JSON.stringify(payload),
                     });
 
                     if (!response.ok) {
                         throw new Error('Failed to save presentation');
                     }
 
-                    set({ savingStatus: 'saved', unsavedChanges: false });
+                    const updatedPresentation: IPresentation = await response.json();
+
+                    set(state => {
+                        const updatedPresentations = state.presentations.map(item =>
+                            item.id === id ? updatedPresentation : item
+                        );
+
+                        const isCurrentPresentation = state.currentPresentationMeta?.id === id;
+
+                        let currentPresentationMeta = state.currentPresentationMeta;
+                        let currentPresentationTitle = state.currentPresentationTitle;
+
+                        if (isCurrentPresentation && state.currentPresentationMeta) {
+                            currentPresentationMeta = {
+                                ...state.currentPresentationMeta,
+                                themeId: updatedPresentation.themeId ?? null,
+                                backgroundSettings: updatedPresentation.backgroundSettings,
+                            };
+                            currentPresentationTitle = updatedPresentation.title;
+                        }
+
+                        return {
+                            presentations: updatedPresentations,
+                            currentPresentationMeta,
+                            currentPresentationTitle,
+                            lastSavedSnapshots: {
+                                ...state.lastSavedSnapshots,
+                                [id]: cloneDeep(updatedPresentation),
+                            },
+                            savingStatus: 'saved',
+                            unsavedChanges: false,
+                        };
+                    });
+
                     setTimeout(() => {
                         set({ savingStatus: 'idle' });
                     }, 2000);
@@ -373,17 +459,18 @@ export const usePresentationStore = create<PresentationState>()(
             }, 1000),
 
             recordAction: (
-                action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any }
+                action: Omit<HistoryAction, 'timestamp' | 'transactionId' | 'changes'> & { before: any; after: any },
+                isForceRecodrTransaction?: boolean
             ) => {
                 const historyStore = useHistoryStore.getState();
-                if (historyStore.hasActiveTransaction(action.presentationId)) {
+                if (historyStore.hasActiveTransaction(action.presentationId) && !isForceRecodrTransaction) {
                     // Don't record individual actions during a transaction
                     // Let the transaction helper handle it
                 } else {
                     // Record action normally
                     historyStore.recordAction({ ...action });
                 }
-                get().incrementVersion();
+                // get().incrementVersion();
             },
 
             createPresentation: async (title: string) => {
@@ -406,6 +493,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                     set(state => ({
                         presentations: [...state.presentations, presentation],
+                        lastSavedSnapshots: {
+                            ...state.lastSavedSnapshots,
+                            [presentation.id]: cloneDeep(presentation),
+                        },
                     }));
 
                     // Инициализируем историю для новой презентации
@@ -430,11 +521,20 @@ export const usePresentationStore = create<PresentationState>()(
                         throw new Error('Failed to load presentations');
                     }
 
-                    const presentations = await response.json();
+                    const presentations = (await response.json()) as IPresentation[];
 
-                    set({
-                        presentations,
-                        isLoading: false,
+                    set(state => {
+                        const updatedSnapshots = { ...state.lastSavedSnapshots };
+
+                        presentations.forEach(presentation => {
+                            updatedSnapshots[presentation.id] = cloneDeep(presentation);
+                        });
+
+                        return {
+                            presentations,
+                            isLoading: false,
+                            lastSavedSnapshots: updatedSnapshots,
+                        };
                     });
                 } catch (error) {
                     console.error('Error loading presentations:', error);
@@ -443,6 +543,14 @@ export const usePresentationStore = create<PresentationState>()(
                         isLoading: false,
                     });
                 }
+            },
+
+            setCurrentPresentationMeta: (meta: PresentationMeta) => {
+                set({ currentPresentationMeta: meta });
+            },
+
+            setCurrentPresentationTitle: (title: string) => {
+                set({ currentPresentationTitle: title });
             },
 
             loadPresentation: async (id: string) => {
@@ -458,6 +566,16 @@ export const usePresentationStore = create<PresentationState>()(
 
                     set(state => ({
                         presentations: [...state.presentations.filter(p => p.id !== id), presentation],
+                        currentPresentationMeta: {
+                            id: presentation.id,
+                            themeId: presentation.themeId,
+                            backgroundSettings: presentation.backgroundSettings,
+                        },
+                        currentPresentationTitle: presentation.title,
+                        lastSavedSnapshots: {
+                            ...state.lastSavedSnapshots,
+                            [presentation.id]: cloneDeep(presentation),
+                        },
                     }));
 
                     // Инициализируем историю для загруженной презентации
@@ -481,11 +599,27 @@ export const usePresentationStore = create<PresentationState>()(
                 const beforeState = { ...get() };
 
                 set(state => {
+                    const updatedPresentations = state.presentations.map(presentation =>
+                        presentation.id === id ? { ...presentation, ...data, updatedAt: Date.now() } : presentation
+                    );
+
+                    let updatedMeta = state.currentPresentationMeta;
+                    const metaKeys = ['themeId', 'backgroundSettings'];
+                    const isMetaUpdated = Object.keys(data).some(key => metaKeys.includes(key));
+
+                    if (state.currentPresentationMeta?.id === id && isMetaUpdated) {
+                        updatedMeta = { ...state.currentPresentationMeta, ...(data as any) };
+                    }
+                    let updatedTitle = state.currentPresentationTitle;
+                    if (state.currentPresentationMeta?.id === id && data.title !== undefined) {
+                        updatedTitle = data.title;
+                    }
                     const updatedState = {
-                        presentations: state.presentations.map(presentation =>
-                            presentation.id === id ? { ...presentation, ...data, updatedAt: Date.now() } : presentation
-                        ),
+                        presentations: updatedPresentations,
+                        currentPresentationMeta: updatedMeta,
+                        currentPresentationTitle: updatedTitle,
                     };
+
                     get().recordAction({
                         type: 'presentation',
                         description: 'Update presentation details',
@@ -508,9 +642,14 @@ export const usePresentationStore = create<PresentationState>()(
                 // Clear history for the presentation being deleted
                 useHistoryStore.getState().clearHistory(id);
 
-                set(state => ({
-                    presentations: state.presentations.filter(presentation => presentation.id !== id),
-                }));
+                set(state => {
+                    const { [id]: _removedSnapshot, ...restSnapshots } = state.lastSavedSnapshots;
+
+                    return {
+                        presentations: state.presentations.filter(presentation => presentation.id !== id),
+                        lastSavedSnapshots: restSnapshots,
+                    };
+                });
             },
 
             getPresentation: id => {
@@ -623,6 +762,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                 // Add auto-save after completing the operation
                 get().saveChanges(presentationId);
+
+                setTimeout(() => {
+                    document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({ behavior: 'smooth' });
+                }, 200);
 
                 return slideId;
             },
@@ -1148,6 +1291,8 @@ export const usePresentationStore = create<PresentationState>()(
                 const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
                 if (!currentSlide) return;
 
+                const layoutId = generateId();
+                const elementId = generateId();
                 set(state => {
                     const gridStructure = getPredefinedGridStructures('blank');
 
@@ -1168,11 +1313,11 @@ export const usePresentationStore = create<PresentationState>()(
                                                 layouts: [
                                                     ...slide.layouts,
                                                     {
-                                                        id: generateId(),
+                                                        id: layoutId,
                                                         elements: [
                                                             {
                                                                 ...element,
-                                                                id: generateId(),
+                                                                id: elementId,
                                                                 cellId,
                                                             },
                                                         ],
@@ -1207,6 +1352,11 @@ export const usePresentationStore = create<PresentationState>()(
                 });
 
                 get().saveChanges(presentationId);
+
+                return {
+                    layoutId,
+                    elementId,
+                };
             },
 
             getTableElements: (presentationId, slideId, layoutId) => {
@@ -1417,6 +1567,7 @@ export const usePresentationStore = create<PresentationState>()(
                         after: updatedState,
                     });
 
+                    console.log('updatedState', updatedState);
                     return updatedState;
                 });
 
@@ -1424,7 +1575,7 @@ export const usePresentationStore = create<PresentationState>()(
                 get().saveChanges(presentationId);
             },
 
-            deleteLayout: (presentationId, slideId, layoutId) => {
+            deleteLayout: (presentationId, slideId, layoutId, isForceRecodrTransaction = false) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -1466,15 +1617,18 @@ export const usePresentationStore = create<PresentationState>()(
                         }),
                     };
 
-                    get().recordAction({
-                        type: 'layout',
-                        description: 'Delete layout',
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState,
-                    });
+                    get().recordAction(
+                        {
+                            type: 'layout',
+                            description: 'Delete layout',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState,
+                        },
+                        isForceRecodrTransaction
+                    );
 
                     return updatedState;
                 });
@@ -2149,54 +2303,64 @@ export const usePresentationStore = create<PresentationState>()(
             }) => {
                 const beforeStatePresentations = JSON.parse(JSON.stringify(get().presentations));
 
-                const currentPresentation = get().getPresentation(presentationId);
-                if (!currentPresentation) return;
+                set(state => {
+                    const newPresentations = state.presentations.map(presentation => {
+                        if (presentation.id !== presentationId) {
+                            return presentation;
+                        }
 
-                const currentSlide = currentPresentation.slides.find(slide => slide.id === slideId);
-                if (!currentSlide) return;
+                        // Ensure the element exists before creating new object references
+                        const slideExists = presentation.slides.some(s => s.id === slideId);
+                        const layoutExists =
+                            slideExists &&
+                            presentation.slides.find(s => s.id === slideId)!.layouts.some(l => l.id === layoutId);
+                        const elementExists =
+                            layoutExists &&
+                            presentation.slides
+                                .find(s => s.id === slideId)!
+                                .layouts.find(l => l.id === layoutId)!
+                                .elements.some(e => e.id === elementId);
 
-                const currentLayout = currentSlide.layouts.find(layout => layout.id === layoutId);
-                if (!currentLayout) return;
+                        if (!elementExists) {
+                            return presentation;
+                        }
 
-                const currentElement = currentLayout.elements.find(element => element.id === elementId);
-                if (!currentElement) return;
+                        return {
+                            ...presentation,
+                            updatedAt: Date.now(),
+                            slides: presentation.slides.map(slide => {
+                                if (slide.id !== slideId) {
+                                    return slide;
+                                }
+                                return {
+                                    ...slide,
+                                    layouts: slide.layouts.map(layout => {
+                                        if (layout.id !== layoutId) {
+                                            return layout;
+                                        }
+                                        return {
+                                            ...layout,
+                                            elements: layout.elements.map(element => {
+                                                if (element.id !== elementId) {
+                                                    return element;
+                                                }
+                                                return {
+                                                    ...element,
+                                                    ...data,
+                                                };
+                                            }),
+                                        };
+                                    }),
+                                };
+                            }),
+                        };
+                    });
 
-                // Directly modify the element in the current state to prevent unnecessary re-renders
-                // Find the presentation, slide, layout, and element by index for direct updates
-                const presentations = get().presentations;
-                const presentationIndex = presentations.findIndex(p => p.id === presentationId);
-                if (presentationIndex === -1) return;
+                    return { presentations: newPresentations };
+                });
 
-                const slides = presentations[presentationIndex].slides;
-                const slideIndex = slides.findIndex(s => s.id === slideId);
-                if (slideIndex === -1) return;
-
-                const layouts = slides[slideIndex].layouts;
-                const layoutIndex = layouts.findIndex(l => l.id === layoutId);
-                if (layoutIndex === -1) return;
-
-                const elements = layouts[layoutIndex].elements;
-                const elementIndex = elements.findIndex(e => e.id === elementId);
-                if (elementIndex === -1) return;
-
-                // Create a copy of the current state for history
-                const newState = { ...get() };
-
-                // Directly update the element while keeping reference identity of other objects
-                newState.presentations[presentationIndex].slides[slideIndex].layouts[layoutIndex].elements[
-                    elementIndex
-                ] = {
-                    ...elements[elementIndex],
-                    ...data,
-                };
-
-                // Update the timestamp to trigger auto-save
-                newState.presentations[presentationIndex].updatedAt = Date.now();
-
-                // Set the new state
-                set(newState);
-
-                // Запись действия в историю
+                // Record action for history
+                const afterStatePresentations = get().presentations;
                 if (createHistoryEntry && !isExcludeFromHistory) {
                     useHistoryStore.getState().recordTransactionAction({
                         type: 'element',
@@ -2207,7 +2371,7 @@ export const usePresentationStore = create<PresentationState>()(
                         elementId,
                         isTextElement,
                         before: { presentations: beforeStatePresentations },
-                        after: { presentations: get().presentations },
+                        after: { presentations: afterStatePresentations },
                     });
                 } else if (!isExcludeFromHistory) {
                     get().recordAction({
@@ -2219,13 +2383,13 @@ export const usePresentationStore = create<PresentationState>()(
                         elementId,
                         isTextElement,
                         before: { presentations: beforeStatePresentations },
-                        after: { presentations: newState.presentations },
+                        after: { presentations: afterStatePresentations },
                     });
                 }
                 get().saveChanges(presentationId);
             },
 
-            deleteElement: (presentationId, slideId, layoutId, elementId) => {
+            deleteElement: (presentationId, slideId, layoutId, elementId, isForceRecodrTransaction = false) => {
                 const beforeState = { ...get() };
 
                 const currentPresentation = get().getPresentation(presentationId);
@@ -2313,16 +2477,19 @@ export const usePresentationStore = create<PresentationState>()(
                     };
 
                     // Record the action for history
-                    get().recordAction({
-                        type: 'element',
-                        description: 'Delete element',
-                        presentationId,
-                        slideId,
-                        layoutId,
-                        elementId,
-                        before: { presentations: beforeState.presentations },
-                        after: updatedState,
-                    });
+                    get().recordAction(
+                        {
+                            type: 'element',
+                            description: 'Delete element',
+                            presentationId,
+                            slideId,
+                            layoutId,
+                            elementId,
+                            before: { presentations: beforeState.presentations },
+                            after: updatedState,
+                        },
+                        isForceRecodrTransaction
+                    );
                     return updatedState;
                 });
 
@@ -2373,8 +2540,18 @@ export const usePresentationStore = create<PresentationState>()(
                         columns: currentLayout.gridStructure.columns + 1,
                         columnWidths,
                         rows: currentLayout.gridStructure.rows.map((row: { id: string; cells: GridCell[] }) => {
-                            const updatedCells = [...row.cells];
+                            const updatedCells = row.cells.map(cell => {
+                                if (options?.direction === 'left') {
+                                    return {
+                                        ...cell,
+                                        column: cell.column + 1,
+                                    };
+                                }
+                                return cell;
+                            });
+
                             updatedCells.splice(newColumnIndex, 0, newColumn);
+                            updatedCells.sort((a, b) => a.column - b.column);
                             return {
                                 ...row,
                                 cells: updatedCells,
@@ -2969,7 +3146,7 @@ export const usePresentationStore = create<PresentationState>()(
                 });
 
                 // Increment version to ensure UI updates
-                get().incrementVersion();
+                // get().incrementVersion();
             },
 
             changeTemplate: (presentationId: string, slideId: string, layoutId: string, template: LayoutType) => {
@@ -3213,7 +3390,7 @@ export const usePresentationStore = create<PresentationState>()(
 
             getBackgroundSettings: (presentationId: string) => {
                 const presentation = get().getPresentation(presentationId);
-                return presentation?.backgroundSettings || {};
+                return presentation?.backgroundSettings;
             },
             setBackgroundSettings: (
                 presentationId: string,
@@ -3398,14 +3575,26 @@ export const usePresentationStore = create<PresentationState>()(
             },
             setFullState: (state: { presentations: IPresentation[] }) => {
                 if (state && Array.isArray(state.presentations)) {
-                    set({ presentations: JSON.parse(JSON.stringify(state.presentations)) });
+                    const presentationsClone = cloneDeep(state.presentations);
+                    const snapshots = { ...get().lastSavedSnapshots };
+
+                    presentationsClone.forEach(presentation => {
+                        if (!snapshots[presentation.id]) {
+                            snapshots[presentation.id] = cloneDeep(presentation);
+                        }
+                    });
+
+                    set({
+                        presentations: presentationsClone,
+                        lastSavedSnapshots: snapshots,
+                    });
                 }
             },
 
             setTheme: (presentationId, themeId) => {
                 const beforeState = { ...get() };
 
-                let updatedState: { presentations: IPresentation[] } = { presentations: [] };
+                let updatedState;
 
                 set(state => {
                     updatedState = {
@@ -3414,6 +3603,10 @@ export const usePresentationStore = create<PresentationState>()(
                                 ? { ...presentation, themeId, updatedAt: Date.now(), backgroundSettings: undefined }
                                 : presentation
                         ),
+                        currentPresentationMeta: {
+                            ...state.currentPresentationMeta!,
+                            themeId,
+                        },
                     };
 
                     return updatedState;
@@ -3747,6 +3940,10 @@ export const usePresentationStore = create<PresentationState>()(
 
                 //     return updatedState;
                 // });
+            },
+
+            clearCurrentPresentationMeta: () => {
+                set({ currentPresentationMeta: null, currentPresentationTitle: 'Новая презентация' });
             },
         }),
         {

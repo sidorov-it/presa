@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Heading } from '@/components/ui/heading';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card/Card';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import styles from './page.module.css';
@@ -253,12 +252,12 @@ const SettingsPage = () => {
             </div>
 
             <div className={styles.settingsGrid}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Настройки профиля</CardTitle>
-                        <CardDescription>Обновление персональной информации</CardDescription>
-                    </CardHeader>
-                    <CardContent className={styles.cardContent}>
+                <div className={`${styles.settingsSection} ${styles.profileSection}`}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionTitle}>Настройки профиля</h2>
+                        <p className={styles.sectionDescription}>Обновление персональной информации</p>
+                    </div>
+                    <div className={styles.sectionContent}>
                         <form onSubmit={handleSaveProfile} className={styles.form}>
                             <div className={styles.formGroup}>
                                 <label htmlFor="name" className={styles.label}>
@@ -290,15 +289,15 @@ const SettingsPage = () => {
                                 {isSaving ? 'Сохранение...' : 'Сохранить профиль'}
                             </Button>
                         </form>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Изменение пароля</CardTitle>
-                        <CardDescription>Обновление пароля учетной записи</CardDescription>
-                    </CardHeader>
-                    <CardContent className={styles.cardContent}>
+                <div className={`${styles.settingsSection} ${styles.passwordSection}`}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionTitle}>Изменение пароля</h2>
+                        <p className={styles.sectionDescription}>Обновление пароля учетной записи</p>
+                    </div>
+                    <div className={styles.sectionContent}>
                         <form onSubmit={handleChangePassword} className={styles.form}>
                             <div className={styles.formGroup}>
                                 <label htmlFor="currentPassword" className={styles.label}>
@@ -344,15 +343,15 @@ const SettingsPage = () => {
                                 {isSaving ? 'Изменение...' : 'Изменить пароль'}
                             </Button>
                         </form>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Настройки электронной почты</CardTitle>
-                        <CardDescription>Управление настройками уведомлений</CardDescription>
-                    </CardHeader>
-                    <CardContent className={styles.cardContent}>
+                <div className={`${styles.settingsSection} ${styles.emailSection}`}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionTitle}>Настройки электронной почты</h2>
+                        <p className={styles.sectionDescription}>Управление настройками уведомлений</p>
+                    </div>
+                    <div className={styles.sectionContent}>
                         <form onSubmit={handleEmailPreferences} className={styles.form}>
                             <div className={styles.emailPreferences}>
                                 <div>
@@ -381,8 +380,8 @@ const SettingsPage = () => {
                                 {isSaving ? 'Сохранение...' : 'Сохранить настройки'}
                             </Button>
                         </form>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -37,6 +37,10 @@ declare module '@tiptap/core' {
              * Unset the font size
              */
             unsetFontSize: () => ReturnType;
+            /**
+             * Get the last used font level
+             */
+            getLastFontLevel: () => ReturnType;
         };
     }
 }
@@ -93,6 +97,12 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
         };
     },
 
+    addStorage() {
+        return {
+            lastLevel: NORMAL_TEXT_LEVEL,
+        };
+    },
+
     addGlobalAttributes() {
         return [
             {
@@ -100,48 +110,68 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                 attributes: {
                     fontSize: {
                         default: null,
+                        keepOnSplit: true,
                         parseHTML: element => {
                             // Try to extract fontSize from style attribute or custom data attribute
                             const dataFontSize = element.getAttribute('data-font-size');
-                            // if (dataFontSize) return dataFontSize;
 
                             const classList = element.classList;
-                            // if (classList) return classList;
 
-                            let fontSize;
-                            if (!dataFontSize) {
-                                const classes = classList.value.split(' ');
+                            // Если есть классы, всегда сохраняем их
+                            if (classList && classList.length > 0) {
+                                const classes = Array.from(classList);
 
-                                const fontSizeInfo = fontSizeMapping.find(mapping =>
-                                    classes.includes(mapping.className)
-                                );
+                                // Пытаемся найти соответствующий fontSize по классам
+                                let fontSize;
+                                if (!dataFontSize) {
+                                    const fontSizeInfo = fontSizeMapping.find(mapping => {
+                                        // Проверяем, содержит ли элемент нужные классы
+                                        if (mapping.className.includes(' ')) {
+                                            // Для составных классов (например, 'heading-text heading-3')
+                                            const mappingClasses = mapping.className.split(' ');
+                                            return mappingClasses.every(cls => classes.includes(cls));
+                                        } else {
+                                            // Для одиночных классов
+                                            return classes.includes(mapping.className);
+                                        }
+                                    });
 
-                                if (fontSizeInfo) {
-                                    fontSize = fontSizeInfo.fontSize;
+                                    if (fontSizeInfo) {
+                                        fontSize = fontSizeInfo.fontSize;
+                                    }
                                 }
+
+                                // Всегда возвращаем результат если есть классы, даже если fontSize не найден
+                                return {
+                                    dataFontSize,
+                                    fontSize,
+                                    classList,
+                                    // Добавляем флаг, что классы были взяты из HTML
+                                    preserveOriginalClasses: true,
+                                };
                             }
 
-                            return {
-                                dataFontSize,
-                                fontSize,
-                                classList,
-                            };
-                            // return element.style.fontSize?.replace(/['"]+/g, '');
+                            // Если нет классов, возвращаем null чтобы не создавать пустой textStyle mark
+                            return null;
                         },
                         renderHTML: attributes => {
-                            if (typeof attributes.fontSize === 'string' && !attributes.fontSize) {
-                                return {};
+                            // Сначала проверяем, есть ли уже классы из парсинга HTML и флаг preserveOriginalClasses
+                            if (attributes.fontSize?.classList && attributes.fontSize?.preserveOriginalClasses) {
+                                return {
+                                    class: attributes.fontSize.classList.toString(),
+                                };
                             }
 
-                            if (
-                                attributes.fontSize &&
-                                !(typeof attributes.fontSize === 'string') &&
-                                !attributes.fontSize.fontSize &&
-                                !attributes.fontSize.classList
-                            ) {
-                                return {};
+                            // Если есть classList без preserveOriginalClasses, но с fontSize undefined,
+                            // это означает, что мы не смогли определить fontSize по классам,
+                            // но классы все равно должны быть сохранены
+                            if (attributes.fontSize?.classList && attributes.fontSize?.fontSize === undefined) {
+                                return {
+                                    class: attributes.fontSize.classList.toString(),
+                                };
                             }
 
+                            // Гарантируем, что для обычного текста всегда возвращается класс 'body-text normal-text'
                             let className;
 
                             const fontSize =
@@ -182,16 +212,13 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
                                         className = 'body-text normal-text';
                                         break;
                                 }
-                            }
-
-                            if (attributes.fontSize?.classList) {
-                                className = attributes.fontSize.classList.toString();
+                            } else {
+                                // Если fontSize не задан — это обычный текст
+                                className = 'body-text normal-text';
                             }
 
                             return {
-                                // style: `font-size: ${attributes.fontSize}`,
                                 class: className,
-                                // 'data-font-size': attributes.fontSize,
                             };
                         },
                     },
@@ -203,53 +230,55 @@ export const FontSizeExtension = Extension.create<FontSizeOptions>({
     addCommands() {
         return {
             setFontSize:
-                fontSize =>
-                    ({ chain }) => {
-                        let fontSizeValue;
+                (fontLevel: number) =>
+                    ({ commands }) => {
+                        // Store the last used font level
+                        this.storage.lastLevel = fontLevel;
 
-                        switch (fontSize) {
-                            case SMALL_TEXT_LEVEL:
-                                fontSizeValue = FONT_SIZE_SMALL_TEXT;
-                                break;
-                            case NORMAL_TEXT_LEVEL:
-                                fontSizeValue = null; // Default font size
-                                break;
-                            case BIG_TEXT_LEVEL:
-                                fontSizeValue = FONT_SIZE_BIG_TEXT;
-                                break;
-                            case HEADING_4_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_4; // Heading 4 size
-                                break;
-                            case HEADING_3_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_3; // Heading 3 size
-                                break;
-                            case HEADING_2_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_2; // Heading 2 size
-                                break;
-                            case HEADING_1_LEVEL:
-                                fontSizeValue = FONT_SIZE_HEADING_1; // Heading 1 size
-                                break;
-                            case TITLE_LEVEL:
-                                fontSizeValue = FONT_SIZE_TITLE;
-                                break;
-                            case BIG_HEADING_LEVEL:
-                                fontSizeValue = FONT_SIZE_BIG_HEADING;
-                                break;
-                            case VERY_BIG_HEADING_LEVEL:
-                                fontSizeValue = FONT_SIZE_VERY_BIG_HEADING;
-                                break;
-                            default:
-                                fontSizeValue = null;
+                        const fontSizeInfo = fontSizeMapping.find(mapping => {
+                            switch (fontLevel) {
+                                case SMALL_TEXT_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_SMALL_TEXT;
+                                case BIG_TEXT_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_BIG_TEXT;
+                                case HEADING_4_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_4;
+                                case HEADING_3_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_3;
+                                case HEADING_2_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_2;
+                                case HEADING_1_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_HEADING_1;
+                                case TITLE_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_TITLE;
+                                case BIG_HEADING_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_BIG_HEADING;
+                                case VERY_BIG_HEADING_LEVEL:
+                                    return mapping.fontSize === FONT_SIZE_VERY_BIG_HEADING;
+                                case NORMAL_TEXT_LEVEL:
+                                default:
+                                    return mapping.fontSize === null;
+                            }
+                        });
+
+                        if (fontSizeInfo) {
+                            return commands.setMark('textStyle', {
+                                fontSize: fontSizeInfo.fontSize,
+                            });
                         }
 
-                        // Only set the font size mark without changing the block type
-                        return chain().focus().setMark('textStyle', { fontSize: fontSizeValue }).run();
+                        return false;
                     },
             unsetFontSize:
                 () =>
-                    ({ chain }) => {
-                        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+                    ({ commands }) => {
+                        return commands.setMark('textStyle', {
+                            fontSize: null,
+                        });
                     },
+            getLastFontLevel: () => () => {
+                return this.storage.lastLevel || NORMAL_TEXT_LEVEL;
+            },
         };
     },
 });

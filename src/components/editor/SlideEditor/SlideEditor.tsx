@@ -1,8 +1,9 @@
+/* eslint-disable indent */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 'use client';
 
-import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject } from 'react';
+import React, { useState, useRef, useCallback, memo, useMemo, MutableRefObject, useEffect } from 'react';
 import { TipTapRefs } from '@/types';
 import { PresentationState, usePresentationStore } from '@/store/presentationStore';
 import styles from './SlideEditor.module.css';
@@ -11,7 +12,7 @@ import DragHandler from '../DragHandler';
 import TemplateButton from '../TemplateButton/TemplateButton';
 import AIEditButton from '../AIEditButton/AIEditButton';
 import ResizableTemplateImage from '../ResizableTemplateImage';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import deepEqual from 'deep-equal';
 import { useDnd } from '@/contexts/DragDropContext';
 import { TEXT_ELEMENT_TYPES } from '@/elements/menuRegistry';
@@ -19,31 +20,37 @@ import { useDndStore } from '@/store/dndStore';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import getNewLayoutWithTextEditor from '@/utils/getNewLayoutWithTextEditor';
 import AISlideGenerator from '../AISlideGenerator/AISlideGenerator';
-import { BsMagic } from 'react-icons/bs';
-import Portal from '@/components/Portal';
+import SlideBottomButtons from '../SlideBottomButtons/SlideBottomButtons';
+import TemplateTestModal from '../TemplateTestModal';
+import HeaderFooter from '../HeaderFooter/HeaderFooter';
+// import SlideHeaderFooterModal from '../SlideHeaderFooterModal/SlideHeaderFooterModal';
+import { applyGlobalHeaderFooterToSlide } from '@/utils/applyGlobalHeaderFooter';
+import { getHeaderFooterLogoPadding } from '@/utils/headerFooterPadding';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 
 interface SlideEditorProps {
     slideLayoutIds: string[];
     presentationId: string;
-    isSelected: boolean;
     tiptapRefs: MutableRefObject<TipTapRefs>;
     slideId: string;
-    handleSelectSlide: (slideId: string) => void;
     isLast: boolean;
 }
+
+const DEFAULT_CONTENT_PADDING = 'var(--card-inner-padding-y)';
 
 const SlideEditor: React.FC<SlideEditorProps> = ({
     slideLayoutIds,
     slideId,
     tiptapRefs,
     presentationId,
-    handleSelectSlide,
-    isSelected,
     isLast,
+    theme,
 }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const openMenu = useMenuStore.getState().openMenu;
+    const { hasActiveSubscription } = useSubscriptionCheck();
+
+    const openMenu = useUIStateStore.getState().openContextMenu;
 
     const slideRef = useRef<HTMLDivElement>(null);
 
@@ -53,12 +60,54 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const backgroundValue = usePresentationStore(state => state.getSlide(presentationId, slideId)?.background?.value);
 
     const contentAlignment = usePresentationStore(state => state.getSlide(presentationId, slideId)?.contentAlignment);
-    const imageSize = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageSize);
+    const slide = usePresentationStore(state => state.getSlide(presentationId, slideId));
+    const imageHeightRatio = slide?.imageHeightRatio;
+    const imageWidthRatio = slide?.imageWidthRatio;
+    // Get slide index and total slides for numbering
+    const presentation = usePresentationStore(state => state.getPresentation(presentationId));
+    const currentSlideIndex = presentation?.slides.findIndex(s => s.id === slideId) ?? 0;
+    const totalSlides = presentation?.slides.length ?? 1;
+
+    // Apply global header/footer settings
+    const effectiveSlide = slide
+        ? applyGlobalHeaderFooterToSlide(
+              slide,
+              currentSlideIndex,
+              totalSlides,
+              presentation?.headerFooterConfig || {
+                  header: {
+                      enabled: false,
+                      left: { type: 'none' },
+                      center: { type: 'none' },
+                      right: { type: 'none' },
+                  },
+                  footer: {
+                      enabled: false,
+                      left: { type: 'none' },
+                      center: { type: 'none' },
+                      right: { type: 'none' },
+                  },
+                  applyTo: 'all',
+              },
+              currentSlideIndex
+          )
+        : null;
+
+    // Get header and footer configurations
+    const header = effectiveSlide?.header;
+    const footer = effectiveSlide?.footer;
+
     const templateType = usePresentationStore(state => state.getSlide(presentationId, slideId)?.templateType);
     const imageUrl = usePresentationStore(state => state.getSlide(presentationId, slideId)?.imageUrl);
 
     const addEmptySlideSelector = useCallback((state: PresentationState) => state.addEmptySlide, []);
     const addEmptySlide = usePresentationStore(addEmptySlideSelector);
+
+    const selectedSlideId = useUIStateStore(state => state.selectedSlideId);
+    const isSelected = selectedSlideId === slideId;
+
+    const [showAIGenerator, setShowAIGenerator] = useState(false);
+    const [showTemplateTestModal, setShowTemplateTestModal] = useState(false);
 
     const handleDeleteElement = useCallback(
         (layoutId: string, elementId: string) => {
@@ -84,6 +133,57 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         [presentationId, slideId, addEmptySlide]
     );
 
+    const handleAddSlideWithAI = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowAIGenerator(true);
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+    };
+
+    const handleTestTemplate = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setShowTemplateTestModal(true);
+    }, []);
+
+    const handleTemplateTest = useCallback(
+        async (templateId: string) => {
+            try {
+                const response = await fetch('/api/ai/template-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ templateId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to test template');
+                }
+
+                const result = await response.json();
+
+                // Add the test slide after the current slide
+                const getSlideIndex = usePresentationStore.getState().getSlideIndex;
+                const slideIndex = getSlideIndex(presentationId, slideId);
+
+                if (slideIndex !== -1) {
+                    const newSlideIndex = slideIndex + 1;
+                    usePresentationStore.getState().addSlide(presentationId, result.slide, newSlideIndex);
+                }
+
+                setShowTemplateTestModal(false);
+            } catch (error) {
+                console.error('Error testing template:', error);
+                // TODO: Show error message to user
+            }
+        },
+        [presentationId, slideId]
+    );
+
+    const handleSelectSlide = useCallback((slideId: string) => {
+        useUIStateStore.getState().setSelectedSlideId(slideId);
+    }, []);
+
     const handleOpenSlideMenu = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             e.stopPropagation();
@@ -96,6 +196,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         },
         [slideId, openMenu, handleSelectSlide]
     );
+
+    const getSlideClassName = useCallback(() => {
+        let className = styles.slideWrapper;
+        if (isSelected && !isReadOnly) {
+            className += ` ${styles.slideSelected}`;
+        }
+        return className;
+    }, [isSelected, isReadOnly]);
 
     const getSlideStyle = useCallback(() => {
         const style: React.CSSProperties & Record<string, string> = {};
@@ -112,15 +220,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         return style;
     }, [imageUrl, templateType, backgroundType, backgroundValue]);
 
-    const getSlideClassName = useCallback(() => {
-        let className = styles.slideWrapper;
-        if (isSelected && !isReadOnly) {
-            className += ` ${styles.slideSelected}`;
-        }
-        return className;
-    }, [isSelected, isReadOnly]);
-
-    const slideMenuOpen = useMenuStore(state => state.checkSlideMenuIsOpen(slideId));
+    const slideMenuOpen = useUIStateStore(state => state.checkSlideContextMenuIsOpen(slideId));
 
     const handleSlideWrapperClick = useCallback(
         (e: React.MouseEvent) => {
@@ -267,7 +367,6 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         if (!templateType) return {};
 
         const baseStyle: React.CSSProperties = {
-            // backgroundImage: `url(${imageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -277,6 +376,16 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             baseStyle.backgroundImage = `url(${imageUrl})`;
         }
 
+        // Calculate dimensions based on ratios
+        const currentImageWidthRatio = imageWidthRatio || 0.33; // Default 33%
+        const currentImageHeightRatio = imageHeightRatio || 0.33; // Default 33%
+
+        // Convert ratios to CSS values
+        const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
+        // For height, we need to calculate based on slide width
+        // In editor, slide width is calc(64.5em / 1)
+        const imageHeightVw = `calc(64.5em * ${currentImageHeightRatio})`;
+
         switch (templateType) {
             case 'imageTop':
                 return {
@@ -285,8 +394,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: '33%',
-                    maxHeight: '200px',
+                    height: imageHeightVw,
                     zIndex: 1,
                 };
             case 'imageLeft':
@@ -296,9 +404,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     left: 0,
                     bottom: 0,
-                    width: '20%',
+                    width: imageWidthPercent,
                     zIndex: 1,
-                    maxWidth: '50%',
                 };
             case 'imageRight':
                 return {
@@ -307,9 +414,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                     top: 0,
                     right: 0,
                     bottom: 0,
-                    width: '20%',
+                    width: imageWidthPercent,
                     zIndex: 1,
-                    maxWidth: '50%',
                 };
             case 'imageBackground':
                 // This is handled by slide background
@@ -317,7 +423,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             default:
                 return {};
         }
-    }, [templateType, imageUrl]);
+    }, [templateType, imageUrl, imageWidthRatio, imageHeightRatio]);
 
     // Calculate content style for layouts based on template
     const contentStyle: React.CSSProperties = useMemo(() => {
@@ -326,8 +432,17 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
             position: 'relative',
             height: '100%',
             width: '100%',
-        };
+            // Font scaling now handled by gamma.app-style system in ElementContent
+        } as React.CSSProperties;
 
+        const rawHeaderPadding = getHeaderFooterLogoPadding(header);
+        const rawFooterPadding = getHeaderFooterLogoPadding(footer);
+
+        const resolvedHeaderPadding = rawHeaderPadding ?? DEFAULT_CONTENT_PADDING;
+        const resolvedFooterPadding = rawFooterPadding ?? DEFAULT_CONTENT_PADDING;
+
+        baseStyle.paddingTop = resolvedHeaderPadding;
+        baseStyle.paddingBottom = resolvedFooterPadding;
         // Apply content alignment
         if (contentAlignment) {
             baseStyle.display = 'flex';
@@ -349,29 +464,35 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
         // Additional styles for image templates
         if (templateType) {
-            // Get stored image size or use default values
-            let imageWidth = imageSize?.width || 'min(50%, 300px)';
-            if (parseInt(imageWidth, 10) > 50) {
-                imageWidth = '50%';
-            }
+            // Calculate dimensions based on ratios
+            const currentImageWidthRatio = imageWidthRatio || 0.33; // Default 33%
+            const currentImageHeightRatio = imageHeightRatio || 0.33; // Default 33%
 
-            const imageHeight = imageSize?.height || 'min(50%, 300px)';
-            const remainingWidth = `${100 - parseFloat(imageWidth)}%`;
-            const remainingHeight = `${100 - parseFloat(imageHeight)}%`;
+            // Convert ratios to CSS values
+            const imageWidthPercent = `${currentImageWidthRatio * 100}%`;
+
+            const remainingWidth = `${(1 - currentImageWidthRatio) * 100}%`;
+            // For remaining height, we need to subtract the image height from total height
+            const remainingHeight = `calc(100% - 64.5em * ${currentImageHeightRatio} - 1em)`;
 
             switch (templateType) {
-                case 'imageTop':
+                case 'imageTop': {
+                    const imageHeightValue = `calc(64.5em * ${currentImageHeightRatio})`;
+                    const topSpacing = resolvedHeaderPadding;
+                    const paddingTopValue = `calc(${imageHeightValue} + ${topSpacing} + 1em)`;
+
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        paddingTop: imageHeight,
+                        paddingTop: paddingTopValue,
                         height: remainingHeight,
                     };
+                }
                 case 'imageLeft':
                     return {
                         ...baseStyle,
                         position: 'relative',
-                        marginLeft: imageWidth,
+                        marginLeft: imageWidthPercent,
                         width: remainingWidth,
                     };
                 case 'imageRight':
@@ -395,22 +516,20 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         }
 
         return baseStyle;
-    }, [contentAlignment, templateType, imageSize?.width, imageSize?.height, imageUrl]);
+    }, [contentAlignment, templateType, header, footer, imageWidthRatio, imageHeightRatio, imageUrl]);
 
     // Add useDnd hook
     const { handleDragStart } = useDnd();
 
     const isDropTarget = useDndStore(({ state }) => state.indicators.slideIndicator === slideId);
     const isDragging = useDndStore(({ state }) => state.dragState === 'dragging' && state.source.slideId === slideId);
-    // Добавляем проверку на активный индикатор для слайда
-    // const isDropTarget = state.indicators.slideIndicator === slideId;
 
-    const [showAIGenerator, setShowAIGenerator] = useState(false);
-
-    const handleAddSlideWithAI = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        setShowAIGenerator(true);
-    };
+    // Cleanup body scroll on unmount
+    useEffect(() => {
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
 
     return (
         <div
@@ -430,11 +549,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
         >
             <div className={`${getSlideClassName()}`} data-slide="true">
                 <div className={`${styles.slideBorder} ${isSelected || isHovered ? styles.slideBorderMenuOpen : ''}`} />
-                <div
-                    ref={editorRef}
-                    className={`${styles.slideContent}`}
-                    data-slide-content="true"
-                >
+                <div ref={editorRef} className={`${styles.slideContent}`} data-slide-content="true">
                     {(isSelected || slideMenuOpen || isHovered) && !isReadOnly && (
                         <>
                             <DragHandler
@@ -484,12 +599,23 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                         />
                     )}
 
+                    {/* Header */}
+                    {hasActiveSubscription && header && (
+                        <HeaderFooter
+                            config={header}
+                            type="header"
+                            currentSlideIndex={currentSlideIndex}
+                            totalSlides={totalSlides}
+                            theme={theme}
+                        />
+                    )}
+
                     <div
                         className={styles.slideContainer}
                         data-slide-id={slideId}
                         data-slide-container="true"
-                        onClick={handleSlideClick}
                         style={contentStyle}
+                        onClick={handleSlideClick}
                     >
                         {slideLayoutIds.map((layoutId: string) => (
                             <LayoutContent
@@ -502,49 +628,57 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
                             />
                         ))}
                     </div>
+
+                    {/* Footer */}
+                    {hasActiveSubscription && footer && (
+                        <HeaderFooter
+                            config={footer}
+                            type="footer"
+                            currentSlideIndex={currentSlideIndex}
+                            totalSlides={totalSlides}
+                            theme={theme}
+                        />
+                    )}
                 </div>
 
                 {!isReadOnly && (
-                    <Portal>
-                        <div
-                            className={`${styles.slideDivider} ${isSelected || isHovered ? styles.slideDividerHovered : ''}`}
-                            style={{
-                                top:
-                                    (slideRef.current?.getBoundingClientRect().bottom || 0) +
-                                    window.scrollY -
-                                    (isLast ? 58 : 24),
-                            }}
-                        >
-                            <div className={styles.buttons}>
-                                <button
-                                    className={styles.slideDividerButton}
-                                    onClick={handleAddSlideAfter}
-                                    aria-label="Добавить слайд"
-                                >
-                                    +
-                                </button>
-                                <button
-                                    className={`${styles.slideDividerButton} ${styles.aiButton}`}
-                                    onClick={handleAddSlideWithAI}
-                                    aria-label="Создать слайд с помощью ИИ"
-                                >
-                                    <BsMagic />
-                                </button>
-                            </div>
-                        </div>
-                    </Portal>
+                    <SlideBottomButtons
+                        isShow={isSelected || isHovered}
+                        slideRef={slideRef}
+                        isLast={isLast}
+                        handleAddSlideAfter={handleAddSlideAfter}
+                        handleAddSlideWithAI={handleAddSlideWithAI}
+                        handleTestTemplate={handleTestTemplate}
+                    />
                 )}
 
                 {showAIGenerator && (
-                    <div className={styles.aiGeneratorOverlay} onClick={() => setShowAIGenerator(false)}>
+                    <div
+                        className={styles.aiGeneratorOverlay}
+                        onClick={() => {
+                            setShowAIGenerator(false);
+                            document.body.style.overflow = '';
+                        }}
+                    >
                         <div onClick={e => e.stopPropagation()}>
                             <AISlideGenerator
                                 presentationId={presentationId}
                                 slideId={slideId}
-                                onClose={() => setShowAIGenerator(false)}
+                                onClose={() => {
+                                    setShowAIGenerator(false);
+                                    document.body.style.overflow = '';
+                                }}
                             />
                         </div>
                     </div>
+                )}
+
+                {showTemplateTestModal && (
+                    <TemplateTestModal
+                        isOpen={showTemplateTestModal}
+                        onClose={() => setShowTemplateTestModal(false)}
+                        onSelectTemplate={handleTemplateTest}
+                    />
                 )}
             </div>
         </div>
@@ -553,17 +687,8 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
 
 // Enhanced memo comparison to perform deep comparison of relevant slide properties
 export default memo(SlideEditor, (prevProps, nextProps) => {
-    // Deep compare the slide layouts to ensure we only re-render when layouts change
-    // const prevLayouts = prevProps.slideLayoutsLength;
-    // const nextLayouts = nextProps.slideLayoutsLength;
-
-    // const layoutsEqual = prevLayouts.length === nextLayouts.length &&
-    //     prevLayouts.every((layout, index) =>
-    //         JSON.stringify(layout) === JSON.stringify(nextLayouts[index]));
-
     return (
         deepEqual(prevProps.slideLayoutIds, nextProps.slideLayoutIds) &&
-        prevProps.isSelected === nextProps.isSelected &&
         prevProps.presentationId === nextProps.presentationId &&
         prevProps.slideId === nextProps.slideId &&
         prevProps.isLast === nextProps.isLast

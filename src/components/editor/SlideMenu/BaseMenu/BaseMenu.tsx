@@ -2,7 +2,7 @@
 
 import React, { CSSProperties, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import styles from './BaseMenu.module.css';
 
 export interface BaseMenuProps {
@@ -16,15 +16,14 @@ export interface BaseMenuProps {
 
 export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, position, className, style, onClose }) => {
     const menuRef = useRef<HTMLDivElement>(null);
-    const isOpen = useMenuStore(state => state.isOpen) || isForceOpen;
+    const isOpen = useUIStateStore(state => state.isContextMenuOpen) || isForceOpen;
 
-    // Light theme styles
-    const lightThemeStyle = {
-        backgroundColor: 'white',
-        color: '#333',
-        borderColor: '#e2e8f0',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    };
+    const baseStyle = {
+        backgroundColor: 'var(--color-surface)',
+        color: 'var(--color-text)',
+        borderColor: 'var(--color-border)',
+        boxShadow: 'var(--shadow-lg)',
+    } as CSSProperties;
 
     // Calculate menu position
     const getMenuPosition = () => {
@@ -49,7 +48,7 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 onClose?.();
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             }
         };
 
@@ -63,20 +62,25 @@ export const BaseMenu: React.FC<BaseMenuProps> = ({ children, isForceOpen, posit
     }, [isOpen, onClose]);
 
     const menuPosition = getMenuPosition();
-    const menuStyle = {
-        position: 'absolute' as CSSProperties['position'],
+    const menuStyle: CSSProperties = {
+        position: 'absolute',
         left: `${menuPosition.left}px`,
         top: `${menuPosition.top}px`,
-        ...lightThemeStyle,
+        ...baseStyle,
         ...style,
-        zIndex: 9999,
+        zIndex: 220,
     };
 
     if (!isOpen) return null;
 
     // Render in portal to ensure proper z-index stacking
     return createPortal(
-        <div ref={menuRef} className={`${styles.layoutMenu} light-theme-only${className ? ` ${className}` : ''}`} style={menuStyle}>
+        <div
+            ref={menuRef}
+            data-is-menu="true"
+            className={`${styles.layoutMenu}${className ? ` ${className}` : ''}`}
+            style={menuStyle}
+        >
             <ul className={styles.layoutMenuList}>{children}</ul>
         </div>,
         document.body

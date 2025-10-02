@@ -1,5 +1,5 @@
 .viewerTiptap {
-    font-size: 18px;
+    /* Font size now inherited from parent container with gamma.app-style scaling */
 }
 
 .container {
@@ -48,7 +48,7 @@
     display: inline-flex;
     align-items: baseline;
     line-height: 1.25em;
-    font-size: 1.125em;
+    /* Font size now inherited from parent container with gamma.app-style scaling */
 }
 
 /* Smart layout styles */
@@ -236,4 +236,16 @@
     font-size: 0.875rem;
     margin: 0 1rem 0.75rem;
     /* color: var(--presentation-accent-blocks-text-color); */
+}
+.buttonGroup {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.viewerButton {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: inherit;
 }

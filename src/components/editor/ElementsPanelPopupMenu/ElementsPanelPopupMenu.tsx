@@ -1,56 +1,43 @@
-import { menuRegistry, SLIDE_TEMPLATE_TYPES } from '@/elements/menuRegistry';
+import { menuRegistry } from '@/elements/menuRegistry';
 import { useDndStore } from '@/store/dndStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { BaseElement } from '@/types';
 import { MenuItem } from '@/types/templates';
 import { getNewElement } from '@/utils/getNewElement';
 import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
+import { Tooltip } from '@/components/ui/tooltip';
 
 import styles from './ElementsPanelPopupMenu.module.css';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 export type CategoryType = 'basic' | 'media' | 'charts' | 'smart-layouts';
 
 interface PElementsPanelPopupMenuProps {
     isOpen: boolean;
     category: CategoryType | null;
-    presentationId: string;
-    slideId: string;
     onClose: () => void;
 }
 
-const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
-    isOpen,
-    category,
-    onClose,
-    slideId,
-    presentationId,
-}) => {
+const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({ isOpen, category, onClose }) => {
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, element: MenuItem) => {
         e.stopPropagation();
 
-        // Check if this is a slide template
-        const categoryData = menuRegistry.find(cat => cat.id === category);
-        const isSlideTemplate = categoryData?.isSlideTemplate || SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
-
-        if (isSlideTemplate) {
-            // Start drag with special handling for slide templates
-            useDndStore.getState().startNewElementDrag({
-                ...element,
-                isSlideTemplate: true,
-            });
-        } else {
-            // Normal element drag
-            useDndStore.getState().startNewElementDrag(element);
-        }
+        // Start drag with appropriate data
+        useDndStore.getState().startNewElementDrag(element);
     };
 
     // Функция для добавления элемента при клике
     const handleElementClick = (element: MenuItem) => {
         // Check if this is a slide template
-        const categoryData = menuRegistry.find(cat => cat.id === category);
-        const isSlideTemplate = categoryData?.isSlideTemplate || SLIDE_TEMPLATE_TYPES.includes(element.elementTypeId);
+        const isSlideTemplate = !!element.templateConfig;
 
         const isTable = element.elementTypeId.startsWith('table');
+        const slideId = useUIStateStore.getState().selectedSlideId;
+        const presentationId = useUIStateStore.getState().currentPresentationId;
+
+        if (!slideId || !presentationId) {
+            return;
+        }
 
         if (isSlideTemplate) {
             // TODO: Implement slide template click
@@ -74,15 +61,28 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
             //     });
             // }
         } else if (isTable) {
-            // TODO: Implement table click
-            const tableLayout = getNewLayoutWithTable(element);
+            const tableLayout = getNewLayoutWithTable(element.props?.columns, element.props?.rows);
             usePresentationStore.getState().addTableLayout(presentationId, slideId, tableLayout);
+
+            setTimeout(() => {
+                document.querySelector(`[data-layout-id="${tableLayout.id}"]`)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }, 300);
         } else {
             // Normal element click
             const newElement = getNewElement(element);
-            usePresentationStore
+            const { elementId } = usePresentationStore
                 .getState()
                 .addLayoutWithElement(presentationId, slideId, newElement as unknown as BaseElement);
+
+            setTimeout(() => {
+                document.querySelector(`[data-element-id="${elementId}"]`)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }, 300);
         }
     };
 
@@ -97,7 +97,7 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
             <div className={styles.popupMenuBody}>
                 {categoryData.subCategories ? (
                     // Для категорий с подкатегориями (например, basic)
-                    <div className={styles.subCategoriesContainer}>
+                    <div className={styles.subCategoriesContainer} key={categoryData.id}>
                         {categoryData.subCategories.map(subCategory => (
                             <div key={subCategory.id} className={styles.subCategoryWrapper}>
                                 {subCategory.label && (
@@ -105,23 +105,30 @@ const ElementsPanelPopupMenu: React.FC<PElementsPanelPopupMenuProps> = ({
                                 )}
                                 <div className={styles.subCategoryElements}>
                                     {subCategory.elements.map(element => (
-                                        <div
+                                        <Tooltip
                                             key={element.label}
-                                            className={styles.elementItem}
-                                            draggable
-                                            onDragStart={e => handleDragStart(e, element)}
-                                            onClick={() => handleElementClick(element)}
-                                            aria-label={`${subCategory.label}: ${element.label}`}
-                                            onKeyDown={e => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    handleElementClick(element);
-                                                }
-                                            }}
+                                            content="Перетащите элемент на слайд"
+                                            openDelay={300}
+                                            closeDelay={100}
                                         >
-                                            {element.Icon && <element.Icon />}
-                                            <div className={styles.elementItemLabel}>{element.label}</div>
-                                        </div>
+                                            <div
+                                                key={element.label}
+                                                className={styles.elementItem}
+                                                draggable
+                                                onDragStart={e => handleDragStart(e, element)}
+                                                onClick={() => handleElementClick(element)}
+                                                aria-label={`${subCategory.label}: ${element.label}`}
+                                                onKeyDown={e => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleElementClick(element);
+                                                    }
+                                                }}
+                                            >
+                                                {element.Icon && <element.Icon />}
+                                                <div className={styles.elementItemLabel}>{element.label}</div>
+                                            </div>
+                                        </Tooltip>
                                     ))}
                                 </div>
                             </div>

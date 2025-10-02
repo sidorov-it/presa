@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
@@ -9,7 +10,7 @@ interface RequestBody {
     presentationId: string;
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/spell');
     return withTokenDeduction(
         request,
@@ -50,3 +51,4 @@ export async function POST(request: NextRequest) {
         }
     );
 }
+export const POST = withLogging(POSTHandler);

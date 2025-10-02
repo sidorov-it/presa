@@ -12,14 +12,14 @@ export interface UserTokenBalance {
 export interface TokenPackage {
     id: string;
     name: string;
-    description?: string;
+    description?: string | null;
     tokens: number;
     price: number;
     currency: string;
     isActive: boolean;
     isPopular: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    // createdAt: Date;
+    // updatedAt: Date;
 }
 
 export interface TokenPurchase {
@@ -46,7 +46,7 @@ export interface TokenTransaction {
     type: TransactionType;
     description: string;
     purchaseId?: string;
-    llmRequestId?: string;
+    llmRequestId: string;
     balanceBefore: number;
     balanceAfter: number;
     createdAt: Date;
@@ -63,7 +63,7 @@ export interface TokenUsageData {
     userId: string;
     amount: number;
     description: string;
-    llmRequestId?: string;
+    llmRequestId: string;
     metadata?: any;
 }
 

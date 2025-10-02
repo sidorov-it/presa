@@ -1,3 +1,4 @@
+'use client';
 import { BubbleMenu, Editor } from '@tiptap/react';
 import { ColorPicker } from './ColorPicker';
 import styles from './BubbleMenu.module.css';
@@ -19,8 +20,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { EditorView } from '@tiptap/pm/view';
 import { EditorState } from '@tiptap/pm/state';
 import HeadingSelector from '../settings/HeadingSelector/HeadingSelector';
-import { HEADING_LEVELS } from '@/constants/consts';
+import { HEADING_LEVELS, NORMAL_TEXT_LEVEL } from '@/constants/consts';
 import getHeadingLevel from '@/utils/getHeadingLevel';
+import { LinkEditor } from './LinkEditor';
 
 export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     const [isHeadingMenuOpen, setIsHeadingMenuOpen] = useState(false);
@@ -47,14 +49,6 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         };
     }, [isHeadingMenuOpen]);
 
-    // const handleHeadingChange = useCallback(
-    //     (level: number) => {
-    //         editor.chain().focus(null, { scrollIntoView: false }).selectAll().setFontSize(level).blur().run();
-    //         setIsHeadingMenuOpen(false);
-    //     },
-    //     [editor]
-    // );
-
     const handleHeadingChange = useCallback(
         (level: number) => {
             // Применяем размер только к текущему выделению
@@ -72,7 +66,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
     );
 
     const handleClearStyles = useCallback(() => {
-        editor.chain().focus().clearNodes().unsetAllMarks().run();
+        editor.chain().focus().clearNodes().unsetAllMarks().setFontSize(NORMAL_TEXT_LEVEL).run();
     }, [editor]);
 
     // Force light theme styles for bubble menu
@@ -110,12 +104,20 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         []
     );
 
+    const handleColorReset = useCallback(() => {
+        editor.commands.unsetColor();
+    }, [editor]);
+
     const handleColorChange = useCallback(
         (color: string) => {
             editor.commands.setColor(color);
         },
         [editor]
     );
+
+    if (typeof window === 'undefined') {
+        return null;
+    }
 
     return (
         <BubbleMenu
@@ -160,7 +162,11 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     headingLevels={HEADING_LEVELS}
                 />
 
-                <ColorPicker onColorChange={handleColorChange} className={styles.button} />
+                <ColorPicker
+                    onColorChange={handleColorChange}
+                    isShowResetColor={true}
+                    onColorReset={handleColorReset}
+                />
 
                 <button
                     onClick={() => {
@@ -204,7 +210,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                     <BiCode size={16} />
                 </button> */}
 
-                {/* <LinkEditor editor={editor} className={styles.button} /> */}
+                <LinkEditor editor={editor} className={styles.button} />
 
                 <button
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -268,3 +274,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
         </BubbleMenu>
     );
 }
+
+// export default memo(CommonBubbleMenu, (prevProps, nextProps) => {
+//     return prevProps.editor === nextProps.editor;
+// });

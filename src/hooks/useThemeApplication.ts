@@ -1,267 +1,189 @@
+/* eslint-disable indent, prettier/prettier, no-nested-ternary */
 import { useEffect, useRef, useCallback } from 'react';
 import { Theme } from '@/types/theme';
-import getContrastTextColor from '@/utils/getContrastTextColor';
-import getHoverColor from '@/utils/getHoverColor';
 import { BackgroundSettings } from '@/types';
-import { getBorderColorForBackground } from '@/utils/themeUtils';
+import { ColorMode } from '@/components/ui/color-mode';
+import generateCSSVariablesFromTheme from '@/utils/themeCssGenerator';
 
 interface UseThemeApplicationOptions {
     theme: Theme | null;
     backgroundSettings?: BackgroundSettings;
     setColorMode?: (mode: 'light' | 'dark') => void;
+    colorMode?: ColorMode;
     defaultThemes?: Theme[];
     externalRef?: React.RefObject<HTMLDivElement>;
+    previousBackgroundSettings?: BackgroundSettings;
 }
 
-const applyThemeStyles = (
-    container: HTMLDivElement,
-    theme: Theme,
-    backgroundSettings?: BackgroundSettings,
-    setColorMode?: (mode: 'light' | 'dark') => void
-) => {
-    // Base colors
-    container.style.setProperty('--presentation-primary-accent', theme.colors.primaryAccent);
-    container.style.setProperty('--presentation-accent-blocks-color', theme.colors.primaryAccent);
+// Helper function to create a hash of theme properties for comparison
+const createThemeHash = (theme: Theme, backgroundSettings?: BackgroundSettings): string => {
+    // Create a stable, ordered representation of the theme data
+    const themeData = {
+        id: theme.id,
+        name: theme.name,
+        colors: {
+            primaryAccent: theme.colors.primaryAccent,
+            slideBackground: theme.colors.slideBackground,
+            pageBackground: theme.colors.pageBackground,
+        },
+        typography: {
+            headingFont: theme.typography.headingFont,
+            headingColor: theme.typography.headingColor,
+            headingWeight: theme.typography.headingWeight,
+            headingLineHeight: theme.typography.headingLineHeight,
+            headingLetterSpacing: theme.typography.headingLetterSpacing,
+            headingCapitalization: theme.typography.headingCapitalization,
+            bodyFont: theme.typography.bodyFont,
+            bodyColor: theme.typography.bodyColor,
+            bodyWeight: theme.typography.bodyWeight,
+            bodyLineHeight: theme.typography.bodyLineHeight,
+            bodyLetterSpacing: theme.typography.bodyLetterSpacing,
+            bodyCapitalization: theme.typography.bodyCapitalization,
+        },
+        design: {
+            slide: theme.design.slide,
+            blocks: theme.design.blocks,
+            buttons: theme.design.buttons,
+        },
+        backgroundSettings: backgroundSettings
+            ? {
+                backgroundColor: backgroundSettings.backgroundColor,
+                backgroundImage: backgroundSettings.backgroundImage,
+            }
+            : null,
+    };
+    return JSON.stringify(themeData);
+};
 
-    // container.style.setProperty('--presentation-accent-blocks-text-color', theme.colors.primaryAccentTextColor);
+// Debounce utility function with cancel support
+const debounce = <T extends (...args: any[]) => void>(func: T, wait: number): T & { cancel: () => void } => {
+    let timeout: NodeJS.Timeout | null = null;
 
-    // Text colors
-    container.style.setProperty('--presentation-heading-color', theme.typography.headingColor);
-    container.style.setProperty('--presentation-text-color', theme.typography.bodyColor);
-    container.style.setProperty('--presentation-slide-background', theme.colors.slideBackground);
+    const debouncedFunction = ((...args: any[]) => {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    }) as T & { cancel: () => void };
 
-    // Handle page background
-    if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
-        if (backgroundSettings?.backgroundColor) {
-            container.style.setProperty('--presentation-page-background-color', backgroundSettings.backgroundColor);
-        } else if (theme.colors.pageBackground.color) {
-            container.style.setProperty('--presentation-page-background-color', theme.colors.pageBackground.color);
-        } else {
-            container.style.setProperty('--presentation-page-background-color', '#f9fafb');
+    debouncedFunction.cancel = () => {
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+    };
+
+    return debouncedFunction;
+};
+
+const applyThemeStyles = ({
+    container,
+    theme,
+    colorMode,
+    backgroundSettings,
+    setColorMode,
+    previousTheme,
+    previousBackgroundSettings,
+}: {
+    container: HTMLDivElement;
+    theme: Theme;
+    colorMode?: 'light' | 'dark';
+    backgroundSettings?: BackgroundSettings;
+    setColorMode?: (mode: 'light' | 'dark') => void;
+    previousTheme?: Theme | null;
+    previousBackgroundSettings?: BackgroundSettings;
+}) => {
+    // Generate CSS variables using the unified generator
+    const result = generateCSSVariablesFromTheme({
+        theme,
+        backgroundSettings,
+        previousTheme
+    });
+
+    // Helper function to set CSS variable only if it changed
+    const setCSSVariableIfChanged = (
+        property: string,
+        newValue: string,
+        oldValue?: string
+    ) => {
+        // Force set on first render (when previousTheme is null)
+        // or when values actually changed
+        if (previousTheme === null || newValue !== oldValue) {
+            container.style.setProperty(property, newValue);
+            document.documentElement.style.setProperty(property, newValue);
+        }
+    };
+
+    // Helper function to remove CSS variable from both container and document
+    const removeCSSVariable = (property: string) => {
+        container.style.removeProperty(property);
+        document.documentElement.style.removeProperty(property);
+    };
+
+    // Apply all CSS variables with change detection
+    Object.entries(result.variables).forEach(([property, value]) => {
+        // Get previous value for comparison
+        let oldValue: string | undefined;
+        if (previousTheme) {
+            const prevResult = generateCSSVariablesFromTheme({
+                theme: previousTheme,
+                backgroundSettings: previousBackgroundSettings,
+                previousTheme: null
+            });
+            oldValue = prevResult.variables[property];
         }
 
-        if (theme.colors.pageBackground.imageUrl || backgroundSettings?.backgroundImage) {
-            let imageUrl;
-
-            if (backgroundSettings?.backgroundImage) {
-                if (backgroundSettings?.backgroundImage !== 'none') {
-                    imageUrl = backgroundSettings.backgroundImage;
-                }
-            } else {
-                imageUrl = theme.colors.pageBackground.imageUrl?.trim();
-            }
-
-            if (imageUrl) {
-                container.style.setProperty('--presentation-page-background-image', `url(${imageUrl})`);
-                container.style.backgroundImage = `url(${imageUrl})`;
-                container.style.backgroundSize = 'cover';
-                container.style.backgroundPosition = 'center';
-                container.style.backgroundRepeat = 'no-repeat';
-                container.style.backgroundAttachment = 'fixed';
-
-                container.style.setProperty('--presentation-page-background-size', 'cover');
-                container.style.setProperty('--presentation-page-background-position', 'center');
-                container.style.setProperty('--presentation-page-background-repeat', 'no-repeat');
-                container.style.setProperty('--presentation-page-background-attachment', 'fixed');
-            } else {
-                container.style.removeProperty('--presentation-page-background-image');
-                container.style.backgroundImage = 'none';
+        // If the new value is undefined or empty, remove the variable
+        if (value === undefined || value === '') {
+            if (oldValue !== undefined && oldValue !== '') {
+                removeCSSVariable(property);
             }
         } else {
-            container.style.removeProperty('--presentation-page-background-image');
-            container.style.backgroundImage = 'none';
+            setCSSVariableIfChanged(property, value, oldValue);
         }
+    });
+
+    // Handle background image changes separately for better control
+    let currentImageUrl;
+    if (backgroundSettings?.backgroundImage === 'none') {
+        currentImageUrl = '';
+    } else if (backgroundSettings?.backgroundImage !== 'none') {
+        currentImageUrl = backgroundSettings?.backgroundImage;
     } else {
-        container.style.setProperty('--presentation-page-background-color', '#f9fafb');
-        container.style.removeProperty('--presentation-page-background-image');
+        currentImageUrl = theme.colors.pageBackground?.imageUrl?.trim() || '';
     }
 
-    // Typography
-    container.style.setProperty('--presentation-heading-font', `'${theme.typography.headingFont}', sans-serif`);
-    container.style.setProperty('--presentation-heading-weight', theme.typography.headingWeight.toString());
-    container.style.setProperty('--presentation-body-font', `'${theme.typography.bodyFont}', sans-serif`);
-    container.style.setProperty('--presentation-body-weight', theme.typography.bodyWeight.toString());
+    // const currentImageUrl = backgroundSettings?.backgroundImage !== 'none'
+    //     ? backgroundSettings?.backgroundImage
+    //     : theme.colors.pageBackground?.imageUrl?.trim() || '';
 
-    // Heading typography
-    container.style.setProperty('--presentation-heading-line-height', theme.typography.headingLineHeight.toString());
-    container.style.setProperty('--presentation-heading-letter-spacing', theme.typography.headingLetterSpacing + 'px');
-    container.style.setProperty(
-        '--presentation-heading-capitalization',
-        theme.typography.headingCapitalization === 'none' ? 'none' : 'uppercase'
-    );
+    const prevImageUrl = previousBackgroundSettings?.backgroundImage !== 'none'
+        ? previousBackgroundSettings?.backgroundImage
+        : previousTheme?.colors.pageBackground?.imageUrl?.trim() || '';
 
-    // Body typography
-    container.style.setProperty('--presentation-body-line-height', theme.typography.bodyLineHeight.toString());
-    container.style.setProperty('--presentation-body-letter-spacing', theme.typography.bodyLetterSpacing + 'px');
-    container.style.setProperty(
-        '--presentation-body-capitalization',
-        theme.typography.bodyCapitalization === 'none' ? 'none' : 'uppercase'
-    );
-
-    // Slide design
-    container.style.setProperty('--presentation-slide-border-radius', theme.design.slide.borderRadius);
-
-    container.style.setProperty('--presentation-slide-opacity', theme.design.slide.opacity.toString());
-
-    // Shadow
-    const shadow = theme.design.slide.shadow;
-    const boxShadowColor = theme.design.slide.borderColor || 'rgba(0, 0, 0, 0.1)';
-
-    if (shadow === 'none') {
-        container.style.setProperty('--presentation-slide-shadow', 'none');
-    } else if (shadow === 'sm') {
-        container.style.setProperty(
-            '--presentation-slide-shadow',
-            `0 10px 15px -3px ${boxShadowColor},0 4px 6px -2px ${boxShadowColor}`
-        );
-    } else if (shadow === 'md') {
-        container.style.setProperty('--presentation-slide-shadow', `${boxShadowColor} 4px 4px 0px 0px`);
-    }
-
-    // Border width
-    const borderWidthMap = {
-        none: '0px',
-        thin: '3px',
-        medium: '4px',
-        thick: '5px',
-    };
-    container.style.setProperty(
-        '--presentation-slide-border-width',
-        borderWidthMap[theme.design.slide.borderWidth] || '0px'
-    );
-
-    container.style.setProperty('--presentation-slide-border-color', theme.design.slide.borderColor);
-
-    // Image masks
-    const getMaskImages = (imageShape: string | null) => {
-        const maskMap = {
-            default: { left: 'none', right: 'none', top: 'none' },
-            fade: {
-                left: 'url(/masks/gradient-left.svg)',
-                right: 'url(/masks/gradient-right.svg)',
-                top: 'url(/masks/gradient-top.svg)',
-            },
-            diagonal: {
-                left: 'url(/masks/diagonal-left.svg)',
-                right: 'url(/masks/diagonal-right.svg)',
-                top: 'url(/masks/diagonal-top.svg)',
-            },
-            round: {
-                left: 'url(/masks/circle-left.svg)',
-                right: 'url(/masks/circle-right.svg)',
-                top: 'url(/masks/circle-top.svg)',
-            },
-            'round-inverse': {
-                left: 'url(/masks/circle-inverted-left.svg)',
-                right: 'url(/masks/circle-inverted-right.svg)',
-                top: 'url(/masks/circle-inverted-top.svg)',
-            },
-            wiggle: {
-                left: 'url(/masks/wiggle-left.svg)',
-                right: 'url(/masks/wiggle-right.svg)',
-                top: 'url(/masks/wiggle-top.svg)',
-            },
-        };
-        if (!imageShape) {
-            return maskMap.default;
+    if (currentImageUrl !== prevImageUrl) {
+        if (currentImageUrl === 'none' || currentImageUrl === '') {
+            removeCSSVariable('--presentation-page-background-image');
+            removeCSSVariable('--presentation-page-background-size');
+            removeCSSVariable('--presentation-page-background-position');
+            removeCSSVariable('--presentation-page-background-repeat');
+            removeCSSVariable('--presentation-page-background-attachment');
+            container.style.backgroundImage = 'none';
+        } else if (currentImageUrl) {
+            container.style.setProperty('--presentation-page-background-image', `url(${currentImageUrl})`);
+            document.documentElement.style.setProperty('--presentation-page-background-image', `url(${currentImageUrl})`);
+            container.style.backgroundImage = `url(${currentImageUrl})`;
+            container.style.backgroundSize = 'cover';
+            container.style.backgroundPosition = 'center';
+            container.style.backgroundRepeat = 'no-repeat';
+            container.style.backgroundAttachment = 'fixed';
         }
-
-        return maskMap[imageShape as keyof typeof maskMap];
-    };
-
-    const maskImages = getMaskImages(theme.design.slide.imageShape);
-    container.style.setProperty('--presentation-slide-image-mask-image-left', maskImages.left);
-    container.style.setProperty('--presentation-slide-image-mask-image-right', maskImages.right);
-    container.style.setProperty('--presentation-slide-image-mask-image-top', maskImages.top);
-
-    // Block design
-    container.style.setProperty('--presentation-block-fill-type', theme.design.blocks.backgroundBlockFillType);
-
-    if (theme.design.blocks.backgroundBlockFillType === 'fill') {
-        container.style.setProperty('--presentation-block-background-opacity', '1');
-    } else if (theme.design.blocks.backgroundBlockFillType === 'semi') {
-        container.style.setProperty('--presentation-block-background-opacity', '0.5');
-    } else if (theme.design.blocks.backgroundBlockFillType === 'none') {
-        container.style.setProperty('--presentation-block-background-opacity', '0');
     }
 
-    const blockBorderWidthMap = {
-        none: '0px',
-        thin: '3px',
-        medium: '4px',
-        thick: '5px',
-    };
-    container.style.setProperty(
-        '--presentation-block-border-width',
-        blockBorderWidthMap[theme.design.blocks.borderWidth] || '0px'
-    );
-
-    if (theme.design.blocks.blockFillColorsType !== 'custom') {
-        container.style.setProperty('--presentation-block-background', theme.colors.primaryAccent);
-        container.style.setProperty(
-            '--presentation-block-border-color',
-            getBorderColorForBackground(theme.colors.primaryAccent)
-        );
-
-        container.style.setProperty(
-            '--presentation-block-background-custom-type',
-            theme.design.blocks.blockFillColorsType
-        );
-    } else if (theme.design.blocks.blockFillColorsType === 'custom') {
-        theme.design.blocks.blockBackgroundCustomColors.forEach((color, index) => {
-            container.style.setProperty(`--presentation-block-background-custom-${index + 1}`, color);
-            container.style.setProperty(
-                `--presentation-block-border-color-custom-${index + 1}`,
-                getBorderColorForBackground(color)
-            );
-        });
-        container.style.setProperty(
-            '--presentation-block-background-custom-count',
-            theme.design.blocks.blockBackgroundCustomColors.length.toString()
-        );
-    }
-
-    const shadowMap = [
-        { value: 'none', shadow: 'none' },
-        { value: 'sm', shadow: '0 1px 2px 0 rgb(0 0 0 / 0.2)' },
-        { value: 'md', shadow: '0 4px 6px -1px rgb(0 0 0 / 0.4)' },
-    ];
-
-    if (theme.design.blocks.shadow === 'none') {
-        container.style.setProperty('--presentation-block-shadow', 'none');
-    } else if (theme.design.blocks.shadow === 'sm') {
-        container.style.setProperty('--presentation-block-shadow', shadowMap[1].shadow);
-    } else if (theme.design.blocks.shadow === 'md') {
-        container.style.setProperty('--presentation-block-shadow', shadowMap[2].shadow);
-    }
-
-    if (theme.design.buttons.buttonColor) {
-        container.style.setProperty('--presentation-button-color', theme.design.buttons.buttonColor);
-
-        const hoverColor = getHoverColor(theme.design.buttons.buttonColor, 15);
-        container.style.setProperty('--presentation-button-hover-color', hoverColor);
-        container.style.setProperty(
-            '--presentation-button-text-color',
-            getContrastTextColor(theme.design.buttons.buttonColor)
-        );
-    }
-    // Button and link design
-
-    const buttonRadiusMap = {
-        square: '1.5px',
-        capsule: 'var(--chakra-radii-full)',
-        default: '4px',
-        rounded: '8px',
-    };
-    container.style.setProperty(
-        '--presentation-button-radius',
-        buttonRadiusMap[theme.design.buttons.buttonShape] || '4px'
-    );
-
-    container.style.setProperty(
-        '--presentation-link-color',
-        theme.design.buttons.linkColor || theme.colors.primaryAccent
-    );
+    // Apply background styles
+    Object.entries(result.backgroundStyles).forEach(([property, value]) => {
+        if (value !== undefined && value !== null) {
+            container.style.setProperty(property, String(value));
+        }
+    });
 
     // Set color mode if provided
     if (setColorMode) {
@@ -287,7 +209,10 @@ const applyThemeStyles = (
             return false;
         })(theme.colors.slideBackground);
 
-        setColorMode(isDarkMode ? 'dark' : 'light');
+        const newColorMode = isDarkMode ? 'dark' : 'light';
+        if (colorMode !== newColorMode) {
+            setColorMode(newColorMode);
+        }
     }
 };
 
@@ -314,15 +239,23 @@ const validateTheme = (theme: Theme): boolean => {
 };
 
 export const useThemeApplication = (options: UseThemeApplicationOptions) => {
-    const { theme, backgroundSettings, setColorMode, defaultThemes, externalRef } = options;
-    const appliedThemeRef = useRef<string | null>(null);
+    const { theme, backgroundSettings, setColorMode, defaultThemes, externalRef, colorMode } = options;
+    const appliedThemeHashRef = useRef<string | null>(null);
+    const previousThemeRef = useRef<Theme | null>(null);
+    const previousBackgroundSettingsRef = useRef<BackgroundSettings | null>(null);
     const internalRef = useRef<HTMLDivElement>(null);
+    const isApplyingRef = useRef(false);
 
     // Use external ref if provided, otherwise use internal ref
     const containerRef = externalRef || internalRef;
 
     const applyTheme = useCallback(
         (container: HTMLDivElement) => {
+            // Prevent concurrent applications
+            if (isApplyingRef.current) {
+                return;
+            }
+
             // Use default theme if no theme is provided and defaultThemes available
             let activeTheme = theme;
             if (!activeTheme && defaultThemes && defaultThemes.length > 0) {
@@ -333,9 +266,9 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
                 return;
             }
 
-            // Check if we already applied this exact theme
-            const themeId = activeTheme.id || activeTheme.name;
-            if (appliedThemeRef.current === themeId) {
+            // Check if we already applied this exact theme configuration
+            const themeHash = createThemeHash(activeTheme, backgroundSettings);
+            if (appliedThemeHashRef.current === themeHash) {
                 return;
             }
 
@@ -344,13 +277,34 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
             }
 
             try {
-                applyThemeStyles(container, activeTheme, backgroundSettings, setColorMode);
-                appliedThemeRef.current = themeId;
+                isApplyingRef.current = true;
+                applyThemeStyles({
+                    container,
+                    theme: activeTheme,
+                    backgroundSettings,
+                    setColorMode,
+                    colorMode,
+                    previousTheme: previousThemeRef.current,
+                    previousBackgroundSettings: previousBackgroundSettingsRef.current || undefined,
+                });
+                appliedThemeHashRef.current = themeHash;
+                previousThemeRef.current = { ...activeTheme }; // Store deep copy
+                previousBackgroundSettingsRef.current = backgroundSettings ? { ...backgroundSettings } : null;
             } catch (error) {
                 console.error('Error applying theme', error);
+            } finally {
+                isApplyingRef.current = false;
             }
         },
-        [theme, backgroundSettings, setColorMode, defaultThemes]
+        [theme, backgroundSettings, setColorMode, defaultThemes, colorMode]
+    );
+
+    // Create debounced version for rapid changes
+    const debouncedApplyTheme = useCallback(
+        debounce((container: HTMLDivElement) => {
+            applyTheme(container);
+        }, 16), // ~60fps for smooth updates
+        [applyTheme]
     );
 
     useEffect(() => {
@@ -359,18 +313,29 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
             return;
         }
 
-        applyTheme(container);
+        // Use debounced version to prevent rapid successive applications
+        debouncedApplyTheme(container);
+    }, [debouncedApplyTheme, containerRef]);
 
+    useEffect(() => {
         return () => {
-            if (container) {
+            const container = containerRef.current;
+
+            // Only clear styles if we're actually unmounting, not just updating
+            if (container && !theme) {
                 container.removeAttribute('style');
             }
             if (setColorMode) {
                 setColorMode('light');
             }
-            appliedThemeRef.current = null;
+            appliedThemeHashRef.current = null;
+            previousThemeRef.current = null;
+            previousBackgroundSettingsRef.current = null;
+            isApplyingRef.current = false;
+            // Cancel any pending debounced calls
+            debouncedApplyTheme.cancel?.();
         };
-    }, [applyTheme, setColorMode, containerRef]);
+    }, [setColorMode]);
 
     return { containerRef: internalRef, applyTheme };
 };

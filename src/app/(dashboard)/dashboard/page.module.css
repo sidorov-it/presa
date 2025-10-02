@@ -1,7 +1,9 @@
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+    /* Layout is now handled by the main dashboard layout */
+}
+
+.container [data-class="slide-container"] {
+    min-height: var(--card-min-height) !important;
 }
 
 .header {
@@ -10,23 +12,17 @@
     margin-bottom: 1.5rem;
 }
 
-@media (max-width: 1023px) {
-    .header {
-        padding-left: 3rem;
-    }
-}
-
 .sortContainer {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1rem;
-    justify-content: end;
+    justify-content: flex-start;
 }
 
 .sortLabel {
     color: var(--color-text);
-    font-size: var(--text-sm);
+    font-size: 1rem;
 }
 
 .sortSelect {
@@ -40,16 +36,12 @@
 @media (min-width: 768px) {
     .header {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
     }
 }
 
-.title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text);
-}
+/* Title styling moved to Heading component */
 
 .buttonGroup {
     margin-top: 1rem;
@@ -153,21 +145,10 @@
 }
 
 .presentationsGrid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .presentationsGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .presentationsGrid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    /* justify-content: space-between; */
 }
 
 .presentationCard {
@@ -178,6 +159,7 @@
     overflow: hidden;
     cursor: pointer;
     transition: all 0.2s ease;
+    width: 360px;
 }
 
 .presentationCard:hover {
@@ -186,7 +168,7 @@
 }
 
 .previewArea {
-    height: 10rem;
+    height: 202px;
     background-color: var(--color-background);
     position: relative;
     cursor: pointer;
@@ -198,7 +180,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 5;
 }
 
 .previewText {
@@ -418,6 +400,7 @@
     color: var(--color-text);
     border-radius: var(--radius-md);
     transition: all 0.2s ease;
+    color: #fff;
 }
 
 .buttonDelete:disabled {

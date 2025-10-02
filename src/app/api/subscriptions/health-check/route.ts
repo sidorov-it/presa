@@ -1,0 +1,24 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { performSubscriptionHealthCheck } from '@/utils/subscriptions';
+import { authOptions } from '../../auth/[...nextauth]/route';
+
+export async function POST() {
+    try {
+        const session = await getServerSession(authOptions);
+
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Perform subscription health check
+        await performSubscriptionHealthCheck(session.user.id);
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Subscription health check API error:', error);
+
+        // Don't return error to client - this is a background operation
+        return NextResponse.json({ success: true });
+    }
+}

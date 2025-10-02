@@ -26,7 +26,9 @@ const SettingsSelector: React.FC<SettingsSelectorProps> = ({ value, setValue, op
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const handleSelect = (option: (typeof options)[number]) => {
+    const handleSelect = (event: React.MouseEvent<HTMLButtonElement>, option: (typeof options)[number]) => {
+        event.preventDefault();
+        event.stopPropagation();
         setValue(option.id);
         setIsOpen(false);
     };
@@ -54,7 +56,7 @@ const SettingsSelector: React.FC<SettingsSelectorProps> = ({ value, setValue, op
                         <button
                             key={option.id}
                             className={`${styles.shapeOption} ${value === option.id ? styles.selected : ''}`}
-                            onClick={() => handleSelect(option)}
+                            onClick={ev => handleSelect(ev, option)}
                             aria-label={`Select ${option.label} shape`}
                         >
                             {option.Icon && (

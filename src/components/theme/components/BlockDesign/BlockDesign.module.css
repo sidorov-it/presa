@@ -11,15 +11,17 @@
     margin-right: 8px;
     display: inline-block;
     cursor: pointer;
+    border: 1px solid #333;
 }
 
 
 .radioItemText-subtle {
-    background-color: var(--chakra-colors-trueblue-400);
+    background-color: var(--presentation-accent-blocks-color-subtle);
+    opacity: 0.2;
 }
 
 .radioItemText-primary {
-    background-color: var(--chakra-colors-trueblue-400);
+    background-color: var(--presentation-accent-blocks-color);
 }
 
 .radioItemText-custom {

@@ -154,7 +154,7 @@ ${currentContent}
 ${instructions ? `Дополнительные инструкции: ${instructions}` : ''}`;
 };
 
-export default async function rewriteSlideContent(userId: string, slide: Slide, instructions?: string) {
+export default async function rewriteSlideContent(userId: string, slide: Slide, instructions?: string, requestId: string) {
     try {
         const llmService = createLLMService({ userId });
 
@@ -168,6 +168,7 @@ export default async function rewriteSlideContent(userId: string, slide: Slide, 
         const response = await llmService.generate(prompt, {
             functions: [functionSchema],
             function_call: { name: 'rewrite_slide_text' },
+            ...(requestId ? { requestId } : {}),
         });
 
         // const updatedSlide: Slide = cloneDeep(slide);

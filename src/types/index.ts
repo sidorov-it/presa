@@ -1,3 +1,4 @@
+import type { Diff } from 'deep-diff';
 import { EditorWithMethods } from '@/components/tiptap/extensions/ArrowNavigationExtension';
 import { IconType } from 'react-icons/lib';
 import { TemplateElement } from './templates';
@@ -116,6 +117,8 @@ export interface SmartLayoutItem {
     text: string;
     imageUrl?: string;
     iconUrl?: string;
+    backgroundColor?: string;
+    textColor?: string;
     stats?: { value: string; label: string };
     metadata?: Record<string, unknown>;
     // AI generation fields for images (isGenerating хранится только на клиенте)
@@ -138,6 +141,12 @@ export interface SmartLayoutElement extends BaseElement {
     direction?: 'horizontal' | 'vertical';
     backgroundColor?: string;
     textColor?: string;
+    // Timeline specific settings
+    sides?: 'one' | 'two';
+    showNumbers?: boolean;
+    showLines?: boolean;
+    timelineColor?: string;
+    numbersColor?: string;
 }
 
 // Элемент редактора Tiptap
@@ -182,11 +191,18 @@ export interface ChartElement extends BaseElement {
     legendPosition?: 'left' | 'right' | 'top' | 'bottom';
 }
 
+export interface ButtonItem {
+    id: string;
+    text: string;
+    link?: string;
+    buttonStyle?: 'filled' | 'outlined';
+    alignment?: 'left' | 'center' | 'right';
+    color?: string;
+}
+
 export interface ButtonElement extends BaseElement {
-    link: string;
-    buttonStyle: 'filled' | 'outlined';
-    alignment: 'left' | 'center' | 'right';
-    color: string;
+    items: ButtonItem[];
+    alignment?: 'left' | 'center' | 'right';
 }
 
 export interface BoxElement extends BaseElement {
@@ -223,6 +239,34 @@ export interface Layout {
     parentId?: string; // Reference to parent layout if nested
 }
 
+// Header/Footer position content types
+export type HeaderFooterContentType = 'none' | 'text' | 'logo' | 'theme-logo' | 'slide-number';
+
+export type HeaderFooterLogoSize = 'S' | 'M' | 'L' | 'XL';
+
+export interface HeaderFooterPosition {
+    type: HeaderFooterContentType;
+    content?: string; // Text content or logo URL
+    logoSize?: HeaderFooterLogoSize;
+}
+
+export type HeaderFooterItem = HeaderFooterPosition;
+
+export interface HeaderFooterConfig {
+    enabled: boolean;
+    left: HeaderFooterPosition;
+    center: HeaderFooterPosition;
+    right: HeaderFooterPosition;
+}
+
+// Slide-specific header/footer configuration that can explicitly disable or use custom settings
+export interface SlideHeaderFooterConfig extends HeaderFooterConfig {
+    // When true, this slide explicitly overrides global settings
+    // When false, this slide explicitly disables header/footer (even if global is enabled)
+    // When undefined, slide uses global settings
+    overrideGlobal?: boolean;
+}
+
 export interface Slide {
     id: string;
     title?: string;
@@ -234,20 +278,27 @@ export interface Slide {
     style?: Style;
     templateType?: (typeof SLIDE_TEMPLATES)[number]['value'];
     imageUrl?: string;
-    imageSize?: {
-        width?: string;
-        height?: string;
-    };
+    textColor?: string;
+    imageHeightRatio?: number; // Height of image as ratio to slide width (0-1)
+    imageWidthRatio?: number; // Width of image as ratio to slide width (0-1) for left/right templates
     contentAlignment?: 'top' | 'center' | 'bottom';
     hidden?: boolean;
+    header?: SlideHeaderFooterConfig;
+    footer?: SlideHeaderFooterConfig;
 }
 
 export interface BackgroundSettings {
-    backgroundColor?: string;
-    backgroundImage?: string;
+    backgroundColor?: string | null;
+    backgroundImage?: string | null;
 }
 
 // Интерфейс презентации
+export interface GlobalHeaderFooterConfig {
+    header: HeaderFooterConfig;
+    footer: HeaderFooterConfig;
+    applyTo: 'all' | 'except-first' | 'except-first-last' | 'current-slide';
+}
+
 export interface IPresentation {
     id: string;
     title: string;
@@ -257,12 +308,17 @@ export interface IPresentation {
     createdAt: number;
     updatedAt: number;
     backgroundSettings?: BackgroundSettings;
+    headerFooterConfig?: GlobalHeaderFooterConfig;
 
     // AI generation metadata
     durationMinutes?: number;
     goal?: string;
     audience?: string;
     tone?: string;
+}
+
+export interface PresentationUpdateDiffRequest {
+    diff: Diff<IPresentation>[];
 }
 
 // Definition for registry element configuration
@@ -366,4 +422,32 @@ export interface GeneratedContent {
     elementId: string;
     content: string | Record<string, string>;
     imageUrl?: string;
+}
+
+// Export/Import types
+export interface ExportPresentationData {
+    version: string;
+    exportedAt: string;
+    presentation: {
+        title: string;
+        description?: string;
+        slides: Slide[];
+        themeId?: string;
+        backgroundSettings?: BackgroundSettings;
+        durationMinutes?: number;
+        goal?: string;
+        audience?: string;
+        tone?: string;
+    };
+}
+
+export interface ImportPresentationResponse {
+    message: string;
+    presentation: {
+        id: string;
+        title: string;
+        description?: string;
+        createdAt: Date;
+        updatedAt: Date;
+    };
 }

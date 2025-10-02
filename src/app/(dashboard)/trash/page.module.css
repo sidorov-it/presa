@@ -1,28 +1,9 @@
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+    /* Layout is now handled by the main dashboard layout */
 }
 
 .header {
-    margin-bottom: 1.5rem;
-}
-
-@media (max-width: 1023px) {
-    .header {
-        padding-left: 3rem;
-    }
-}
-
-.title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1f2937;
-}
-
-.description {
-    color: #4b5563;
-    margin-top: 0.5rem;
+    /* Styling is now handled by the Heading component */
 }
 
 .loadingContainer {
@@ -79,11 +60,16 @@
 }
 
 .table {
-    min-width: 100%;
+    width: 100%;
     background-color: white;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     overflow: hidden;
+}
+
+.table table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .tableHeader {

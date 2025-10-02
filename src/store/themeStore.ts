@@ -7,6 +7,7 @@ interface ThemeState {
     defaultThemes: Theme[];
     currentTheme: Theme | null;
     allThemes: Theme[];
+    themesLoaded: boolean;
     setCurrentTheme: (theme: Theme | undefined) => void;
     getCurrentThemeImageShape: () => ThemeDesignImageShape | null | undefined;
     getCurrentThemeSlideBackground: () => string | null | undefined;
@@ -23,6 +24,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     defaultThemes: [],
     currentTheme: null,
     allThemes: [],
+    themesLoaded: false,
 
     setCurrentTheme: theme => {
         set({ currentTheme: theme });
@@ -56,7 +58,8 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
             const savedTheme = await response.json();
             const themes = [savedTheme, ...get().themes];
-            set({ themes });
+            const allThemes = [savedTheme, ...get().allThemes];
+            set({ themes, allThemes });
             return savedTheme;
         } catch (error) {
             console.error('Failed to add theme:', error);
@@ -80,7 +83,8 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
             const updatedTheme = await response.json();
             const themes = get().themes.map(t => (t.id === theme.id ? updatedTheme : t));
-            set({ themes });
+            const allThemes = get().allThemes.map(t => (t.id === theme.id ? updatedTheme : t));
+            set({ themes, allThemes });
             if (get().currentTheme?.id === theme.id) {
                 set({ currentTheme: updatedTheme });
             }
@@ -103,7 +107,8 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
             // Update local state after successful deletion
             const filteredThemes = get().themes.filter(t => t.id !== themeId);
-            set({ themes: filteredThemes });
+            const filteredAllThemes = get().allThemes.filter(t => t.id !== themeId);
+            set({ themes: filteredThemes, allThemes: filteredAllThemes });
 
             if (get().currentTheme?.id === themeId) {
                 set({ currentTheme: null });
@@ -115,6 +120,11 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     },
 
     loadThemes: async () => {
+        // Don't reload if themes are already loaded
+        if (get().themesLoaded) {
+            return;
+        }
+
         try {
             const response = await fetch('/api/themes');
             if (!response.ok) {
@@ -125,6 +135,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
                 themes: themes.filter(t => !t.isDefault),
                 defaultThemes: themes.filter(t => t.isDefault),
                 allThemes: themes,
+                themesLoaded: true,
             });
         } catch (error) {
             console.error('Failed to load themes:', error);

@@ -2,34 +2,39 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useEffect, useRef, useState } from 'react';
 import DragHandler from '@/components/editor/DragHandler';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import styles from './ItemWrapper.module.css';
 import { useDnd } from '@/contexts/DragDropContext';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { useShallow } from 'zustand/react/shallow';
 
 export default function ItemWrapper({
+    className,
     children,
     itemId,
     slideId,
-    className,
+    dragHandlerClassName,
     layoutId,
     elementId,
     renderMenuComponent,
 }: {
+    className?: string;
     children: React.ReactNode;
     presentationId: string;
     itemId: string;
     slideId: string;
-    className?: string;
+    dragHandlerClassName?: string;
     layoutId: string;
     elementId: string;
-    renderMenuComponent: (menuPosition: { x: number; y: number } | null) => React.ReactNode;
+    renderMenuComponent: (menuPosition: { x: number; y: number }) => React.ReactNode;
 }) {
     const isReadOnly = useReadOnly();
 
     const [hovered, setHovered] = useState(false);
-    const isSelected = useMenuStore(state => state.selectedSmartLayoutItemId === itemId);
-    const isMenuOpen = useMenuStore(state => state.isOpen && state.smartLayoutItemId === itemId);
+    const isSelected = useUIStateStore(useShallow(state => state.selectedSmartLayoutItemId === itemId));
+    const isMenuOpen = useUIStateStore(
+        useShallow(state => state.isContextMenuOpen && state.selectedSmartLayoutItemId === itemId)
+    );
     const itemRef = useRef<HTMLDivElement>(null);
     const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
     const { handleDragStart } = useDnd();
@@ -53,52 +58,47 @@ export default function ItemWrapper({
             dragElementType: 'smart-layout-item',
         });
 
-        // Set drag image for smoother UX (optional enhancement)
-        if (itemRef.current) {
-            const rect = itemRef.current.getBoundingClientRect();
-            const dragImage = document.createElement('div');
-            dragImage.className = styles.dragImage;
-            dragImage.style.width = `${rect.width}px`;
-            dragImage.style.height = `${rect.height}px`;
-            dragImage.innerText = 'Item';
-            document.body.appendChild(dragImage);
-
-            e.dataTransfer.setDragImage(dragImage, 0, 0);
-
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(dragImage);
-            }, 0);
-        }
+        // Create an invisible drag image
+        // const emptyImage = new Image();
+        // emptyImage.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        // e.dataTransfer.setDragImage(emptyImage, 0, 0);
     };
 
     return (
         <div
-            className={`${styles.container} ${className ? className : ''} ${isSelected ? styles.selected : ''}`}
+            className={`${styles.container} ${className ? className : ''}`}
             ref={itemRef}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onClick={() => {
                 if (!isReadOnly) {
-                    useMenuStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
+                    useUIStateStore.getState().setSelectedSmartLayoutItemId(layoutId, elementId, itemId);
                 }
             }}
             data-smart-layout-item-id={itemId}
         >
             {!isReadOnly && (hovered || isSelected) && (
                 <DragHandler
-                    className={styles.dragHandler}
+                    className={`${styles.dragHandler} ${dragHandlerClassName ? dragHandlerClassName : ''}`}
                     horizontal={true}
                     slideId={slideId}
                     isActive={isMenuOpen}
                     ariaLabel="Перетащить"
-                    handleClick={() => useMenuStore.getState().openMenu({ smartLayoutItemId: itemId })}
+                    handleClick={() =>
+                        useUIStateStore.getState().openContextMenu({
+                            smartLayoutItemId: itemId,
+                            layoutId,
+                            elementId,
+                            slideId,
+                            elementType: 'smart-layout-item',
+                        })
+                    }
                     handleKeyDown={() => {}}
                     handleDragStart={handleItemDragStart}
                     dataAttributes={{
                         'data-smart-layout-item-drag-handle': itemId,
                     }}
-                    title="Drag to reorder item (items can only be moved within the same smartLayout)"
+                    title="Перетащите, чтобы переместить элемент"
                 />
             )}
             {!isReadOnly && isMenuOpen && menuPosition && renderMenuComponent && renderMenuComponent(menuPosition)}

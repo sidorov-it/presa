@@ -4,6 +4,7 @@
 import React from 'react';
 import { ImageElement } from '@/types';
 import { default as NextImage } from 'next/image';
+import getImagePath from '@/utils/getImagePath';
 
 import styles from './Image.module.css';
 
@@ -13,16 +14,6 @@ interface ImageComponentProps {
 }
 
 const ImageComponent: React.FC<ImageComponentProps> = ({ element, className = '' }) => {
-    // Get alignment style based on element alignment property
-    // const width = element.width ? `${element.width}px` : '100%';
-    let widthPercent;
-
-    if (element.width) {
-        widthPercent = (1034 / element.width) * document.body.clientWidth;
-    } else {
-        widthPercent = 100;
-    }
-
     const getAlignmentClass = () => {
         switch (element.alignment) {
             case 'left':
@@ -63,12 +54,12 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ element, className = ''
                     <div className={`${styles.imageWrapper}`}>
                         <div style={{ position: 'relative' }}>
                             <NextImage
-                                src={element.src}
+                                src={getImagePath(element.src)}
                                 alt={element.alt || ''}
-                                width={widthPercent}
+                                width={0}
                                 height={0}
                                 sizes="100vw"
-                                style={{ width: widthPercent, height: 'auto', maxWidth: '100%' }}
+                                style={{ width: '100%', height: 'auto' }}
                                 className={styles.image}
                             />
                         </div>

@@ -1,47 +1,38 @@
+import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-    const path = request.nextUrl.pathname;
+export default withAuth(
+    async function middleware(req: NextRequest & { nextauth: { token: any } }) {
+        const token = req.nextauth.token;
 
-    // Define which paths are public (no auth needed)
-    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
-    const isPublicPath = publicPaths.some(pp => path === pp || path.startsWith(pp));
+        // Check if user is trying to access protected routes
+        if (
+            req.nextUrl.pathname.startsWith('/dashboard') ||
+            req.nextUrl.pathname.startsWith('/docs') ||
+            req.nextUrl.pathname.startsWith('/payment')
+        ) {
+            if (!token) {
+                return NextResponse.redirect(new URL('/login', req.url));
+            }
+        }
 
-    // Get the token
-    const token = await getToken({
-        req: request,
-        secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    // If it's a public path and user is logged in, redirect to dashboard
-    if (isPublicPath && token) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        return NextResponse.next();
+    },
+    {
+        callbacks: {
+            authorized: ({ token }) => !!token,
+        },
     }
+);
 
-    // If it's not a public path and no token, redirect to login
-    if (!isPublicPath && !token) {
-        return NextResponse.redirect(new URL('/login', request.url));
-    }
-
-    return NextResponse.next();
-}
-
-// Configure which paths this middleware should run on
 export const config = {
     matcher: [
-        '/',
         '/dashboard/:path*',
         '/docs/:path*',
-        '/login',
-        '/register',
-        '/forgot-password',
-        '/reset-password',
-        '/settings',
-        '/trash',
-        '/templates',
-        '/themes',
-        '/payment',
+        '/payment/:path*',
+        '/api/ai/:path*',
+        '/api/presentations/:path*',
+        '/api/subscriptions/:path*',
     ],
 };

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { BiPalette } from 'react-icons/bi';
 import styles from './ColorPicker.module.css';
 import { Button } from '../ui/Button';
+import { RiResetLeftFill } from 'react-icons/ri';
 
 // Пресеты цветов, можно настроить под ваши нужды
 const COLOR_PRESETS = [
@@ -32,18 +33,22 @@ type ColorPickerMode = 'icon' | 'card';
 
 export const ColorPicker = ({
     className,
-    onColorChange,
     initialColor = '#000000',
     mode = 'icon',
     label = '',
-    customFooter,
+    // customFooter,
+    isShowResetColor = false,
+    onColorChange,
+    onColorReset,
 }: {
     className?: string;
-    onColorChange: (color: string) => void;
     initialColor?: string;
     mode?: ColorPickerMode;
     label?: string;
-    customFooter?: React.ReactNode;
+    // customFooter?: React.ReactNode;
+    isShowResetColor?: boolean;
+    onColorChange: (color: string) => void;
+    onColorReset?: () => void;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentColor, setCurrentColor] = useState(initialColor);
@@ -68,7 +73,7 @@ export const ColorPicker = ({
 
     // Валидация hex-цвета
     const isValidHex = (hex: string) => {
-        return /^#([0-9A-Fa-f]{6})$/.test(hex);
+        return /^#([0-9A-Fa-f]{6,8})$/.test(hex);
     };
 
     // Обработка выбора цвета из палитры
@@ -149,6 +154,11 @@ export const ColorPicker = ({
         );
     };
 
+    const handlePresetClick = (event: React.MouseEvent<HTMLButtonElement>, color: string) => {
+        event.stopPropagation();
+        handleColorSelect(color);
+    };
+
     return (
         <div className={`${styles.colorPickerContainer} light-theme-only`} ref={colorPickerRef}>
             {renderTriggerButton()}
@@ -157,7 +167,7 @@ export const ColorPicker = ({
                 <div
                     className={`${
                         styles.colorPopover
-                    } light-theme-only ${mode === 'card' ? styles.cardPopover : ''} ${customFooter ? styles.withFooter : ''}`}
+                    } light-theme-only ${mode === 'card' ? styles.cardPopover : ''} ${isShowResetColor ? styles.withFooter : ''}`}
                 >
                     <div className={styles.colorGrid}>
                         {COLOR_PRESETS.map(color => (
@@ -165,7 +175,7 @@ export const ColorPicker = ({
                                 key={color}
                                 className={styles.colorPreset}
                                 style={{ backgroundColor: color }}
-                                onClick={() => handleColorSelect(color)}
+                                onClick={ev => handlePresetClick(ev, color)}
                                 aria-label={`Выбрать цвет ${color}`}
                             />
                         ))}
@@ -218,7 +228,18 @@ export const ColorPicker = ({
                         )}
                     </div>
 
-                    {customFooter && <div className={styles.customFooter}>{customFooter}</div>}
+                    {isShowResetColor && (
+                        <div className={styles.customFooter}>
+                            <button
+                                onClick={onColorReset}
+                                className={styles.resetColorButton}
+                                aria-label="Сбросить цвет"
+                            >
+                                <RiResetLeftFill />
+                                Сбросить цвет
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

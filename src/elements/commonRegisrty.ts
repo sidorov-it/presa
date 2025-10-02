@@ -1,17 +1,6 @@
-import {
-    FaFont,
-    FaTable,
-    FaList,
-    FaImage,
-    FaQuoteLeft,
-    FaRegAddressCard,
-    FaHeading,
-    FaListOl,
-    FaChartBar,
-    FaChartPie,
-} from 'react-icons/fa';
+import { FaFont, FaTable, FaList, FaImage, FaQuoteLeft, FaRegAddressCard, FaHeading, FaListOl } from 'react-icons/fa';
 import { FaRegChartBar, FaListCheck } from 'react-icons/fa6';
-import { LuChartColumn, LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
+import { LuChartBar, LuChartColumn, LuChartPie, LuHeading1, LuHeading2, LuHeading3, LuHeading4 } from 'react-icons/lu';
 import { TbChartDonutFilled } from 'react-icons/tb';
 import { IconType } from 'react-icons';
 
@@ -22,6 +11,14 @@ import { MenuElementType, ImageElement, EditorElement, TipTapRefs, SmartLayoutEl
 
 import { BubbleMenus } from '@/components/editor/Menus/menusComponents';
 import { MutableRefObject } from 'react';
+import {
+    HEADING_1_LEVEL,
+    HEADING_2_LEVEL,
+    HEADING_3_LEVEL,
+    HEADING_4_LEVEL,
+    HEADING_5_LEVEL,
+    NORMAL_TEXT_LEVEL,
+} from '@/constants/consts';
 
 interface ElementRegistryElement {
     elementTypeId: ElementType;
@@ -48,7 +45,6 @@ interface ElementRegistryElement {
 export const ElementRegistry: Record<string, ElementRegistryElement> = {
     SmartLayoutImagesWithText: {
         elementTypeId: ElementType.SMART_LAYOUT,
-        // MenuComponent: SmartLayoutSettings,
         Icon: FaRegAddressCard,
         label: 'Изображения с текстом',
         elementVariant: 'images-with-text',
@@ -56,19 +52,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -135,7 +131,6 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
     },
     SmartLayoutTextBlocks: {
         elementTypeId: ElementType.SMART_LAYOUT,
-        // MenuComponent: SmartLayoutSettings,
         Icon: FaRegAddressCard,
         label: 'Текстовые блоки',
         elementVariant: 'text-boxes',
@@ -143,19 +138,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -230,19 +225,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Шаг 1</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Шаг 2</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Шаг 3</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -264,19 +259,19 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             items: [
                 {
                     title: '<p><span class="heading-text heading-3">Событие 1</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Событие 2</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
                     title: '<p><span class="heading-text heading-3">Событие 3</span></p>',
-                    text: '<p>Описание</p>',
+                    text: '<p><span class="body-text normal-text">Описание</span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -297,7 +292,8 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'text',
         props: {
             textType: 'text',
-            content: '',
+            level: NORMAL_TEXT_LEVEL,
+            content: '<span class="body-text normal-text"></span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текстовый контент', type: 'text' }],
         llmHints: {
@@ -313,7 +309,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading',
         props: {
             textType: 'heading',
-            level: 1,
+            level: HEADING_1_LEVEL,
             content: '<span class="heading-text title-text">Заголовок</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -330,7 +326,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading1',
         props: {
             textType: 'heading',
-            level: 2,
+            level: HEADING_2_LEVEL,
             content: '<span class="heading-text heading-1">Подзаголовок 1</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -347,7 +343,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading2',
         props: {
             textType: 'heading',
-            level: 3,
+            level: HEADING_3_LEVEL,
             content: '<span class="heading-text heading-2">Подзаголовок 2</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -364,7 +360,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading3',
         props: {
             textType: 'heading',
-            level: 4,
+            level: HEADING_4_LEVEL,
             content: '<span class="heading-text heading-3">Подзаголовок 3</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -381,7 +377,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'heading4',
         props: {
             textType: 'heading',
-            level: 5,
+            level: HEADING_5_LEVEL,
             content: '<span class="heading-text heading-4">Подзаголовок 4</span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
@@ -399,7 +395,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'quote',
         props: {
             textType: 'quote',
-            content: '<blockquote>Цитата</blockquote>',
+            content: 'Цитата',
         },
         slots: [{ slot: 'content', llmHint: 'Текст цитаты', type: 'text' }],
         llmHints: {
@@ -664,6 +660,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             contextRules: ['Список задач должен быть понятным и информативным'],
         },
     },
+
     NoteBox: {
         elementTypeId: ElementType.BOX,
         MenuComponent: BubbleMenus['box-bubble'],
@@ -672,7 +669,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'note-box',
         props: {
             iconType: 'note-box',
-            content: '<p>Простой блок текста</p>',
+            content: '<p><span class="body-text normal-text">Простой блок текста</span></p>',
             backgroundColor: '#bbb8fa',
             darkBackgroundColor: '#01004d',
         },
@@ -690,7 +687,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'info-box',
         props: {
             iconType: 'info-box',
-            content: '<p>Полезная информация</p>',
+            content: '<p><span class="body-text normal-text">Полезная информация</span></p>',
             backgroundColor: '#b6d6fc',
             darkBackgroundColor: '#032349',
         },
@@ -708,7 +705,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'warning-box',
         props: {
             iconType: 'warning-box',
-            content: '<p>Предупреждение</p>',
+            content: '<p><span class="body-text normal-text">Предупреждение</span></p>',
             backgroundColor: '#fcf2b5',
             darkBackgroundColor: '#032349',
         },
@@ -726,7 +723,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'caution-box',
         props: {
             iconType: 'caution-box',
-            content: '<p>Внимание!</p>',
+            content: '<p><span class="body-text normal-text">Внимание</span>!</p>',
             backgroundColor: '#ffb3b3',
             darkBackgroundColor: '#4a3f03',
         },
@@ -744,7 +741,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'success-box',
         props: {
             iconType: 'success-box',
-            content: '<p>Успешно выполнено</p>',
+            content: '<p><span class="body-text normal-text">Успешно выполнено</span></p>',
             backgroundColor: '#b5fcb8',
             darkBackgroundColor: '#183a13',
         },
@@ -762,8 +759,8 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'question-box',
         props: {
             iconType: 'question-box',
-            content: '<p>Частый вопрос</p>',
-            backgroundColor: '#b5fcb8',
+            content: '<p><span class="body-text normal-text">Частый вопрос</span></p>',
+            backgroundColor: '#e8f4fd',
             darkBackgroundColor: '#262626',
         },
         slots: [{ slot: 'content', llmHint: 'Текст блока', type: 'text' }],
@@ -772,6 +769,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             contextRules: ['Блок текста должен быть понятным и информативным'],
         },
     },
+
     Image: {
         elementTypeId: ElementType.IMAGE,
         label: 'Изображение',
@@ -787,6 +785,28 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
             purpose: 'Изображение',
             contextRules: ['Изображение должно быть напрямую связано с текстом'],
         },
+    },
+    Buttons: {
+        elementTypeId: ElementType.BUTTON,
+        label: 'Кнопка',
+        Icon: FaListCheck,
+        props: {
+            items: [
+                {
+                    id: '1',
+                    text: '<p><span>Button</span></p>',
+                    link: '',
+                    buttonStyle: 'filled',
+                    alignment: 'left',
+                    color: '#3C3939',
+                },
+            ],
+        },
+        isArray: true,
+        itemFields: [
+            { field: 'text', llmHint: 'Текст кнопки', type: 'text' },
+            { field: 'link', llmHint: 'Ссылка', type: 'text' },
+        ],
     },
     BarChart: {
         elementTypeId: ElementType.CHART,
@@ -832,7 +852,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         customMenuType: 'chart',
         label: 'Линейная диаграмма',
         elementVariant: 'line',
-        Icon: FaRegChartBar,
+        Icon: LuChartBar,
         props: {
             data: [
                 {
@@ -870,7 +890,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         customMenuType: 'chart',
         label: 'Круговая диаграмма',
         elementVariant: 'pie',
-        Icon: FaChartPie,
+        Icon: LuChartPie,
         props: {
             data: [
                 {

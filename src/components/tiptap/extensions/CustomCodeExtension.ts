@@ -22,7 +22,7 @@ function getSizeClasses(fontSize: string) {
         case '7.5em': // Very big heading
             return ['heading-text', 'very-big-heading'];
         default:
-            return '';
+            return 'body-text';
     }
 }
 

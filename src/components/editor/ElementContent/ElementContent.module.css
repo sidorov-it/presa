@@ -1,5 +1,6 @@
 .elementContent {
     /* margin: 0.9em 0; */
+    position: relative;
 }
 
 .elementWrapper {
@@ -14,6 +15,17 @@
 
 .elementWrapper:hover .elementDragHandle {
     opacity: 1;
+}
+
+.elementContentSelected::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    outline: 2px solid var(--color-primary);
+    border-radius: var(--presentation-slide-border-radius);
 }
 
 /* .elementWrapper::before {

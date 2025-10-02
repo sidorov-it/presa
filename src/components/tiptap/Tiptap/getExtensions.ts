@@ -2,7 +2,7 @@
 import { RefObject } from 'react';
 import { ArrowNavigationExtension, EditorWithMethods } from '../extensions/ArrowNavigationExtension';
 import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
+
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Table from '@tiptap/extension-table';
@@ -15,6 +15,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import { Extension, generateHTML } from '@tiptap/core';
 import Link from '@tiptap/extension-link';
+import { Heading } from '@tiptap/extension-heading';
 
 import {
     CustomCodeExtension,
@@ -24,6 +25,8 @@ import {
     PreventDropExtension,
     EnterHandlerExtension,
     SlashCommandExtension,
+    EmptySpanExtension,
+    CustomPlaceholderExtension,
 } from '../extensions';
 import { BlockquoteExtension } from '../extensions/BlockquoteExtension';
 import {
@@ -37,6 +40,7 @@ import {
     QuestionBoxNode,
 } from '../nodes';
 import { MenuItem } from '@/types/templates';
+import { CleanPasteExtension } from '../extensions/CleanPasteExtension';
 
 interface GetExtensionsProps {
     placeholder: string;
@@ -54,6 +58,16 @@ interface GetExtensionsProps {
     onDeletePressed: (isEmpty: boolean, textContent: string) => void;
     onBackspacePressed: (isEmpty: boolean, textContent: string) => void;
     onAddElement?: (menuItem: MenuItem) => void;
+    editor?: any;
+    smartLayoutItemId?: string;
+    initialStyle?: {
+        level: number;
+        color: string | null;
+        bold: boolean;
+        italic: boolean;
+        underline: boolean;
+        strike: boolean;
+    };
 }
 // Определяем массив расширений
 const getExtensions = ({
@@ -69,6 +83,9 @@ const getExtensions = ({
     onDeletePressed,
     onBackspacePressed,
     onAddElement,
+    editor,
+    smartLayoutItemId,
+    initialStyle,
 }: GetExtensionsProps) => [
     // Базовый набор расширений
     StarterKit.configure({
@@ -95,6 +112,31 @@ const getExtensions = ({
         codeBlock: false,
         paragraph: false,
     }),
+    // Add custom Heading extension with class support
+    Heading.configure({
+        levels: [1, 2, 3, 4, 5, 6],
+        HTMLAttributes: {
+            class: null, // Allow any classes
+        },
+    }).extend({
+        addGlobalAttributes() {
+            return [
+                {
+                    types: ['heading'],
+                    attributes: {
+                        class: {
+                            default: null,
+                            parseHTML: element => element.getAttribute('class'),
+                            renderHTML: attributes => {
+                                if (!attributes.class) return {};
+                                return { class: attributes.class };
+                            },
+                        },
+                    },
+                },
+            ];
+        },
+    }),
     CustomCodeExtension.configure({
         HTMLAttributes: {
             class: 'custom-code',
@@ -110,6 +152,7 @@ const getExtensions = ({
     FontSizeExtension.configure({
         types: ['textStyle'],
     }),
+    EmptySpanExtension,
     ParagraphExtension,
     Color,
     Underline,
@@ -144,7 +187,10 @@ const getExtensions = ({
         openOnClick: false,
         autolink: true,
         defaultProtocol: 'https',
-        protocols: ['http', 'https'],
+        protocols: ['http', 'https', 'mailto', 'tel'],
+        HTMLAttributes: {
+            class: 'link-text',
+        },
         isAllowedUri: (url, ctx) => {
             try {
                 // construct URL
@@ -233,30 +279,42 @@ const getExtensions = ({
     PreventDropExtension,
 
     EnterHandlerExtension(
-        (contentBeforeCursor, contentAfterCursor) => {
-            if (!contentBeforeCursor && !contentAfterCursor) return;
-            const htmlBeforeCursor = generateHTML(
-                contentBeforeCursor!,
-                getExtensions({
-                    onEnterPressed,
-                    onBackspacePressed,
-                    onDeletePressed,
-                    placeholder,
-                    onAddElement,
-                    isHideSlashMenu,
-                })
-            );
-            const htmlAfterCursor = generateHTML(
-                contentAfterCursor!,
-                getExtensions({
-                    onEnterPressed,
-                    onBackspacePressed,
-                    onDeletePressed,
-                    placeholder,
-                    onAddElement,
-                    isHideSlashMenu,
-                })
-            );
+        (contentBeforeCursor, contentAfterCursor, preservedStyles) => {
+            if (!contentBeforeCursor && !contentAfterCursor && !preservedStyles) return;
+
+            // Используем сохраненные стили, если они есть, иначе используем initialStyle
+            const stylesToUse = preservedStyles || initialStyle;
+
+            const htmlBeforeCursor = contentBeforeCursor
+                ? generateHTML(
+                      contentBeforeCursor,
+                      getExtensions({
+                          onEnterPressed,
+                          onBackspacePressed,
+                          onDeletePressed,
+                          placeholder,
+                          onAddElement,
+                          isHideSlashMenu,
+                          initialStyle: stylesToUse,
+                      })
+                  )
+                : undefined;
+
+            const htmlAfterCursor = contentAfterCursor
+                ? generateHTML(
+                      contentAfterCursor,
+                      getExtensions({
+                          onEnterPressed,
+                          onBackspacePressed,
+                          onDeletePressed,
+                          placeholder,
+                          onAddElement,
+                          isHideSlashMenu,
+                          initialStyle: stylesToUse,
+                      })
+                  )
+                : undefined;
+
             onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
         },
         (isEmpty, textContent) => {
@@ -270,7 +328,7 @@ const getExtensions = ({
 
     // Arrow key navigation between editors
     ...(presentationId && slideId && layoutId && elementId && tiptapRefs
-        ? [ArrowNavigationExtension(presentationId, slideId, layoutId, elementId, tiptapRefs)]
+        ? [ArrowNavigationExtension(presentationId, slideId, layoutId, elementId, tiptapRefs, smartLayoutItemId)]
         : []),
     // Slash command
     ...(isHideSlashMenu
@@ -280,9 +338,10 @@ const getExtensions = ({
                   onAddElement: onAddElement || (() => {}),
               }),
           ]),
-    // Плейсхолдер
-    Placeholder.configure({
+    // Custom placeholder with dynamic styling
+    CustomPlaceholderExtension.configure({
         placeholder,
+        initialStyle,
     }),
     ButtonNode,
     // Details.configure({
@@ -301,6 +360,7 @@ const getExtensions = ({
     CautionBoxNode,
     SuccessBoxNode,
     QuestionBoxNode,
+    CleanPasteExtension.configure({ editor }),
 ];
 
 export default getExtensions;

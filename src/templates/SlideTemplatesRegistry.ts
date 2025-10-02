@@ -1,7 +1,7 @@
 import { TextType } from '@/types';
 import { ElementType } from '@/types/elements';
 import { SlideTemplateCore } from '@/types/templates';
-import { FaImage, FaRegAddressCard, FaColumns, FaList, FaHighlighter, FaThLarge, FaChartBar } from 'react-icons/fa';
+import { FaImage, FaRegAddressCard, FaColumns, FaList, FaThLarge, FaChartBar } from 'react-icons/fa';
 import { MdViewColumn } from 'react-icons/md';
 
 // Единый реестр шаблонов
@@ -715,6 +715,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     'title-bullets': {
         id: 'title-bullets',
         name: 'Заголовок с пунктами',
+        contentAlignment: 'top',
         layouts: [
             {
                 layout: 'heading',
@@ -873,386 +874,386 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-left': {
-        id: 'accent-left',
-        name: 'Акцент слева',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-left',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2.5rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-left': {
+    //     id: 'accent-left',
+    //     name: 'Акцент слева',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-left',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2.5rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Акцентный текст или заголовок',
-                            contextRules: [
-                                'Краткая, запоминающаяся фраза',
-                                'Ключевое сообщение или цифра',
-                                'Символ ## для заголовков в markdown',
-                            ],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 1,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Акцентный текст или заголовок',
+    //                         contextRules: [
+    //                             'Краткая, запоминающаяся фраза',
+    //                             'Ключевое сообщение или цифра',
+    //                             'Символ ## для заголовков в markdown',
+    //                         ],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 1,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Детальное объяснение акцентного текста',
-                            contextRules: ['Раскрытие смысла акцентной фразы', 'Поддерживающие детали и объяснения'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент слева',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом слева',
-        },
-        llm: {
-            description: 'Шаблон для выделения важной информации с акцентом слева',
-            purpose: ['emphasis', 'key-message', 'statistics'],
-            useCases: ['Ключевые цифры', 'Важные утверждения', 'Статистика'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Детальное объяснение акцентного текста',
+    //                         contextRules: ['Раскрытие смысла акцентной фразы', 'Поддерживающие детали и объяснения'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент слева',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом слева',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для выделения важной информации с акцентом слева',
+    //         purpose: ['emphasis', 'key-message', 'statistics'],
+    //         useCases: ['Ключевые цифры', 'Важные утверждения', 'Статистика'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-right': {
-        id: 'accent-right',
-        name: 'Акцент справа',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-right',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-right': {
+    //     id: 'accent-right',
+    //     name: 'Акцент справа',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-right',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Основной контент, ведущий к акценту',
-                            contextRules: ['Логическое построение к акцентной части', 'Контекст для понимания акцента'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2.5rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Основной контент, ведущий к акценту',
+    //                         contextRules: ['Логическое построение к акцентной части', 'Контекст для понимания акцента'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2.5rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Акцентный текст или заголовок',
-                            contextRules: ['Итоговая мысль или вывод', 'Ключевой результат'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент справа',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом справа',
-        },
-        llm: {
-            description: 'Шаблон для выделения важной информации с акцентом справа',
-            purpose: ['emphasis', 'conclusion', 'result'],
-            useCases: ['Выводы', 'Результаты', 'Ключевые достижения'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Акцентный текст или заголовок',
+    //                         contextRules: ['Итоговая мысль или вывод', 'Ключевой результат'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент справа',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом справа',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для выделения важной информации с акцентом справа',
+    //         purpose: ['emphasis', 'conclusion', 'result'],
+    //         useCases: ['Выводы', 'Результаты', 'Ключевые достижения'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-top': {
-        id: 'accent-top',
-        name: 'Акцент сверху',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-top',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Заголовок слайда',
-                            style: {
-                                fontSize: '3rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-top': {
+    //     id: 'accent-top',
+    //     name: 'Акцент сверху',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-top',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Заголовок слайда',
+    //                         style: {
+    //                             fontSize: '3rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Слайд с фоновым изоюражением сверху (изображение занимает 1/4 слайда)',
-                            contextRules: ['Основная мысль или тема', 'Привлекающий внимание заголовок'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Слайд с фоновым изоюражением сверху (изображение занимает 1/4 слайда)',
+    //                         contextRules: ['Основная мысль или тема', 'Привлекающий внимание заголовок'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Раскрытие акцентной темы',
-                            contextRules: ['Подробное объяснение', 'Развитие основной мысли'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент сверху',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом сверху',
-        },
-        llm: {
-            description: 'Шаблон для выделения важной информации с акцентом сверху',
-            purpose: ['emphasis', 'introduction', 'topic'],
-            useCases: ['Заголовки разделов', 'Ключевые темы', 'Основные идеи'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Раскрытие акцентной темы',
+    //                         contextRules: ['Подробное объяснение', 'Развитие основной мысли'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент сверху',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом сверху',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для выделения важной информации с акцентом сверху',
+    //         purpose: ['emphasis', 'introduction', 'topic'],
+    //         useCases: ['Заголовки разделов', 'Ключевые темы', 'Основные идеи'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-right-fit': {
-        id: 'accent-right-fit',
-        name: 'Акцент справа (компактный)',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-right-fit',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-right-fit': {
+    //     id: 'accent-right-fit',
+    //     name: 'Акцент справа (компактный)',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-right-fit',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Детальное описание',
-                            contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING3,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Детальное описание',
+    //                         contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING3,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Компактный акцент',
-                            contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент справа (компактный)',
-            icon: FaHighlighter,
-            description: 'Шаблон с компактным акцентным текстом справа',
-        },
-        llm: {
-            description: 'Шаблон для компактного выделения информации с акцентом справа',
-            purpose: ['emphasis', 'highlight', 'summary'],
-            useCases: ['Краткие выводы', 'Ключевые цитаты', 'Важные заметки'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Компактный акцент',
+    //                         contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент справа (компактный)',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с компактным акцентным текстом справа',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для компактного выделения информации с акцентом справа',
+    //         purpose: ['emphasis', 'highlight', 'summary'],
+    //         useCases: ['Краткие выводы', 'Ключевые цитаты', 'Важные заметки'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-left-fit': {
-        id: 'accent-left-fit',
-        name: 'Акцент слева (компактный)',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-left-fit',
-                columnsCount: 2,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING3,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '2rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-left-fit': {
+    //     id: 'accent-left-fit',
+    //     name: 'Акцент слева (компактный)',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-left-fit',
+    //             columnsCount: 2,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING3,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '2rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Компактный акцент',
-                            contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'main_content',
-                        row: 0,
-                        column: 1,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Основной текст слайда',
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Компактный акцент',
+    //                         contextRules: ['Краткое выделение важной информации', 'Ключевые моменты в сжатой форме'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'main_content',
+    //                     row: 0,
+    //                     column: 1,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Основной текст слайда',
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Детальное описание',
-                            contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент слева (компактный)',
-            icon: FaHighlighter,
-            description: 'Шаблон с компактным акцентным текстом слева',
-        },
-        llm: {
-            description: 'Шаблон для компактного выделения информации с акцентом слева',
-            purpose: ['emphasis', 'highlight', 'introduction'],
-            useCases: ['Вводные заметки', 'Ключевые определения', 'Важные термины'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Детальное описание',
+    //                         contextRules: ['Подробное объяснение контекста', 'Развернутая информация'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент слева (компактный)',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с компактным акцентным текстом слева',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для компактного выделения информации с акцентом слева',
+    //         purpose: ['emphasis', 'highlight', 'introduction'],
+    //         useCases: ['Вводные заметки', 'Ключевые определения', 'Важные термины'],
+    //     },
+    // },
 
-    // FIXME акцент - не то, как тут используется
-    'accent-background': {
-        id: 'accent-background',
-        name: 'Акцент на фоне',
-        disabled: true,
-        layouts: [
-            {
-                layout: 'accent-background',
-                columnsCount: 1,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'accent',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING2,
-                            content: 'Акцентный текст',
-                            style: {
-                                fontSize: '3.5rem',
-                                fontWeight: 'bold',
-                                color: 'var(--accent-color)',
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
-                            },
-                        },
+    // // FIXME акцент - не то, как тут используется
+    // 'accent-background': {
+    //     id: 'accent-background',
+    //     name: 'Акцент на фоне',
+    //     disabled: true,
+    //     layouts: [
+    //         {
+    //             layout: 'accent-background',
+    //             columnsCount: 1,
+    //             rowsCount: 1,
+    //             elements: [
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'accent',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.HEADING2,
+    //                         content: 'Акцентный текст',
+    //                         style: {
+    //                             fontSize: '3.5rem',
+    //                             fontWeight: 'bold',
+    //                             color: 'var(--accent-color)',
+    //                             textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Главный акцент на всём слайде',
-                            contextRules: ['Одна ключевая мысль', 'Максимально сильный акцент'],
-                        },
-                    },
-                    {
-                        elementTypeId: ElementType.TEXT,
-                        slot: 'subtitle',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.DEFAULT,
-                            content: 'Поясняющий текст',
-                            style: {
-                                fontSize: '1.5rem',
-                                opacity: 0.9,
-                            },
-                        },
+    //                     llmHints: {
+    //                         purpose: 'Главный акцент на всём слайде',
+    //                         contextRules: ['Одна ключевая мысль', 'Максимально сильный акцент'],
+    //                     },
+    //                 },
+    //                 {
+    //                     elementTypeId: ElementType.TEXT,
+    //                     slot: 'subtitle',
+    //                     row: 0,
+    //                     column: 0,
+    //                     props: {
+    //                         textType: TextType.DEFAULT,
+    //                         content: 'Поясняющий текст',
+    //                         style: {
+    //                             fontSize: '1.5rem',
+    //                             opacity: 0.9,
+    //                         },
+    //                     },
 
-                        llmHints: {
-                            purpose: 'Краткое пояснение к акценту',
-                            contextRules: ['Минимальное необходимое пояснение', 'Поддержка основного акцента'],
-                        },
-                    },
-                ],
-            },
-        ],
-        ui: {
-            category: 'accent-templates',
-            label: 'Акцент на фоне',
-            icon: FaHighlighter,
-            description: 'Шаблон с акцентным текстом на всём слайде',
-        },
-        llm: {
-            description: 'Шаблон для максимального акцента на важной информации',
-            purpose: ['emphasis', 'statement', 'quote'],
-            useCases: ['Ключевые заявления', 'Важные цитаты', 'Главные выводы'],
-        },
-    },
+    //                     llmHints: {
+    //                         purpose: 'Краткое пояснение к акценту',
+    //                         contextRules: ['Минимальное необходимое пояснение', 'Поддержка основного акцента'],
+    //                     },
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    //     ui: {
+    //         category: 'accent-templates',
+    //         label: 'Акцент на фоне',
+    //         icon: FaHighlighter,
+    //         description: 'Шаблон с акцентным текстом на всём слайде',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для максимального акцента на важной информации',
+    //         purpose: ['emphasis', 'statement', 'quote'],
+    //         useCases: ['Ключевые заявления', 'Важные цитаты', 'Главные выводы'],
+    //     },
+    // },
 
     'two-image-columns': {
         id: 'two-image-columns',
@@ -1837,6 +1838,344 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
         },
     },
+    'images-with-text': {
+        id: 'images-with-text',
+        name: 'Изображения с текстом',
+        layouts: [
+            {
+                layout: 'heading',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Заголовок слайда',
+                        },
+
+                        llmHints: {
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'text-boxes-with-title',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.SMART_LAYOUT,
+                        elementVariant: 'images-with-text',
+                        slot: 'content',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            columnSize: 3,
+                            align: 'center',
+                            items: [
+                                {
+                                    id: 'item1',
+                                    title: '<p><span class="heading-text heading-3">Блок 1</span></p>',
+                                    text: '<p>Содержимое блока 1</p>',
+                                },
+                                {
+                                    id: 'item2',
+                                    title: '<p><span class="heading-text heading-3">Блок 2</span></p>',
+                                    text: '<p>Содержимое блока 2</p>',
+                                },
+                                {
+                                    id: 'item3',
+                                    title: '<p><span class="heading-text heading-3">Блок 3</span></p>',
+                                    text: '<p>Содержимое блока 3</p>',
+                                },
+                            ],
+                            itemsSchema: [
+                                {
+                                    key: 'title',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.HEADING3,
+                                },
+                                {
+                                    key: 'text',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.DEFAULT,
+                                },
+                            ],
+                        },
+
+                        llmHints: {
+                            purpose: 'Структурированное представление информации в блоках',
+                            contextRules: [
+                                'Блоки должны быть связаны общей темой',
+                                'Заголовки блоков должны быть информативными',
+                                'Содержимое должно быть кратким и четким',
+                            ],
+                            items: {
+                                title: {
+                                    type: 'string',
+                                    description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                text: {
+                                    type: 'string',
+                                    description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                imageUrl: {
+                                    type: 'string',
+                                    description: 'URL изображения',
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'text-templates',
+            label: 'Изображения с текстом',
+            icon: FaColumns,
+            description: 'Шаблон с заголовком и изображениями с текстом',
+        },
+        llm: {
+            description: 'Шаблон для структурированного представления информации в изображениях с текстом',
+            purpose: ['structured-content', 'information-blocks', 'key-points'],
+            useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
+        },
+    },
+
+    steps: {
+        id: 'steps',
+        name: 'Шаги',
+        layouts: [
+            {
+                layout: 'heading',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Заголовок слайда',
+                        },
+
+                        llmHints: {
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'text-boxes-with-title',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.SMART_LAYOUT,
+                        elementVariant: 'steps',
+                        slot: 'content',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            columnSize: 3,
+                            align: 'center',
+                            items: [
+                                {
+                                    id: 'item1',
+                                    title: '<p><span class="heading-text heading-3">Блок 1</span></p>',
+                                    text: '<p>Содержимое блока 1</p>',
+                                },
+                                {
+                                    id: 'item2',
+                                    title: '<p><span class="heading-text heading-3">Блок 2</span></p>',
+                                    text: '<p>Содержимое блока 2</p>',
+                                },
+                                {
+                                    id: 'item3',
+                                    title: '<p><span class="heading-text heading-3">Блок 3</span></p>',
+                                    text: '<p>Содержимое блока 3</p>',
+                                },
+                            ],
+                            itemsSchema: [
+                                {
+                                    key: 'title',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.HEADING3,
+                                },
+                                {
+                                    key: 'text',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.DEFAULT,
+                                },
+                            ],
+                        },
+
+                        llmHints: {
+                            purpose: 'Структурированное представление информации в блоках',
+                            contextRules: [
+                                'Блоки должны быть связаны общей темой',
+                                'Заголовки блоков должны быть информативными',
+                                'Содержимое должно быть кратким и четким',
+                            ],
+                            items: {
+                                title: {
+                                    type: 'string',
+                                    description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                text: {
+                                    type: 'string',
+                                    description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                imageUrl: {
+                                    type: 'string',
+                                    description: 'URL изображения',
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'text-templates',
+            label: 'Шаги',
+            icon: FaColumns,
+            description: 'Шаблон с заголовком и шагами',
+        },
+        llm: {
+            description: 'Шаблон для структурированного представления информации в шагах',
+            purpose: ['structured-content', 'information-blocks', 'key-points'],
+            useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
+        },
+    },
+
+    timeline: {
+        id: 'timeline',
+        name: 'Хронология',
+        layouts: [
+            {
+                layout: 'heading',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Заголовок слайда',
+                        },
+
+                        llmHints: {
+                            purpose: 'Основной Заголовок слайда',
+                            contextRules: ['Четкий, информативный заголовок', 'Символ ## в markdown'],
+                        },
+                    },
+                ],
+            },
+
+            {
+                layout: 'text-boxes-with-title',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.SMART_LAYOUT,
+                        elementVariant: 'timeline',
+                        slot: 'content',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            columnSize: 3,
+                            align: 'center',
+                            items: [
+                                {
+                                    id: 'item1',
+                                    title: '<p><span class="heading-text heading-3">Блок 1</span></p>',
+                                    text: '<p>Содержимое блока 1</p>',
+                                },
+                                {
+                                    id: 'item2',
+                                    title: '<p><span class="heading-text heading-3">Блок 2</span></p>',
+                                    text: '<p>Содержимое блока 2</p>',
+                                },
+                                {
+                                    id: 'item3',
+                                    title: '<p><span class="heading-text heading-3">Блок 3</span></p>',
+                                    text: '<p>Содержимое блока 3</p>',
+                                },
+                            ],
+                            itemsSchema: [
+                                {
+                                    key: 'title',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.HEADING3,
+                                },
+                                {
+                                    key: 'text',
+                                    type: ElementType.TEXT,
+                                    variant: TextType.DEFAULT,
+                                },
+                            ],
+                        },
+
+                        llmHints: {
+                            purpose: 'Структурированное представление информации в блоках',
+                            contextRules: [
+                                'Блоки должны быть связаны общей темой',
+                                'Заголовки блоков должны быть информативными',
+                                'Содержимое должно быть кратким и четким',
+                            ],
+                            items: {
+                                title: {
+                                    type: 'string',
+                                    description: 'Заголовок изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                text: {
+                                    type: 'string',
+                                    description: 'Описание изображения',
+                                    contextRules: ['Текст без символов для markdown'],
+                                },
+                                imageUrl: {
+                                    type: 'string',
+                                    description: 'URL изображения',
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'text-templates',
+            label: 'Хронология',
+            icon: FaColumns,
+            description: 'Шаблон с заголовком и хронологией',
+        },
+        llm: {
+            description: 'Шаблон для структурированного представления информации в хронологии',
+            purpose: ['structured-content', 'information-blocks', 'key-points'],
+            useCases: ['Ключевые моменты', 'Преимущества', 'Характеристики'],
+        },
+    },
 
     'bar-chart': {
         id: 'bar-chart',
@@ -2388,9 +2727,10 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     //     },
     // },
 
-    'welcome-slide': {
+    'welcome-slide-speaker': {
         id: 'welcome-slide',
         name: 'Приветственный слайд с темой',
+        contentAlignment: 'center',
         layouts: [
             {
                 layout: 'welcome-slide',
@@ -2431,38 +2771,6 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
                 elements: [
                     {
                         elementTypeId: ElementType.TEXT,
-                        slot: 'subtitle',
-                        row: 0,
-                        column: 0,
-                        props: {
-                            textType: TextType.HEADING3,
-                            content: 'Подзаголовок или описание темы',
-                            style: {
-                                fontSize: '1.8rem',
-                                textAlign: 'center',
-                                opacity: 0.8,
-                                marginBottom: '3rem',
-                            },
-                        },
-                        llmHints: {
-                            purpose: 'Дополнительное описание или контекст',
-                            contextRules: [
-                                'Расширяет и поясняет основной заголовок',
-                                'Может содержать краткое описание содержания',
-                                'Устанавливает контекст для аудитории',
-                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
-                            ],
-                        },
-                    },
-                ],
-            },
-            {
-                layout: 'welcome-slide',
-                columnsCount: 1,
-                rowsCount: 1,
-                elements: [
-                    {
-                        elementTypeId: ElementType.TEXT,
                         slot: 'presenter_info',
                         row: 0,
                         column: 0,
@@ -2491,20 +2799,138 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         ],
         ui: {
             category: 'intro-templates',
-            label: 'Приветственный слайд',
+            label: 'Приветственный слайд со спикером',
             icon: FaRegAddressCard,
             description: 'Шаблон для начала презентации с темой',
         },
         llm: {
-            description: 'Шаблон для создания приветственного слайда с основной темой презентации',
+            description:
+                'Шаблон для создания приветственного слайда с основной темой презентации. Используется для презентаций с личным выступлением на конференциях или онлайн, где важно указать имя докладчика.',
             purpose: ['introduction', 'presentation-start', 'theme-announcement'],
             useCases: ['Начало презентации', 'Представление темы', 'Вводная информация'],
+        },
+    },
+
+    'welcome-slide': {
+        id: 'welcome-slide',
+        name: 'Приветственный слайд с изображением',
+        contentAlignment: 'center',
+        layouts: [
+            {
+                layout: 'welcome-slide',
+                columnsCount: 2,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'main_title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Заголовок',
+                            style: {
+                                fontSize: '3.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Главный заголовок презентации',
+                            contextRules: [
+                                'Краткий, но информативный заголовок',
+                                'Должен отражать основную тему презентации',
+                                'Использовать привлекающие внимание формулировки',
+                                'Символ # в markdown',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'subtitle',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING2,
+                            content: 'Подзаголовок',
+                            style: {
+                                fontSize: '2rem',
+                                textAlign: 'center',
+                                marginBottom: '1.5rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Подзаголовок презентации',
+                            contextRules: [
+                                'Краткое пояснение к теме',
+                                'Может содержать дополнительную информацию',
+                                'Символ ## в markdown',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'small_subtitle',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'совсем маленький подзаголовок',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'center',
+                                opacity: 0.7,
+                                marginBottom: '1rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Маленький подзаголовок или дополнительная информация',
+                            contextRules: [
+                                'Может содержать дату, место или организацию',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                    {
+                        elementTypeId: ElementType.IMAGE,
+                        slot: 'main_image',
+                        row: 0,
+                        column: 1,
+                        props: {
+                            src: '',
+                            alt: 'Image',
+                            alignment: 'center',
+                            width: '300px',
+                        },
+                        llmHints: {
+                            purpose: 'Изображение для визуального оформления приветственного слайда',
+                            contextRules: [
+                                'Изображение должно быть связано с темой презентации',
+                                'Может быть логотипом, иллюстрацией или фотографией',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'intro-templates',
+            label: 'Приветственный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для начала презентации с темой и изображением',
+        },
+        llm: {
+            description: 'Шаблон для создания приветственного слайда с основной темой презентации и изображением.',
+            purpose: ['introduction', 'presentation-start', 'theme-announcement'],
+            useCases: ['Начало презентации', 'Представление темы'],
         },
     },
 
     'final-slide-contacts': {
         id: 'final-slide-contacts',
         name: 'Заключительный слайд с контактами',
+        contentAlignment: 'center',
         layouts: [
             {
                 layout: 'final-slide-contacts',
@@ -2618,6 +3044,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
     'final-slide-contacts-qr': {
         id: 'final-slide-contacts-qr',
         name: 'Заключительный слайд с контактами и QR-кодом',
+        contentAlignment: 'center',
         layouts: [
             {
                 layout: 'final-slide-contacts-qr',
@@ -2771,4 +3198,173 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
             useCases: ['Завершение презентации', 'Предоставление контактов', 'Быстрый доступ к ресурсам'],
         },
     },
+
+    'final-slide': {
+        id: 'final-slide-custom',
+        name: 'Финальный слайд с благодарностью',
+        contentAlignment: 'center',
+        layouts: [
+            {
+                layout: 'final-slide-custom',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'main_title',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.HEADING1,
+                            content: 'Спасибо за внимание!',
+                            style: {
+                                fontSize: '2.5rem',
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Благодарность аудитории',
+                            contextRules: [
+                                'Вежливое завершение презентации',
+                                'Может включать призыв к действию',
+                                'Создает позитивное впечатление',
+                                'Символ # в markdown',
+                            ],
+                        },
+                    },
+                ],
+            },
+            {
+                layout: 'final-slide-custom',
+                columnsCount: 1,
+                rowsCount: 1,
+                elements: [
+                    {
+                        elementTypeId: ElementType.TEXT,
+                        slot: 'custom_info_left',
+                        row: 0,
+                        column: 0,
+                        props: {
+                            textType: TextType.DEFAULT,
+                            content: 'Здесь может быть ваша контактная информация или дополнительный текст.',
+                            style: {
+                                fontSize: '1.2rem',
+                                textAlign: 'left',
+                                lineHeight: '1.8rem',
+                                marginBottom: '2rem',
+                            },
+                        },
+                        llmHints: {
+                            purpose: 'Контактная информация или дополнительный текст',
+                            contextRules: [
+                                'Включает основные способы связи или дополнительную информацию',
+                                'Может содержать эмодзи для визуального разделения',
+                                'Информация должна быть актуальной',
+                                'Символ ### в markdown для заголовков и без дополнительных символов для текста',
+                            ],
+                        },
+                    },
+                ],
+            },
+        ],
+        ui: {
+            category: 'final-templates',
+            label: 'Пользовательский финальный слайд',
+            icon: FaRegAddressCard,
+            description: 'Шаблон для завершения презентации с пользовательским контентом',
+        },
+        llm: {
+            description: 'Шаблон для создания финального слайда с благодарностью, контактами и иллюстрацией/QR-кодом',
+            purpose: ['conclusion', 'contact-information', 'custom-content', 'presentation-end'],
+            useCases: [
+                'Завершение презентации',
+                'Предоставление контактов',
+                'Быстрый доступ к ресурсам',
+                'Пользовательский контент',
+            ],
+        },
+    },
+
+    // 'final-slide': {
+    //     id: 'final-slide',
+    //     name: 'Заключительный слайд с благодарностью',
+    //     contentAlignment: 'center',
+    //     layouts: [
+    //         {
+    //             "id": "04w55m2u4s6g",
+    //             "gridStructure": {
+    //                 "columns": 1,
+    //                 "rows": [
+    //                     {
+    //                         "id": "k867ku",
+    //                         "cells": [
+    //                             {
+    //                                 "id": "ehdf6f",
+    //                                 "row": 1,
+    //                                 "column": 1
+    //                             }
+    //                         ]
+    //                     }
+    //                 ],
+    //                 "columnWidths": [
+    //                     "100%"
+    //                 ]
+    //             },
+    //             "type": "blank",
+    //             "style": {},
+    //             "elements": [
+    //                 {
+    //                     "id": "dwy1k084yr6",
+    //                     "content": "<p style=\"text-align: center\"><span class=\"heading-text title-text\">Спасибо за внимание!</span></p>",
+    //                     "elementTypeId": "text",
+    //                     "cellId": "ehdf6f"
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             "id": "5es0d3",
+    //             "gridStructure": {
+    //                 "columns": 1,
+    //                 "rows": [
+    //                     {
+    //                         "id": "s8gdm1",
+    //                         "cells": [
+    //                             {
+    //                                 "id": "hbuflx",
+    //                                 "row": 1,
+    //                                 "column": 1
+    //                             }
+    //                         ]
+    //                     }
+    //                 ],
+    //                 "columnWidths": [
+    //                     "100%"
+    //                 ]
+    //             },
+    //             "type": "blank",
+    //             "style": {},
+    //             "elements": [
+    //                 {
+    //                     "id": "jp8q63xdkvr",
+    //                     "content": "<p style=\"text-align: center\"><span class=\"body-text big-text\">Готов ответить на вопросы.</span></p>",
+    //                     "elementTypeId": "text",
+    //                     "cellId": "hbuflx"
+    //                 }
+    //             ]
+    //         }
+    //     ],
+    //     ui: {
+    //         category: 'final-templates',
+    //         label: 'Заключительный слайд с благодарностью',
+    //         icon: FaRegAddressCard,
+    //         description: 'Шаблон для завершения презентации с благодарностью',
+    //     },
+    //     llm: {
+    //         description: 'Шаблон для создания заключительного слайда с благодарностью',
+    //         purpose: ['conclusion', 'presentation-end'],
+    //         useCases: ['Завершение презентации'],
+    //     },
+    // }
 };

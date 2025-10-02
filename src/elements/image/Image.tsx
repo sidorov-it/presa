@@ -1,6 +1,6 @@
 import { ImageElement } from '@/types';
 import { usePresentationStore } from '@/store/presentationStore';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useAIImageStore } from '@/store/aiImageStore';
 import ImageComponent from './ImageComponent';
 
@@ -11,6 +11,7 @@ interface ImageProps {
     slideId: string;
     layoutId: string;
     hasMultipleCells?: boolean;
+    isWidthRightMenu?: boolean;
 }
 
 export default function Image({
@@ -20,13 +21,14 @@ export default function Image({
     slideId,
     layoutId,
     hasMultipleCells,
+    isWidthRightMenu,
 }: ImageProps) {
     const element = usePresentationStore(state =>
         state.getElement(presentationId, slideId, layoutId, elementId)
     ) as ImageElement;
     const updateElement = usePresentationStore(state => state.updateElement);
     const addColumnsAroundImage = usePresentationStore(state => state.addColumnsAroundImage);
-    const openMenu = useMenuStore(state => state.openMenu);
+    const openMenu = useUIStateStore.getState().openContextMenu;
     const aiImageStore = useAIImageStore();
     const isGenerating = aiImageStore.isGenerating(elementId);
 
@@ -40,6 +42,7 @@ export default function Image({
             hasMultipleCells={hasMultipleCells}
             isGenerating={isGenerating}
             openMenu={openMenu}
+            isWidthRightMenu={isWidthRightMenu}
             updateElement={(data: Partial<ImageElement>) =>
                 updateElement({
                     presentationId,

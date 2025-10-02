@@ -9,6 +9,7 @@ export default async function generateSlide({
     totalSlides,
     templateId,
     instructions,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -21,6 +22,7 @@ export default async function generateSlide({
     totalSlides: number;
     templateId: string;
     instructions: string;
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -36,6 +38,7 @@ export default async function generateSlide({
         totalSlides,
         template,
         instructions,
+        contentAmount,
         durationMinutes,
         goal,
         audience,
@@ -60,6 +63,7 @@ export default async function generateSlide({
     // const functionArgs = response.function_call?.arguments;
 
     // создаем слайд из шаблона и аргументов
+    console.log('functionArgs', functionArgs);
     const slide = await createSlideFromTemplateWithContent({
         templateId: template.id,
         slotMapping,

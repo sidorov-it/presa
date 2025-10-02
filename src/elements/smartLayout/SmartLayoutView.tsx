@@ -12,6 +12,10 @@ interface SmartLayoutViewProps {
     layoutId: string;
     tiptapRefs: RefObject<TipTapRefs> | null;
     isFocused: boolean;
+    blockFillColorsType?: string;
+    blockBackgroundCustomColors?: string[];
+    primaryAccentColor?: string;
+    backgroundBlockFillType?: string;
 }
 
 const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
@@ -21,6 +25,10 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
     layoutId,
     tiptapRefs,
     isFocused,
+    blockFillColorsType,
+    blockBackgroundCustomColors,
+    primaryAccentColor,
+    backgroundBlockFillType,
 }) => {
     const elementVariant = element.elementVariant;
 
@@ -46,6 +54,10 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
                         slideId={slideId}
                         layoutId={layoutId}
                         isFocused={isFocused}
+                        blockFillColorsType={blockFillColorsType}
+                        primaryAccentColor={primaryAccentColor}
+                        blockBackgroundCustomColors={blockBackgroundCustomColors}
+                        backgroundBlockFillType={backgroundBlockFillType}
                     />
                 );
             case 'steps':
@@ -90,7 +102,18 @@ const SmartLayoutView: React.FC<SmartLayoutViewProps> = ({
                     />
                 );
         }
-    }, [element, isFocused, layoutId, elementVariant, presentationId, slideId, tiptapRefs]);
+    }, [
+        elementVariant,
+        element,
+        tiptapRefs,
+        presentationId,
+        slideId,
+        layoutId,
+        isFocused,
+        blockFillColorsType,
+        blockBackgroundCustomColors,
+        primaryAccentColor,
+    ]);
 
     return (
         <div

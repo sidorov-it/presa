@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 100%;
     box-sizing: border-box;
+    gap: 1em;
 }
 
 .image {
@@ -87,6 +88,7 @@
 
 .title {
     margin-bottom: 0.6em;
+    width: 100%;
 }
 
 .left {

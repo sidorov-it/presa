@@ -72,6 +72,9 @@ export class GigaChatService implements LLMService {
             },
         ];
     }
+    getTokensCount(): Promise<number> {
+        throw new Error('Method not implemented.');
+    }
 
     private calculateCost(tokens: number): number {
         return (tokens / 1000) * COST_PER_1K_TOKENS;
@@ -90,7 +93,10 @@ export class GigaChatService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
-        } = {}
+            requestId: string;
+        } = {
+            requestId: ''
+        }
     ): Promise<LLMResponse> {
         const startTime = performance.now();
         let cached = false;
@@ -178,6 +184,9 @@ export class GigaChatService implements LLMService {
                             type: 'chat',
                             data: parsedResponse,
                         },
+                        inputTokens: apiResponse.usage.prompt_tokens,
+                        outputTokens: apiResponse.usage.completion_tokens,
+                        requestId: options.requestId || '',
                     });
                 }
 
@@ -190,7 +199,9 @@ export class GigaChatService implements LLMService {
 
                 const logMessage: LLMRequestData = {
                     userId: this.userId,
+                    provider: 'gigachat',
                     presentationId: options.presentationId,
+                    requestId: options.requestId,
                     requestType: 'generate_content',
                     prompt,
                     inputTokens,
@@ -333,7 +344,9 @@ export class GigaChatService implements LLMService {
 
                 const logMessage: LLMRequestData = {
                     userId: this.userId,
+                    provider: 'gigachat',
                     presentationId: options?.presentationId,
+                    requestId: options?.requestId,
                     requestType: 'generate_image',
                     prompt,
                     inputTokens,
@@ -363,7 +376,8 @@ export class GigaChatService implements LLMService {
                 const image = await this.client.getImage(detectedImage.uuid);
 
                 if (typeof window === 'undefined') {
-                    const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+                    const { getUploadPath } = await import('@/utils/uploadPath');
+                    const UPLOAD_DIR = getUploadPath();
                     const filePath = path.join(UPLOAD_DIR, `${detectedImage.uuid}.jpg`);
                     await this.saveImageToFile(filePath, image.content);
                     const imageUrl = `/uploads/${detectedImage.uuid}.jpg`;
@@ -387,6 +401,9 @@ export class GigaChatService implements LLMService {
                             type: 'image',
                             data: result,
                         },
+                        inputTokens: 0,
+                        outputTokens: 0,
+                        requestId: options.requestId || '',
                     });
                 }
             }
@@ -448,7 +465,8 @@ export class GigaChatService implements LLMService {
             throw new Error('File operations can only be performed on the server side');
         }
 
-        const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+        const { getUploadPath } = await import('@/utils/uploadPath');
+        const UPLOAD_DIR = getUploadPath();
         await fs.mkdir(UPLOAD_DIR, { recursive: true });
         await fs.writeFile(filePath, content, 'binary');
     }

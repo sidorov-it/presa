@@ -49,7 +49,6 @@ export const Paragraph = Node.create<ParagraphOptions>({
                     if (!(node instanceof HTMLElement)) return false;
 
                     return {
-                        //   level: Number(node.tagName[1]),
                         class: node.className,
                     };
                 },
@@ -59,6 +58,24 @@ export const Paragraph = Node.create<ParagraphOptions>({
 
     renderHTML({ HTMLAttributes }) {
         return ['p', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
+    },
+
+    addGlobalAttributes() {
+        return [
+            {
+                types: ['paragraph'],
+                attributes: {
+                    class: {
+                        default: null,
+                        parseHTML: element => element.getAttribute('class'),
+                        renderHTML: attributes => {
+                            if (!attributes.class) return {};
+                            return { class: attributes.class };
+                        },
+                    },
+                },
+            },
+        ];
     },
 
     addCommands() {

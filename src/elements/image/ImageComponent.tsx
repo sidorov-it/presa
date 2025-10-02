@@ -6,10 +6,11 @@ import { FiLoader } from 'react-icons/fi';
 import { ImageElement } from '@/types';
 import { default as NextImage } from 'next/image';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
-import type { useMenuStore } from '@/store/menuStore';
+import type { useUIStateStore } from '@/store/uiStateStore';
 
 import styles from './Image.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import getImagePath from '@/utils/getImagePath';
 
 interface ImageComponentProps {
     element: ImageElement;
@@ -19,7 +20,8 @@ interface ImageComponentProps {
     layoutId: string;
     hasMultipleCells?: boolean;
     isGenerating?: boolean;
-    openMenu?: ReturnType<typeof useMenuStore>['openMenu'];
+    isWidthRightMenu?: boolean;
+    openMenu?: ReturnType<typeof useUIStateStore>['openSideMenu'];
     updateElement?: (data: Partial<ImageElement>) => void;
     addColumnsAroundImage?: (options: { width: number; direction?: 'right' | 'left' | 'both' }) => void;
 }
@@ -35,6 +37,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
     hasMultipleCells,
     isGenerating = false,
     openMenu,
+    isWidthRightMenu,
     updateElement,
     addColumnsAroundImage,
 }) => {
@@ -339,6 +342,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
                         onClearImage={() => {
                             updateElement?.({ src: '' });
                         }}
+                        isWidthRightMenu={isWidthRightMenu}
                         onUpdateLink={(link: string, uploaded: boolean) => handleUpdateLink(link, uploaded)}
                     />
                 )}
@@ -360,7 +364,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({
                         <div style={{ position: 'relative' }}>
                             <NextImage
                                 ref={imageRef}
-                                src={element.src}
+                                src={getImagePath(element.src)}
                                 alt={element.alt || ''}
                                 width={0}
                                 height={0}

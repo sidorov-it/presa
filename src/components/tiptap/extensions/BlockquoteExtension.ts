@@ -58,7 +58,11 @@ export const BlockquoteExtension = Node.create<BlockquoteOptions>({
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['blockquote', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
+        return [
+            'blockquote',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { class: 'blockquote' }),
+            ['p', {}, ['span', { class: 'body-text normal-text' }, 0]],
+        ];
     },
 
     addCommands() {

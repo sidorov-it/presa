@@ -1,10 +1,77 @@
-import { createSlideFromTemplateWithContent } from '../createSlideFromTemplateWithContent';
+import { createSlideFromTemplateWithContent } from '../createSlideFromTemplateWithContentMock';
+import { SlotKeyMapping } from '@/types/gigachat';
+import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 
-jest.mock('@/services/llm/gigaChat/generateImage', () => {
-    return jest.fn().mockResolvedValue('https://example.com/image.jpg');
-});
+jest.mock('@/services/llm/gigaChat', () => ({
+    generateImage: jest.fn().mockResolvedValue('https://example.com/image.jpg'),
+}));
 
 describe('createSlideFromTemplateWithContent', () => {
+    test('slide inherits contentAlignment from template', async () => {
+        // Test welcome-slide template which has contentAlignment: 'center'
+        const templateId = 'welcome-slide';
+        const template = SlideTemplatesRegistry[templateId];
+
+        expect(template.contentAlignment).toBe('center');
+
+        const slotMapping = new Map<string, SlotKeyMapping>();
+        const layoutsContents = {};
+        const title = 'Test Slide';
+
+        const slide = await createSlideFromTemplateWithContent({
+            templateId,
+            slotMapping,
+            layoutsContents,
+            title,
+            options: { userId: 'test-user', requestId: 'test-request' },
+        });
+
+        expect(slide.contentAlignment).toBe('center');
+    });
+
+    test('slide uses default center alignment when template has no contentAlignment', async () => {
+        // Test a template without explicit contentAlignment
+        const templateId = 'image-text';
+        const template = SlideTemplatesRegistry[templateId];
+
+        expect(template.contentAlignment).toBeUndefined();
+
+        const slotMapping = new Map<string, SlotKeyMapping>();
+        const layoutsContents = {};
+        const title = 'Test Slide';
+
+        const slide = await createSlideFromTemplateWithContent({
+            templateId,
+            slotMapping,
+            layoutsContents,
+            title,
+            options: { userId: 'test-user', requestId: 'test-request' },
+        });
+
+        expect(slide.contentAlignment).toBe('center');
+    });
+
+    test('title-bullets template has top alignment', async () => {
+        const templateId = 'title-bullets';
+        const template = SlideTemplatesRegistry[templateId];
+
+        expect(template.contentAlignment).toBe('top');
+
+        const slotMapping = new Map<string, SlotKeyMapping>();
+        const layoutsContents = {};
+        const title = 'Test Slide';
+
+        const slide = await createSlideFromTemplateWithContent({
+            templateId,
+            slotMapping,
+            layoutsContents,
+            title,
+            options: { userId: 'test-user', requestId: 'test-request' },
+        });
+
+        expect(slide.contentAlignment).toBe('top');
+    });
+
     test('true is true', async () => {
         const templateId = 'two-image-columns';
         const slotMapping = new Map([

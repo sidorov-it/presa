@@ -1,0 +1,146 @@
+[
+    {
+        "themeName": "Звёздная пыль",
+        "bgUrl": "/uploads/backgrounds/2e089ba7-d8cd-4d28-aeb1-54c24b1fb0f1.jpeg"
+    },
+    {
+        "themeName": "Туманности",
+        "bgUrl": "/uploads/backgrounds/783f4c96-6b8c-4564-bd6b-76cc627fa3b4.png"
+    },
+    {
+        "themeName": "Элизия",
+        "bgUrl": "/uploads/backgrounds/e53f1860-e1c3-4e73-9c0e-266a78b2f472.png"
+    },
+    {
+        "themeName": "Призма",
+        "bgUrl": "/uploads/backgrounds/ffdb6664-d0df-4921-ad89-99ad2343d189.png"
+    },
+    {
+        "themeName": "Ночное небо",
+        "bgUrl": "/uploads/backgrounds/8675c732-222f-4683-bfb8-68634393120e.png"
+    },
+    {
+        "themeName": "Гамма Тёмная",
+        "bgUrl": "/uploads/backgrounds/b0cb0ed1-50d3-4c97-9c30-77a458567be3.png"
+    },
+    {
+        "themeName": "Атмосфера",
+        "bgUrl": "/uploads/backgrounds/f66d21e9-36ac-442d-8f8a-37bd18ac711f.png"
+    },
+    {
+        "themeName": "Блюз",
+        "bgUrl": "/uploads/backgrounds/1b2bfff7-54b2-47a2-b09f-ef929351ed4d.jpeg"
+    },
+    {
+        "themeName": "Персиковая",
+        "bgUrl": "/uploads/backgrounds/fed31511-0572-4352-a070-e7b903fa4cb8.png"
+    },
+    {
+        "themeName": "Овсяная",
+        "bgUrl": "/uploads/backgrounds/349fcd50-d48e-4a82-a609-31a5ccb52587.jpeg"
+    },
+    {
+        "themeName": "Бордовая",
+        "bgUrl": "/uploads/backgrounds/cc6c6f70-b939-4fbc-8909-2b70ab06cd86.jpeg"
+    },
+    {
+        "themeName": "Патинированная",
+        "bgUrl": "/uploads/backgrounds/ae08de14-4e9b-4c1e-9f83-fd75ef3789e8.png"
+    },
+    {
+        "themeName": "Фламинго",
+        "bgUrl": "/uploads/backgrounds/66ea8eff-a0b0-4845-b418-80ae6f0221fb.png"
+    },
+    {
+        "themeName": "Канаверал",
+        "bgUrl": "/uploads/backgrounds/ab82cf50-c92b-483c-9e1d-56e3b4863e75.png"
+    },
+    {
+        "themeName": "Мягкое облако",
+        "bgUrl": "/uploads/backgrounds/e26ded28-0b54-46c3-9ac7-5b5b01dcc623.svg+xml"
+    },
+    {
+        "themeName": "Зефир",
+        "bgUrl": "/uploads/backgrounds/c4d021a0-d5f3-43be-9a55-926410010036.png"
+    },
+    {
+        "themeName": "Дым",
+        "bgUrl": "/uploads/backgrounds/91c69b92-217e-41fb-86d7-5f9c0fd896e0.png"
+    },
+    {
+        "themeName": "Сажа",
+        "bgUrl": "/uploads/backgrounds/d9c0c8be-2174-4cf6-a2b2-dbbc4dc5e968.png"
+    },
+    {
+        "themeName": "Грёзы",
+        "bgUrl": "/uploads/backgrounds/e4e71f00-6858-49f6-8375-f4821f5424df.png"
+    },
+    {
+        "themeName": "Орбита",
+        "bgUrl": "/uploads/backgrounds/b9211d8a-0e97-4986-85d0-7977a3059db0.png"
+    },
+    {
+        "themeName": "Дюна",
+        "bgUrl": "/uploads/backgrounds/019478a5-5cd8-4c3f-b2ec-abb1618bcda0.jpeg"
+    },
+    {
+        "themeName": "Инопланетная",
+        "bgUrl": "/uploads/backgrounds/1ef938e4-8c23-493e-bcbc-ca7cfdd17e5f.png"
+    },
+    {
+        "themeName": "Аврора",
+        "bgUrl": "/uploads/backgrounds/eed5ba35-994b-4569-9f72-284dd744c3fd.png"
+    },
+    {
+        "themeName": "Бархатные волны",
+        "bgUrl": "/uploads/backgrounds/424dd240-7027-414f-bac6-7b66140408e2.jpeg"
+    },
+    {
+        "themeName": "Спокойствие",
+        "bgUrl": "/uploads/backgrounds/11dc0a6d-81ff-479d-a5be-05a1b63d5523.jpeg"
+    },
+    {
+        "themeName": "Северное сияние",
+        "bgUrl": "/uploads/backgrounds/0b627ed8-a0a5-47a7-8060-30efaa5d628b.jpeg"
+    },
+    {
+        "themeName": "Снежок",
+        "bgUrl": "/uploads/backgrounds/ea1f312c-f3a2-435b-a07f-5370af77d08a.jpeg"
+    },
+    {
+        "themeName": "Атакама",
+        "bgUrl": "/uploads/backgrounds/48d8a5eb-7912-498f-bb7b-9edb1e1cb9e0.jpeg"
+    },
+    {
+        "themeName": "Золото",
+        "bgUrl": "/uploads/backgrounds/b21f68fb-74e3-469e-98c9-44cff69354b0.png"
+    },
+    {
+        "themeName": "Сияние",
+        "bgUrl": "/uploads/backgrounds/06c1c1a2-a06b-4276-b25e-cfb7dce8bba1.jpeg"
+    },
+    {
+        "themeName": "Золотой лист",
+        "bgUrl": "/uploads/backgrounds/a8097ff6-3e81-4671-a094-125e17d4dd0e.png"
+    },
+    {
+        "themeName": "Ирис",
+        "bgUrl": "/uploads/backgrounds/0c13864e-52f5-48d0-9143-52261396f32b.jpeg"
+    },
+    {
+        "themeName": "Малибу",
+        "bgUrl": "/uploads/backgrounds/579a6760-5daf-4489-a4f6-5d0c9054491e.jpeg"
+    },
+    {
+        "themeName": "Порыв",
+        "bgUrl": "/uploads/backgrounds/498407f8-d0ec-48c9-81df-baa373847ac9.jpeg"
+    },
+    {
+        "themeName": "Тень",
+        "bgUrl": "/uploads/backgrounds/9af43440-3d60-4d1c-aa86-486f01d2dc6b.jpeg"
+    },
+    {
+        "themeName": "Росток",
+        "bgUrl": "/uploads/backgrounds/adbd4d53-467c-446f-bcae-769bd273f8bf.jpeg"
+    }
+]

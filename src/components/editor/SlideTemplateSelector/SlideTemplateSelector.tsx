@@ -1,6 +1,7 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { MutableRefObject, useCallback, useState } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
-import { SLIDE_TEMPLATES, TipTapRefs } from '@/types';
+import { SLIDE_TEMPLATES, SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import styles from './SlideTemplateSelector.module.css';
 import ColorPicker from '@/components/ui/ColorPicker';
 import { MdOutlineVerticalAlignTop, MdOutlineVerticalAlignCenter, MdOutlineVerticalAlignBottom } from 'react-icons/md';
@@ -8,6 +9,12 @@ import { useHistoryStore } from '@/store/historyStore';
 import { FiLoader } from 'react-icons/fi';
 import { useThemeStore } from '@/store/themeStore';
 import { useShallow } from 'zustand/react/shallow';
+import getContrastTextColor from '@/utils/getContrastTextColor';
+import { ElementType } from '@/types/elements';
+import { useUIStateStore } from '@/store/uiStateStore';
+import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
+import { showSubscriptionModal } from '@/utils/subscriptionModalHelpers';
+import { FaCrown } from 'react-icons/fa';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -18,7 +25,6 @@ interface SlideTemplateSelectorProps {
     tiptapRefs: MutableRefObject<TipTapRefs>;
 }
 
-const DEFAULT_HEIGHT_PX = 200;
 const DEFAULT_BACKGROUND_COLOR = '#ffffff';
 const DEFAULT_TEXT_COLOR = '#000000';
 
@@ -49,22 +55,48 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const { hasActiveSubscription, loading: subscriptionLoading } = useSubscriptionCheck();
+    const showSubscriptionCrown = !subscriptionLoading && !hasActiveSubscription;
+
+    const handleHeaderFooterClick = useCallback(() => {
+        if (subscriptionLoading) {
+            return;
+        }
+
+        if (hasActiveSubscription) {
+            useUIStateStore.getState().setCurrentSlideId(slideId);
+            useUIStateStore.getState().setGlobalHeaderFooterModalOpen(true);
+            return;
+        }
+
+        showSubscriptionModal();
+    }, [hasActiveSubscription, slideId, subscriptionLoading]);
+
     const handleTemplateChange = (value: SlideTemplateType) => {
         // Set default image size based on template type
-        let imageSize;
+        let imageHeightRatio;
+        let imageWidthRatio;
         if (value === 'imageTop') {
-            imageSize = { height: `${DEFAULT_HEIGHT_PX}px` };
+            imageHeightRatio = 0.33; // Default 33% height ratio
         } else if (value === 'imageLeft' || value === 'imageRight') {
-            imageSize = { width: '33%' };
+            imageWidthRatio = 0.33; // Default 33% width ratio
         }
 
         useHistoryStore.getState().beginTransaction(presentationId, 'update slide template');
 
+        // Prepare update data with ratios
+        const updateData: any = { templateType: value as SlideTemplateType };
+        if (imageHeightRatio !== undefined) {
+            updateData.imageHeightRatio = imageHeightRatio;
+        }
+        if (imageWidthRatio !== undefined) {
+            updateData.imageWidthRatio = imageWidthRatio;
+        }
+
         // Update background if template is imageBackground
         if (value === 'imageBackground' && imageUrl) {
             updateSlide(presentationId, slideId, {
-                templateType: value as SlideTemplateType,
-                imageSize,
+                ...updateData,
                 background: {
                     type: 'image',
                     value: imageUrl,
@@ -73,53 +105,60 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
         } else if (slide?.background?.type === 'image' && value !== 'imageBackground') {
             // Reset background to color if changing from imageBackground to another template
             updateSlide(presentationId, slideId, {
-                templateType: value as SlideTemplateType,
-                imageSize,
+                ...updateData,
                 background: {
                     type: 'color',
                     value: backgroundColor || DEFAULT_BACKGROUND_COLOR,
                 },
             });
         } else {
-            updateSlide(
-                presentationId,
-                slideId,
-                {
-                    templateType: value as SlideTemplateType,
-                    imageSize,
-                },
-                true
-            );
+            updateSlide(presentationId, slideId, updateData, true);
         }
 
-        // Determine if the selected template will have a resizable image component rendered
-        const templateNeedsImage =
-            ['imageTop', 'imageLeft', 'imageRight'].includes(value) || (value === 'imageBackground' && !!imageUrl);
-
-        // If no resizable image is expected, we can safely commit the transaction right away
-        if (!templateNeedsImage) {
-            useHistoryStore.getState().commitTransaction(presentationId);
-        }
+        useHistoryStore.getState().commitTransaction(presentationId);
     };
 
     const handleBackgroundColorChange = useCallback(
         (color: string) => {
             // Only update background if not using image background
             if (templateType !== 'imageBackground') {
+                const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
+
+                const textColor = getContrastTextColor(color);
+                useHistoryStore.getState().beginTransaction(presentationId, 'change text color');
+
+                // Update existing elements
+                elements.forEach(element => {
+                    if (tiptapRefs.current?.editors[element.id]) {
+                        tiptapRefs.current.editors[element.id]?.editor
+                            .chain()
+                            .setMeta('transaction', true)
+                            .focus(null, { scrollIntoView: false })
+                            .selectAll()
+                            .setColor(textColor)
+                            .blur()
+                            .run();
+                    }
+                });
+
+                setTextColor(textColor);
+
                 updateSlide(presentationId, slideId, {
                     background: {
                         type: 'color',
                         value: color,
                     },
+                    textColor: textColor,
                 });
+
+                useHistoryStore.getState().commitTransaction(presentationId);
             }
         },
-        [templateType, presentationId, slideId, updateSlide]
+        [templateType, presentationId, slideId, updateSlide, tiptapRefs]
     );
 
     const handleTextColorChange = useCallback(
         (color: string) => {
-            console.log('handleTextColorChange', color);
             const elements = usePresentationStore.getState().getSlideElements(presentationId, slideId);
 
             useHistoryStore.getState().beginTransaction(presentationId, 'change text color');
@@ -138,6 +177,32 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         .setColor(color)
                         .blur()
                         .run();
+                } else if (element.elementTypeId === ElementType.SMART_LAYOUT) {
+                    (element as SmartLayoutElement).items.forEach((item: SmartLayoutItem) => {
+                        const titleEditor = tiptapRefs.current.editors[`title-${element.id}-${item.id}`];
+                        const textEditor = tiptapRefs.current.editors[`text-${element.id}-${item.id}`];
+
+                        if (titleEditor) {
+                            titleEditor.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus(null, { scrollIntoView: false })
+                                .selectAll()
+                                .setColor(color)
+                                .blur()
+                                .run();
+                        }
+                        if (textEditor) {
+                            textEditor.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus(null, { scrollIntoView: false })
+                                .selectAll()
+                                .setColor(color)
+                                .blur()
+                                .run();
+                        }
+                    });
                 }
             });
 
@@ -320,7 +385,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                     </label>
                     <div className={styles.templateSelectorBackgroundColorPicker}>
                         <ColorPicker
-                            value={backgroundColor}
+                            value={backgroundColor || DEFAULT_BACKGROUND_COLOR}
                             onChange={color => handleBackgroundColorChange(color)}
                             allowAlpha={true}
                             className={styles.colorPicker}
@@ -338,7 +403,7 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         className={styles.colorPicker}
                         value={textColor}
                         allowAlpha={true}
-                        onChange={color => handleTextColorChange(color)}
+                        onChange={handleTextColorChange}
                     />
                 </div>
             </div>
@@ -370,6 +435,22 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                         title="Вниз"
                     >
                         <MdOutlineVerticalAlignBottom size={16} />
+                    </button>
+                </div>
+            </div>
+
+            <div className={styles.headerFooterSection}>
+                <span className={styles.headerFooterLabel}>Колонтитулы</span>
+                <div className={styles.headerFooterButtons}>
+                    <button
+                        type="button"
+                        onClick={handleHeaderFooterClick}
+                        className={styles.headerFooterButton}
+                        aria-label="Настроить колонтитулы"
+                        disabled={subscriptionLoading}
+                    >
+                        {showSubscriptionCrown && <FaCrown className={styles.headerFooterCrown} aria-hidden="true" />}
+                        <span>Настроить</span>
                     </button>
                 </div>
             </div>

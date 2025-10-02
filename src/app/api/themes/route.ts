@@ -1,10 +1,11 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET(request: Request) {
+async function GETHandler(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
     }
 }
 
-export async function POST(request: Request) {
+async function POSTHandler(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -76,8 +77,12 @@ export async function POST(request: Request) {
         const createdTheme = await prisma.theme.create({
             data: {
                 name: theme.name,
+                logo: theme.logo || null,
                 colors: {
-                    set: theme.colors,
+                    set: {
+                        ...theme.colors,
+                        secondaryAccents: theme.colors.secondaryAccents ?? [],
+                    },
                 },
                 typography: {
                     set: theme.typography,
@@ -87,14 +92,15 @@ export async function POST(request: Request) {
                 },
                 isDefault: theme.isDefault ?? false,
                 isActive: theme.isActive ?? true,
-                logo: null,
                 userId: session.user.id, // Associate theme with user
             },
         });
 
         return NextResponse.json(createdTheme, { status: 201 });
     } catch (error) {
-        logger.error('Failed to create theme:', error);
+        logger.error('Failed to create theme:', error instanceof Error ? error.message : 'Unknown error');
         return NextResponse.json({ error: 'Failed to create theme' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const POST = withLogging(POSTHandler);

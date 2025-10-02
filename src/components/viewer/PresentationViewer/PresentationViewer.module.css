@@ -33,4 +33,8 @@
   background-color: transparent;
   transition: transform 0.2s;
   position: relative;
+
+  /* height: calc(64em / 16 * 9 ); */
+  min-height: calc(64em / 16 * 9 );
+  font-size: var(--font-size);
 }

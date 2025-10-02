@@ -11,7 +11,7 @@
 - **Imports**: Use absolute imports with `@/` prefix (e.g. `@/components/ui/Button`)
 - **Component Structure**: React functional components with TypeScript interfaces
 - **State Management**: Use Zustand store in `/src/store` with typesafe actions
-- **Styling**: Use CSS modules (.module.css) and Tailwind CSS
+- **Styling**: Use CSS modules (.module.css)
 - **Naming**: 
   - PascalCase for components and type interfaces
   - camelCase for functions, variables and props

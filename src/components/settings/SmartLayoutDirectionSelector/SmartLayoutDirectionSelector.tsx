@@ -2,8 +2,8 @@
 import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector';
 
 const DIRECTIONS = [
-    { id: 'horizontal', label: 'Horizontal' },
-    { id: 'vertical', label: 'Vertical' },
+    { id: 'horizontal', label: 'Горизонтально' },
+    { id: 'vertical', label: 'Вертикально' },
 ];
 
 export default function SmartLayoutDirectionSelector({

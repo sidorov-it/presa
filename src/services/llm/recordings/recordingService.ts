@@ -21,6 +21,25 @@ export class RecordingService {
         await this.persistRecordings();
     }
 
+    /**
+     * Сохраняет запись с явными параметрами (для удобства)
+     */
+    async saveDetailedRecording(params: {
+        prompt: string;
+        response: { type: 'chat' | 'image'; data: any };
+        options?: any;
+        inputTokens: number;
+        outputTokens: number;
+        requestId: string;
+    }): Promise<void> {
+        const newRecording: LLMRecording = {
+            ...params,
+            timestamp: Date.now(),
+        };
+        this.recordings.push(newRecording);
+        await this.persistRecordings();
+    }
+
     async findRecordingByPrompt(prompt: string): Promise<LLMRecording | null> {
         await this.loadRecordings();
         return this.recordings.findLast(r => r.prompt.includes(prompt)) || null;
@@ -32,6 +51,14 @@ export class RecordingService {
             this.recordings.find(r => r.prompt === prompt && JSON.stringify(r.options) === JSON.stringify(options)) ||
             null
         );
+    }
+
+    /**
+     * Поиск всех записей по requestId (все LLM-запросы, относящиеся к одному пользовательскому запросу)
+     */
+    async findRecordingsByRequestId(requestId: string): Promise<LLMRecording[]> {
+        await this.loadRecordings();
+        return this.recordings.filter(r => r.requestId === requestId);
     }
 
     private async persistRecordings(): Promise<void> {

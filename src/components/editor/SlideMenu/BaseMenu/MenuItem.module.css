@@ -10,7 +10,7 @@
 
 .menuItem:hover,
 .menuItem:focus {
-    background-color: var(--color-bg-light);
+    background-color: var(--color-surface);
     outline: none;
 }
 
@@ -20,12 +20,13 @@
 }
 
 .active {
-    background-color: var(--color-bg-dark);
+    background-color: var(--color-primary);
+    color: var(--color-button-text);
 }
 
 .danger:hover {
-    background-color: #fee2e2;
-    color: #ef4444;
+    background-color: var(--chakra-colors-red-50);
+    color: var(--color-error);
 }
 
 .iconWrapper {

@@ -1,30 +1,32 @@
 /* PDF Export specific styles */
 .pdfExport {
-    width: 100% !important;
+    /* width: 100% !important;
     height: auto !important;
     min-height: auto !important;
     overflow: visible !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 !important; */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
 }
 
 .pdfExport .slideViewerWrapper {
-    min-height: auto !important;
+    /* min-height: auto !important;
     height: auto !important;
     width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    max-width: none !important; */
+    margin: 20px;
+    /* padding: 0 !important; */
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    min-height: var(--pdf-slide-height) !important;
 }
 
 .slideViewerWrapper {
     width: 100%;
     max-width: 100%;
-    min-height: 100vh;
+    min-height: var(--card-height);
+    height: auto;
     position: relative;
 }
 
@@ -57,7 +59,7 @@
 }
 
 .pdfExport .slideViewerContent {
-    min-height: auto !important;
+    min-height: var(--pdf-slide-height) !important;
     height: auto !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
@@ -77,4 +79,114 @@
     mask-position: center !important;
     border-radius: 50% !important;
     overflow: hidden !important;
+}
+
+.slide {
+    padding: 0;
+    /* max-width: calc(100vh / 1.7777777777777777); */
+}
+
+.pdfExport .slide {
+    width: var(--pdf-slide-width) !important;
+    box-sizing: content-box;
+}
+
+/* .pdfExport .slideWrapper {
+    max-width: calc(100vh / 1.7777777777777777);
+} */
+
+.slideWrapper {
+    max-width: var(--card-width);
+    width: var(--card-width);
+    border-radius: var(--presentation-slide-border-radius);
+    min-height: 130px;
+
+}
+
+.slideWrapper::before {
+    /* top: 20px;
+    bottom: 44px; */
+    border-radius: var(--presentation-slide-border-radius);
+}
+
+.slideContent {
+    box-shadow: none !important;
+    min-height: calc(64em / 16 * 9 )
+}
+
+.pdfExport .slideContainer {
+    width: var(--pdf-slide-width);
+    min-height: var(--pdf-slide-height);
+    box-sizing: content-box;
+}
+
+.slideContainer {
+    max-width: calc(64.5em / var(--card-font-scale, 1));
+}
+
+.slidePreview {
+    width: 100%;
+    height: auto;
+}
+
+.slidePreview .slideWrapper {
+    width: 100%;
+    height: auto;
+    min-height: var(--card-min-height);
+    border-radius: var(--presentation-slide-border-radius);
+    overflow: visible;
+}
+
+.slidePreview .slideContent {
+    width: 100%;
+    height: auto;
+    min-height: var(--card-min-height);
+    overflow: visible;
+}
+
+.slidePreview .slideContainer {
+    width: 100%;
+    height: auto;
+    max-width: calc(64.5em / var(--card-font-scale, 1));
+    margin: 0 auto;
+}
+
+/* Fix for grid cell overflow in preview mode */
+.slidePreview :global(.tiptap) {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure grid cells don't overflow in preview */
+.slidePreview [style*="display: grid"] > div {
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Additional text overflow prevention in preview */
+.slidePreview :global(.ProseMirror) {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure all text elements respect container boundaries in preview */
+.slidePreview :global(p),
+.slidePreview :global(h1),
+.slidePreview :global(h2),
+.slidePreview :global(h3),
+.slidePreview :global(h4),
+.slidePreview :global(h5),
+.slidePreview :global(h6),
+.slidePreview :global(div) {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    box-sizing: border-box;
 }

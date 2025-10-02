@@ -11,8 +11,10 @@
     top: 50%;
     left: 0;
     transform: translateY(-50%);
-    /* height: 100vh; */
-    overflow-y: auto;
+    max-height: 80vh;
+    overflow: hidden;
+    padding: 12px 0;
+    border-radius: 8px;
 }
 
 .collapsed {
@@ -167,53 +169,75 @@
     }
 }
 
-.leftPanelHeader {
+.expandedPanelCollapseButton {
+    padding: 2px;
+    width: 18px;
+    height: 32px;
     display: flex;
-    padding: 0.5rem;
-    justify-content: flex-end;
     align-items: center;
-    border-bottom-width: 1px;
-    border-color: var(--color-border);
-}
-
-.leftPanelHeaderButtons {
-    display: flex;
-    margin-left: 0.25rem;
-    align-items: center;
-}
-
-.leftPanelHeaderButton {
-    padding: 0.375rem;
-    border-radius: 0.25rem;
-    color: var(--color-primary);
-    transition: all 0.2s ease;
+    justify-content: center;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    color: #A0A0A0;
+    background-color: #1E1E1E;
+    border: 1px solid #3A3F4B;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    z-index: 40;
 
     &:hover {
-        background-color: var(--color-background);
-        color: var(--color-primary);
+        background-color: #2D2D2D;
+        color: #fff;
+    }
+}
+
+.expandedPanelCollapseButtonLight {
+    color: #666666;
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+
+    &:hover {
+        background-color: #F7FAFC;
+        color: #1A202C;
     }
 }
 
 .leftPanelContent {
     display: flex;
-    overflow-y: auto;
     flex-direction: column;
     flex: 1 1 0%;
+    min-height: 0;
+    overflow: hidden;
     justify-content: center;
     align-items: center;
 }
 
 .leftPanelContentSlides {
-    overflow: hidden;
+    overflow-y: auto;
     width: 100%;
     padding: 0 8px;
-    margin-bottom: 8px; 
-    /* background-color: var(--color-surface); */
-    /* box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1); */
+    margin-bottom: 8px;
     max-width: 180px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) transparent;
+}
+
+.leftPanelContentSlides::-webkit-scrollbar {
+    width: 6px;
+}
+
+.leftPanelContentSlides::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.leftPanelContentSlides::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary);
+    border-radius: 3px;
 }
 
 .slideContainer {
@@ -229,8 +253,13 @@
 }
 
 .activeSlide {
-    background-color: var(--color-primary);
+    background-color: #2D2D2D;
     color: var(--color-text);
+}
+
+.activeSlideLight {
+    background-color: #F0F3F9;
+    color: #1A202C;
 }
 
 .hoverSlide:hover {
@@ -301,13 +330,24 @@
 }
 
 .createButton {
-    margin: 4px;
-    padding: 4px;
+    margin: 4px 4px 12px;
     border: 1px solid var(--color-border);
-    border-radius: 4px;
     background: var(--color-surface);
     cursor: pointer;
     color: var(--color-text);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    border-radius: 25px;
+    font-size: 12px;
+    padding: 4px 16px;
+
+    &:hover {
+        background-color: var(--color-background);
+    }
 }
 
 .contextMenu {
@@ -319,6 +359,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     background: var(--chakra-colors-chakra-body-bg);
     border: 1px solid var(--chakra-colors-chakra-border-color);
+    transition: transform 0.2s ease;
 }
 
 .contextMenuItem {
@@ -348,4 +389,25 @@
 
 .contextMenuDark .contextMenuItem svg {
     color: var(--chakra-colors-whiteAlpha-700);
+}
+
+.hiddenSlide {
+    opacity: 0.5;
+}
+
+.hiddenIndicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: var(--color-text-light);
+    pointer-events: none;
+}
+
+.emptyContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    color: var(--color-text-light);
 }

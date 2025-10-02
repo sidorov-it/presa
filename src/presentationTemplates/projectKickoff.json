@@ -1,0 +1,672 @@
+{
+  "_id": "6872980cc80634567cf6cc3a",
+  "title": "Project kickoff",
+  "description": "",
+  "themeId": "6872a06e312e30e904094569",
+  "themeName": "Канаверал",
+  "createdAt": "2025-07-07T04:11:20.921Z",
+  "updatedAt": "2025-07-12T17:52:17.956Z",
+  "slides": [
+    {
+      "id": "jcyj3lmeykg",
+      "templateType": "imageTop",
+      "contentAlignment": "center",
+      "layouts": [
+        {
+          "id": "b2ox8e0fjfb",
+          "elements": [
+            {
+              "id": "ih7hftm890n",
+              "content": "<p style=\"text-align: center\"><span class=\"heading-text title-text\" style=\"color: rgb(255, 255, 255)\">Project Kickoff Template</span></p>",
+              "elementTypeId": "text",
+              "cellId": "ncghmsu82l"
+            }
+          ],
+          "gridStructure": {
+            "rows": [
+              {
+                "id": "pxif1ffilg",
+                "cells": [
+                  {
+                    "id": "ncghmsu82l",
+                    "row": 0,
+                    "column": 0
+                  }
+                ]
+              }
+            ],
+            "columns": 1,
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "style": {}
+        },
+        {
+          "id": "89hql5",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "j9ert7",
+                "cells": [
+                  {
+                    "id": "ut1f72",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "x15sz410l0j",
+              "content": "<p style=\"text-align: center\"><span class=\"body-text big-text\" style=\"color: #FFFFFF\">What do I want to tell the company about a new workstream?</span></p>",
+              "elementTypeId": "text",
+              "cellId": "ut1f72"
+            }
+          ]
+        },
+        {
+          "id": "mwcs5j",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "f7hcnd",
+                "cells": [
+                  {
+                    "id": "fl4nxz",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "oom690uohxe",
+              "content": "<p style=\"text-align: center\"><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><em>Template by:</em><br></span><span class=\"emoji\" style=\"color: #FFFFFF\">🐦</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"> @koolaidco&nbsp;| </span><span class=\"emoji\" style=\"color: #FFFFFF\">👋</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"> koolaidfactory.com | </span><span class=\"emoji\" style=\"color: #FFFFFF\">✉️</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"> hikoolaidco@gmail.com</span><span class=\"body-text normal-text\" style=\"color: #FFFFFF\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "fl4nxz"
+            }
+          ]
+        }
+      ],
+      "imageHeightRatio": 0.2227875243664718,
+      "imageUrl": "/uploads/4c65b546-2e6d-40f7-ab08-edc0d0cb63fb.jpeg",
+      "background": {
+        "type": "color",
+        "value": "#000000"
+      }
+    },
+    {
+      "id": "18nbd50cjbd",
+      "title": "Слайд 2",
+      "layouts": [
+        {
+          "id": "8ze0pmf03b9",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "1p09re",
+                "cells": [
+                  {
+                    "id": "31vr8b",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "6mw7ube79jj",
+              "content": "<p><span class=\"heading-text heading-1\" style=\"color: #FFFFFF\">Project Summary&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "31vr8b"
+            }
+          ]
+        },
+        {
+          "id": "ctwo6l",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "8msk4q",
+                "cells": [
+                  {
+                    "id": "8twykp",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "xvdj6pu32le",
+              "content": "<p><span class=\"body-text big-text\" style=\"color: #FFFFFF\">2-4 sentence summary description and objective of the project&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "8twykp"
+            }
+          ]
+        },
+        {
+          "id": "49bz3y",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "jk7ist",
+                "cells": [
+                  {
+                    "id": "xekgq0",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "bvy36ixidqe",
+              "content": "<p><span class=\"body-text normal-text\">/t&nbsp;</span></p>",
+              "elementTypeId": "smart-layout",
+              "cellId": "xekgq0",
+              "elementVariant": "text-boxes",
+              "items": [
+                {
+                  "title": "<p><span class=\"heading-text heading-1\">2,491</span></p>",
+                  "text": "<p>Lorem ipsum dolor sit amet, consectetur adipi</p>",
+                  "imageUrl": "",
+                  "iconUrl": "",
+                  "id": "0v4a5w8mj1s"
+                },
+                {
+                  "title": "<p><span class=\"heading-text heading-1\">6,000</span></p>",
+                  "text": "<p>Excepteur sint occaecat cupidatat non proident</p>",
+                  "imageUrl": "",
+                  "iconUrl": "",
+                  "id": "s4rv6ncqh8q"
+                },
+                {
+                  "title": "<p><span class=\"heading-text heading-1\">96%</span></p>",
+                  "text": "<p>Sed ut perspiciatis unde omnis iste natus error </p>",
+                  "imageUrl": "",
+                  "iconUrl": "",
+                  "id": "c3t5jypi3e"
+                }
+              ],
+              "columnSize": 3,
+              "align": "center",
+              "imageShape": "square",
+              "imageSize": 5
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard"
+    },
+    {
+      "id": "pjm6n66w0oj",
+      "title": "Слайд 3",
+      "layouts": [
+        {
+          "id": "lf44gcli8bc",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "7o5mpl",
+                "cells": [
+                  {
+                    "id": "uc57hg",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "7bytib4u1a2",
+              "content": "<p><span class=\"heading-text title-text\" style=\"color: #FFFFFF\">Project Goals&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "uc57hg"
+            }
+          ]
+        },
+        {
+          "id": "t4wm06",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "zrg6pi",
+                "cells": [
+                  {
+                    "id": "tm702b",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "wmodeunsa7",
+              "content": "<p><span class=\"body-text big-text\" style=\"color: rgb(255, 255, 255)\">What does success look like? What are we signing up to deliver? What has to be true for this project to be successfully completed? (These are binary deliverables. &nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "tm702b"
+            }
+          ]
+        },
+        {
+          "id": "7hb9ps",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "5o9w3d",
+                "cells": [
+                  {
+                    "id": "1m1za0",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "lfz4kcimcg8",
+              "content": "<p><span class=\"body-text normal-text\">&nbsp;SL bullets</span></p>",
+              "elementTypeId": "text",
+              "cellId": "1m1za0"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "imageRight",
+      "imageWidthRatio": 0.4012959524693651,
+      "imageUrl": "/uploads/7d64de6c-9b71-450b-9ea6-d0868f04500f.jpeg"
+    },
+    {
+      "id": "sutk1923pni",
+      "title": "Слайд 4",
+      "layouts": [
+        {
+          "id": "mbgrwx27lej",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "mch3fm",
+                "cells": [
+                  {
+                    "id": "iikjwp",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "b2hn5e82nik",
+              "content": "<p><span class=\"heading-text heading-1\" style=\"color: rgb(255, 254, 253)\"><strong>Audience</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "iikjwp"
+            }
+          ]
+        },
+        {
+          "id": "cbllf7wtkt",
+          "gridStructure": {
+            "rows": [
+              {
+                "id": "t15fluzptcb",
+                "cells": [
+                  {
+                    "id": "hn7oxtrvg6e",
+                    "row": 0,
+                    "column": 0
+                  },
+                  {
+                    "id": "8o6inqf8wyd",
+                    "row": 0,
+                    "column": 1
+                  }
+                ]
+              },
+              {
+                "id": "r5ux5dabud",
+                "cells": [
+                  {
+                    "id": "xl27da4nd9",
+                    "row": 1,
+                    "column": 0
+                  },
+                  {
+                    "id": "qrw7y0lujn",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              },
+              {
+                "id": "0imx8c",
+                "cells": [
+                  {
+                    "id": "mib4r5",
+                    "column": 0,
+                    "row": 2
+                  },
+                  {
+                    "id": "upgrop",
+                    "column": 1,
+                    "row": 2
+                  }
+                ]
+              }
+            ],
+            "columns": 2,
+            "columnWidths": [
+              "50%",
+              "50%"
+            ]
+          },
+          "type": "table",
+          "style": {},
+          "elements": [
+            {
+              "id": "xghmffaib0b",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #fffefd\">&nbsp;</span><span class=\"body-text normal-text\" style=\"color: #fffefd\"><strong>Who</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "hn7oxtrvg6e"
+            },
+            {
+              "id": "2ai6clbnn13",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #fffefd\">&nbsp;</span><span class=\"body-text normal-text\" style=\"color: #fffefd\"><em>Who is the audience for your work? (Can be external or internal)&nbsp;</em></span></p>",
+              "elementTypeId": "text",
+              "cellId": "8o6inqf8wyd"
+            },
+            {
+              "id": "nfxvpx4ksdi",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #fffefd\">&nbsp;</span><span class=\"body-text normal-text\" style=\"color: #fffefd\"><strong>Key Insight</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "xl27da4nd9"
+            },
+            {
+              "id": "wuxgws51hhr",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #fffefd\">&nbsp;</span><span class=\"body-text normal-text\" style=\"color: #fffefd\"><em>What’s our key insight about them that will guide the project?</em></span></p>",
+              "elementTypeId": "text",
+              "cellId": "qrw7y0lujn"
+            },
+            {
+              "id": "gi827esd6hn",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #fffefd\">&nbsp;</span><span class=\"body-text normal-text\" style=\"color: #fffefd\"><strong>Basis for key insight</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "mib4r5"
+            },
+            {
+              "id": "itz4g6uqteh",
+              "content": "<p><span class=\"body-text normal-text\" style=\"color: #fffefd\">&nbsp;</span><span class=\"body-text normal-text\" style=\"color: #fffefd\"><em>How do we know what we know? Data? Anecdotes? (Ideally both!)</em></span></p>",
+              "elementTypeId": "text",
+              "cellId": "upgrop"
+            }
+          ],
+          "isTable": true
+        },
+        {
+          "id": "00fechb9q1zld",
+          "gridStructure": {
+            "columns": 1,
+            "columnWidths": [
+              "100%"
+            ],
+            "rows": [
+              {
+                "id": "ux7ik9ivcte",
+                "cells": [
+                  {
+                    "id": "1hh6v3egele",
+                    "row": 0,
+                    "column": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "blank",
+          "elements": [
+            {
+              "id": "d9boqrydg1h",
+              "content": "<p><span class=\"body-text normal-text\">&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "tempLayout": true,
+              "cellId": "1hh6v3egele"
+            }
+          ],
+          "style": {}
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "imageLeft",
+      "imageHeightRatio": 0.33,
+      "imageWidthRatio": 0.33,
+      "textColor": "#fffefd"
+    },
+    {
+      "id": "5kp0uzwgct8",
+      "title": "Слайд 3",
+      "layouts": [
+        {
+          "id": "yoanfc1kwsm",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "ne02gywef0m",
+                "cells": [
+                  {
+                    "id": "xf3p5o0gkra",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "fkhsbhp7l4i",
+              "content": "<p><span class=\"heading-text title-text\" style=\"color: #ffffff\"><strong>Team</strong></span></p>",
+              "elementTypeId": "text",
+              "cellId": "xf3p5o0gkra"
+            }
+          ]
+        },
+        {
+          "id": "ozl7len0ped",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "76jupskaned",
+                "cells": [
+                  {
+                    "id": "y5r18zin01",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "voh3388mlf9",
+              "content": "<p><span class=\"body-text big-text\" style=\"color: #ffffff\">🧑‍🚀 Who are you and what makes your team special?&nbsp;</span></p>",
+              "elementTypeId": "text",
+              "cellId": "y5r18zin01"
+            }
+          ]
+        },
+        {
+          "id": "79jjj2eb2gq",
+          "gridStructure": {
+            "columns": 1,
+            "rows": [
+              {
+                "id": "nvh4tebrv8b",
+                "cells": [
+                  {
+                    "id": "0llr3pmahaig",
+                    "row": 1,
+                    "column": 1
+                  }
+                ]
+              }
+            ],
+            "columnWidths": [
+              "100%"
+            ]
+          },
+          "type": "blank",
+          "style": {},
+          "elements": [
+            {
+              "id": "epzz2hhvcqv",
+              "content": "<p><span class=\"body-text normal-text\">/&nbsp;</span></p>",
+              "elementTypeId": "smart-layout",
+              "cellId": "0llr3pmahaig",
+              "elementVariant": "images-with-text",
+              "items": [
+                {
+                  "title": "<p><span class=\"heading-text heading-3\">Nikola <br>Tesla</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Inventor</strong><br>@ Tesla Inc. </span></p>",
+                  "imageUrl": "/uploads/a474dc0c-011e-4408-b5d9-bb2d8879e730.jpeg",
+                  "iconUrl": "",
+                  "id": "zjh8rhh15np",
+                  "uploaded": true
+                },
+                {
+                  "title": "<p><span class=\"heading-text heading-3\">Marie <br>Curie</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Physicist and Chemist</strong><br>@ Radioactivity</span></p>",
+                  "imageUrl": "/uploads/cb7a3031-de4a-4866-8a05-a6b2784739ba.jpeg",
+                  "iconUrl": "",
+                  "id": "1vw7kaa3dbt",
+                  "uploaded": true
+                },
+                {
+                  "title": "<p><span class=\"heading-text heading-3\">Thomas Edison</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: #FFFFFF\"><strong>Inventor </strong><br>@ Light bulb </span></p>",
+                  "imageUrl": "/uploads/324a9a4a-7cf6-45ca-aa90-91c8ac4a34cb.webp",
+                  "iconUrl": "",
+                  "id": "fkyba9y5a1f",
+                  "uploaded": true
+                },
+                {
+                  "id": "qocjjihpqvq",
+                  "title": "<p><span class=\"heading-text heading-3\">Albert Einstein</span></p>",
+                  "text": "<p><span class=\"body-text normal-text\" style=\"color: rgb(255, 255, 255)\"><strong>Theoretical Physicist</strong><br>@ EMC2</span></p>",
+                  "imageUrl": "/uploads/44e90c71-5195-47e5-afc2-6ee703dd99c7.jpeg",
+                  "uploaded": true
+                }
+              ],
+              "columnSize": 3,
+              "align": "center",
+              "imageShape": "square",
+              "imageSize": 5
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "contentAlignment": "top",
+      "templateType": "standard",
+      "textColor": "#ffffff"
+    }
+  ],
+  "durationMinutes": null,
+  "goal": null,
+  "audience": null,
+  "tone": null,
+  "id": "686b48e8fdc5b1f44d7dbce3",
+  "userId": "687296818352d4f203efdf5f",
+  "isDeleted": false,
+  "deletedAt": null
+}

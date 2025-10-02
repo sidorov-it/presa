@@ -13,11 +13,14 @@ export default function ThemesLayout({ children }: { children: React.ReactNode }
     }, [pathname, previousPath]);
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-            {/* Main content */}
-            <div style={{ flex: '1', flexDirection: 'column', overflow: 'hidden' }}>
-                <main style={{ flex: '1', overflowX: 'hidden', overflowY: 'auto' }}>{children}</main>
+        <>
+            <div style={{ display: 'flex', minHeight: '100vh' }}>
+                {/* Main content */}
+                <div style={{ flex: '1', flexDirection: 'column', overflow: 'hidden' }}>
+                    <main style={{ flex: '1', overflowX: 'hidden', overflowY: 'auto' }}>{children}</main>
+                </div>
             </div>
-        </div>
+            {/* <Footer /> */}
+        </>
     );
 }

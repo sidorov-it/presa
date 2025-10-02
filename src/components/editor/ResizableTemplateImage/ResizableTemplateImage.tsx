@@ -7,10 +7,10 @@ import deepEqual from 'deep-equal';
 import { ImagePlaceholder } from '@/components/ui/ImagePlaceholder/ImagePlaceholder';
 import { useThemeStore } from '@/store/themeStore';
 import { useHistoryStore } from '@/store/historyStore';
+import ResizeHandlesPortal from './ResizeHandlesPortal';
 
 const MIN_SIZE = 20;
 const MAX_SIZE = 50;
-const DEFAULT_HEIGHT_PX = 200;
 
 interface ResizableTemplateImageProps {
     presentationId: string;
@@ -28,6 +28,8 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     initialImageStyle,
 }) => {
     const [isSelected, setIsSelected] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isHandleHovered, setIsHandleHovered] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -53,15 +55,30 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }, [clickOutside]);
 
     const storedSize = useMemo(() => {
-        return (
-            slide?.imageSize ||
-            (slide?.templateType === 'imageTop' ? { height: `${DEFAULT_HEIGHT_PX}px` } : { width: '20%' })
-        );
-    }, [slide?.imageSize, slide?.templateType]);
+        // Convert from imageHeightRatio and imageWidthRatio to actual dimensions
+        if (slide?.imageHeightRatio && slide?.templateType === 'imageTop') {
+            return { heightRatio: slide.imageHeightRatio };
+        }
+        if (slide?.imageWidthRatio && (slide?.templateType === 'imageLeft' || slide?.templateType === 'imageRight')) {
+            return { widthRatio: slide.imageWidthRatio };
+        }
+
+        // Default values
+        if (slide?.templateType === 'imageTop') {
+            return { heightRatio: 0.33 }; // Default 33% height ratio
+        }
+        return { widthRatio: 0.33 }; // Default 33% width ratio
+    }, [slide?.imageHeightRatio, slide?.imageWidthRatio, slide?.templateType]);
 
     // State for tracking resize operation
     const [isResizing, setIsResizing] = useState(false);
     const [currentSize, setCurrentSize] = useState(storedSize);
+
+    useEffect(() => {
+        if (!isResizing) {
+            setCurrentSize(storedSize);
+        }
+    }, [storedSize, isResizing]);
 
     // Refs for resize handling
     const startPosRef = useRef({ x: 0, y: 0 });
@@ -73,28 +90,23 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     // Ref for the image element
     const imageRef = useRef<HTMLDivElement>(null);
 
-    // Update image size on slide when it changes and resizing is complete
+    // Update image ratios on slide when they change and resizing is complete
     useEffect(() => {
         if (isResizing) return; // Don't update while actively resizing
 
         // Only update if values actually changed
-        if (currentSize.width !== storedSize.width || currentSize.height !== storedSize.height) {
-            // Record this auto-resize as part of the existing transaction (started in SlideTemplateSelector)
-            updateSlide(
-                presentationId,
-                slideId,
-                {
-                    imageSize: currentSize,
-                },
-                true // force recording in the current transaction
-            );
-
-            // Defer commit to ensure the action above is fully recorded before closing the transaction
-            setTimeout(() => {
-                useHistoryStore.getState().commitTransaction(presentationId);
-            }, 0);
+        if (slide?.templateType === 'imageTop' && slide?.imageHeightRatio !== currentSize.heightRatio) {
+            // This case might handle updates from external changes,
+            // but for resize operations, we handle history explicitly.
         }
-    }, [currentSize, isResizing, presentationId, slideId, storedSize, updateSlide]);
+        if (
+            (slide?.templateType === 'imageLeft' || slide?.templateType === 'imageRight') &&
+            slide?.imageWidthRatio !== currentSize.widthRatio
+        ) {
+            // This case might handle updates from external changes,
+            // but for resize operations, we handle history explicitly.
+        }
+    }, [currentSize, isResizing, presentationId, slideId, slide, updateSlide]);
 
     // Update refs when their corresponding state changes
     useEffect(() => {
@@ -122,50 +134,42 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     // Compute final image style including stored dimensions
     const containerStyle = useMemo(() => {
         const { backgroundImage, ...rest } = initialImageStyle;
+
         if (templateType === 'imageBackground') {
             return {
                 ...rest,
-                ...(currentSize.width && { width: currentSize.width }),
-                ...(currentSize.height && { height: currentSize.height }),
                 zIndex: 10,
             };
         } else if (templateType === 'imageTop') {
+            // Use CSS calc() to calculate height based on slide width
+            // In editor, slide width is calc(64.5em / 1)
+            const heightRatio = currentSize.heightRatio || 0.33;
+            const height = `calc(64.5em * ${heightRatio})`;
             return {
                 ...rest,
-                ...(currentSize.height && { height: currentSize.height }),
+                height,
                 zIndex: 10,
             };
         } else {
+            const width = currentSize.widthRatio ? `${currentSize.widthRatio * 100}%` : '33%';
             return {
                 ...rest,
-                ...(currentSize.width && { width: currentSize.width }),
+                width,
                 zIndex: 10,
             };
         }
-    }, [currentSize.height, currentSize.width, initialImageStyle, templateType]);
+    }, [currentSize.heightRatio, currentSize.widthRatio, initialImageStyle, templateType]);
 
     const imageStyle = useMemo(() => {
-        const { width, height, ...rest } = currentSize;
-        if (templateType === 'imageBackground') {
-            return {
-                // ...initialImageStyle,
-                ...rest,
-                // zIndex: 10,
-            };
-        } else if (templateType === 'imageTop') {
-            return {
-                // ...initialImageStyle,
-                ...rest,
-                // zIndex: 10,
-            };
-        } else {
-            return {
-                // ...initialImageStyle,
-                ...rest,
-                // zIndex: 10,
-            };
-        }
-    }, [currentSize, templateType]);
+        return {
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover' as const,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+        };
+    }, []);
 
     // Handle resize movement
     const handleResizeMove = useCallback((e: MouseEvent) => {
@@ -183,42 +187,41 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             const deltaY = e.clientY - startPosRef.current.y;
 
             if (resizeDirectionRef.current === 'horizontal') {
-                let newWidth;
+                let newWidthRatio;
 
                 if (templateTypeRef.current === 'imageLeft') {
                     // For left image, increase width when dragging right
-                    const baseWidth = parseFloat(currentSizeRef.current.width || '20%');
+                    const baseWidthRatio = currentSizeRef.current.widthRatio || 0.33;
                     const parentWidth = parentRect.width;
-                    const pixelWidth = (baseWidth / 100) * parentWidth + deltaX;
-                    newWidth = `${Math.max(MIN_SIZE, Math.min(MAX_SIZE, (pixelWidth / parentWidth) * 100))}%`;
+                    const pixelWidth = baseWidthRatio * parentWidth + deltaX;
+                    newWidthRatio = Math.max(MIN_SIZE / 100, Math.min(MAX_SIZE / 100, pixelWidth / parentWidth));
                 } else if (templateTypeRef.current === 'imageRight') {
                     // For right image, increase width when dragging left
-                    const baseWidth = parseFloat(currentSizeRef.current.width || '20%');
+                    const baseWidthRatio = currentSizeRef.current.widthRatio || 0.33;
                     const parentWidth = parentRect.width;
-                    const pixelWidth = (baseWidth / 100) * parentWidth - deltaX;
-                    newWidth = `${Math.max(MIN_SIZE, Math.min(MAX_SIZE, (pixelWidth / parentWidth) * 100))}%`;
+                    const pixelWidth = baseWidthRatio * parentWidth - deltaX;
+                    newWidthRatio = Math.max(MIN_SIZE / 100, Math.min(MAX_SIZE / 100, pixelWidth / parentWidth));
                 }
 
-                if (newWidth) {
-                    setCurrentSize({ width: newWidth });
+                if (newWidthRatio) {
+                    setCurrentSize({ widthRatio: newWidthRatio });
                 }
             }
 
             if (resizeDirectionRef.current === 'vertical') {
-                let newHeight;
+                let newHeightRatio;
 
                 if (templateTypeRef.current === 'imageTop') {
-                    // For top image, use pixels for height
-                    const currentHeightString = currentSizeRef.current.height || `${DEFAULT_HEIGHT_PX}px`;
-                    const baseHeight = parseFloat(currentHeightString);
-                    // If the height is in pixels, add deltaY directly
-                    const newHeightValue = baseHeight + deltaY;
-                    // Enforce a minimum and maximum pixel height
-                    newHeight = `${Math.max(50, Math.min(800, newHeightValue))}px`;
+                    // For top image, calculate height ratio based on parent width
+                    const baseHeightRatio = currentSizeRef.current.heightRatio || 0.33;
+                    const parentWidth = parentRect.width;
+                    const currentPixelHeight = baseHeightRatio * parentWidth;
+                    const newPixelHeight = currentPixelHeight + deltaY;
+                    newHeightRatio = Math.max(0.05, Math.min(1.0, newPixelHeight / parentWidth)); // Min 5%, Max 100%
                 }
 
-                if (newHeight) {
-                    setCurrentSize({ height: newHeight });
+                if (newHeightRatio) {
+                    setCurrentSize({ heightRatio: newHeightRatio });
                 }
             }
 
@@ -234,19 +237,39 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             animationFrameIdRef.current = null;
         }
 
+        // Save the ratio values to the slide
+        const updateData: any = {};
+        if (currentSizeRef.current.heightRatio !== undefined) {
+            updateData.imageHeightRatio = currentSizeRef.current.heightRatio;
+        }
+        if (currentSizeRef.current.widthRatio !== undefined) {
+            updateData.imageWidthRatio = currentSizeRef.current.widthRatio;
+        }
+
+        updateSlide(
+            presentationId,
+            slideId,
+            updateData,
+            true // force recording in the current transaction
+        );
+
+        useHistoryStore.getState().commitTransaction(presentationId);
+
         resizeDirectionRef.current = null;
         setIsResizing(false);
 
         // Remove global event listeners
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
-    }, [handleResizeMove]);
+    }, [handleResizeMove, presentationId, slideId, updateSlide]);
 
     // Handle resize start - must be defined after handleResizeMove and handleResizeEnd
     const handleResizeStart = useCallback(
         (e: React.MouseEvent, direction: 'horizontal' | 'vertical') => {
             e.preventDefault();
             e.stopPropagation();
+
+            useHistoryStore.getState().beginTransaction(presentationId, 'Resize Image');
 
             const initialPos = { x: e.clientX, y: e.clientY };
             startPosRef.current = initialPos;
@@ -257,99 +280,7 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
             document.addEventListener('mousemove', handleResizeMove);
             document.addEventListener('mouseup', handleResizeEnd);
         },
-        [handleResizeMove, handleResizeEnd]
-    );
-
-    // Handle keyboard resize
-    const handleKeyboardResize = useCallback(
-        (e: React.KeyboardEvent, direction: 'horizontal' | 'vertical', action: 'increase' | 'decrease') => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (!imageRef.current) return;
-
-            const parentRect = imageRef.current.parentElement?.getBoundingClientRect();
-            if (!parentRect) return;
-
-            if (direction === 'horizontal') {
-                const step = e.shiftKey ? 5 : 2; // Larger step with shift key
-                const currentWidth = parseFloat(currentSize.width || '20%');
-                const newWidth =
-                    action === 'increase'
-                        ? `${Math.min(MAX_SIZE, currentWidth + step)}%`
-                        : `${Math.max(MIN_SIZE, currentWidth - step)}%`;
-
-                setCurrentSize({ width: newWidth });
-            } else {
-                // For vertical resizing (height), use pixels for top/bottom images
-                if (templateType === 'imageTop') {
-                    const step = e.shiftKey ? 20 : 10; // Larger step with shift key
-                    const currentHeightString = currentSize.height || `${DEFAULT_HEIGHT_PX}px`;
-                    const currentHeight = parseFloat(currentHeightString);
-                    const newHeight =
-                        action === 'increase'
-                            ? `${Math.min(800, currentHeight + step)}px`
-                            : `${Math.max(50, currentHeight - step)}px`;
-
-                    setCurrentSize({ height: newHeight });
-                }
-            }
-
-            // Immediately update the slide with the new size
-            updateSlide(presentationId, slideId, {
-                imageSize: currentSize,
-            });
-        },
-        [currentSize, presentationId, slideId, templateType, updateSlide]
-    );
-
-    // Handle keyboard navigation
-    const handleKeyDown = useCallback(
-        (e: React.KeyboardEvent, direction: 'horizontal' | 'vertical') => {
-            // Handle arrow keys for resize
-            switch (e.key) {
-                case 'ArrowLeft':
-                    if (direction === 'horizontal') {
-                        handleKeyboardResize(e, direction, templateType === 'imageLeft' ? 'decrease' : 'increase');
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (direction === 'horizontal') {
-                        handleKeyboardResize(e, direction, templateType === 'imageLeft' ? 'increase' : 'decrease');
-                    }
-                    break;
-                case 'ArrowUp':
-                    if (direction === 'vertical') {
-                        handleKeyboardResize(e, direction, templateType === 'imageTop' ? 'decrease' : 'increase');
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (direction === 'vertical') {
-                        handleKeyboardResize(e, direction, templateType === 'imageTop' ? 'increase' : 'decrease');
-                    }
-                    break;
-                case 'Escape':
-                    // Cancel resizing if the user presses Escape
-                    setIsResizing(false);
-                    resizeDirectionRef.current = null;
-                    break;
-                case 'Enter':
-                case ' ': // Space key
-                    // Toggle resizing mode
-                    e.preventDefault();
-                    if (!isResizing) {
-                        setIsResizing(true);
-                        resizeDirectionRef.current = direction;
-                    } else {
-                        setIsResizing(false);
-                        resizeDirectionRef.current = null;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        },
-        [handleKeyboardResize, isResizing, templateType]
+        [handleResizeMove, handleResizeEnd, presentationId]
     );
 
     // Clean up event listeners on unmount
@@ -388,124 +319,80 @@ const ResizableTemplateImage: React.FC<ResizableTemplateImageProps> = ({
     }
     // Render template image with resize handles
     return (
-        <div
-            className={`${styles.container} ${isSelected ? styles.selected : ''}`}
-            style={containerStyle}
-            ref={containerRef}
-            data-template-type={templateType}
-            onClick={() => {
-                setIsSelected(true);
-            }}
-        >
+        <>
             <div
-                ref={imageRef}
-                className={`${styles.templateImage} ${styles[templateType]} ${imageMaskClass}`}
-                style={imageStyle}
-                aria-label={`Изменяемый шаблон изображения ${templateType}`}
-                role="region"
+                className={`${styles.container} ${isSelected ? styles.selected : ''}`}
+                style={containerStyle}
+                ref={containerRef}
+                data-template-type={templateType}
+                onClick={() => {
+                    setIsSelected(true);
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
-                {imageUrl && (
-                    <div
-                        className={styles.templateImage}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            backgroundImage: `url(${imageUrl})`,
-                        }}
-                    >
-                        {/* <Image src={imageUrl} alt={`Template ${templateType}`} fill /> */}
-                    </div>
-                )}
+                <div
+                    ref={imageRef}
+                    className={`${styles.templateImage} ${styles[templateType]} ${imageMaskClass}`}
+                    style={imageStyle}
+                    aria-label={`Изменяемый шаблон изображения ${templateType}`}
+                    role="region"
+                >
+                    {imageUrl && (
+                        <div
+                            className={styles.templateImage}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                backgroundImage: `url(${imageUrl})`,
+                            }}
+                        >
+                            {/* <Image src={imageUrl} alt={`Template ${templateType}`} fill /> */}
+                        </div>
+                    )}
 
-                {!imageUrl && (
-                    <div
-                        className={styles.templateImagePlaceholder}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            backgroundColor: 'var(--chakra-colors-gray-300)',
-                        }}
-                    >
-                        <ImagePlaceholder
-                            imageUrl={imageUrl || ''}
-                            isWidthRightMenu={true}
-                            onClearImage={() => {
-                                updateSlide(presentationId, slideId, {
-                                    imageUrl: '',
-                                });
+                    {!imageUrl && (
+                        <div
+                            className={styles.templateImagePlaceholder}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                backgroundColor: 'var(--chakra-colors-gray-300)',
                             }}
-                            onUpdateLink={(link: string) => {
-                                updateSlide(presentationId, slideId, {
-                                    imageUrl: link,
-                                });
-                            }}
-                        />
-                    </div>
-                )}
+                        >
+                            <ImagePlaceholder
+                                imageUrl={imageUrl || ''}
+                                isWidthRightMenu={true}
+                                onClearImage={() => {
+                                    updateSlide(presentationId, slideId, {
+                                        imageUrl: '',
+                                    });
+                                }}
+                                onUpdateLink={(link: string) => {
+                                    updateSlide(presentationId, slideId, {
+                                        imageUrl: link,
+                                    });
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {resizeHandles.includes('left') && (
-                <div
-                    className={styles.resizeHandleLeft}
-                    onMouseDown={e => handleResizeStart(e, 'horizontal')}
-                    onKeyDown={e => handleKeyDown(e, 'horizontal')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить ширину изображения"
-                    aria-valuemin={MIN_SIZE}
-                    aria-valuemax={MAX_SIZE}
-                    aria-valuenow={parseInt(currentSize.width?.toString() || '20')}
-                    aria-orientation="horizontal"
-                />
-            )}
-
-            {resizeHandles.includes('right') && (
-                <div
-                    className={styles.resizeHandleRight}
-                    onMouseDown={e => handleResizeStart(e, 'horizontal')}
-                    onKeyDown={e => handleKeyDown(e, 'horizontal')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить ширину изображения"
-                    aria-valuemin={MIN_SIZE}
-                    aria-valuemax={MAX_SIZE}
-                    aria-valuenow={parseInt(currentSize.width?.toString() || '20')}
-                    aria-orientation="horizontal"
-                />
-            )}
-
-            {resizeHandles.includes('top') && (
-                <div
-                    className={styles.resizeHandleTop}
-                    onMouseDown={e => handleResizeStart(e, 'vertical')}
-                    onKeyDown={e => handleKeyDown(e, 'vertical')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить высоту изображения"
-                    aria-valuemin={50}
-                    aria-valuemax={800}
-                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
-                    aria-orientation="vertical"
-                />
-            )}
-
-            {resizeHandles.includes('bottom') && (
-                <div
-                    className={styles.resizeHandleBottom}
-                    onMouseDown={e => handleResizeStart(e, 'vertical')}
-                    onKeyDown={e => handleKeyDown(e, 'vertical')}
-                    tabIndex={0}
-                    role="slider"
-                    aria-label="Изменить высоту изображения"
-                    aria-valuemin={50}
-                    aria-valuemax={800}
-                    aria-valuenow={parseInt(currentSize.height?.toString() || `${DEFAULT_HEIGHT_PX}`)}
-                    aria-orientation="vertical"
-                />
-            )}
-        </div>
+            {/* Render resize handles in portal */}
+            <ResizeHandlesPortal
+                containerRef={containerRef}
+                resizeHandles={resizeHandles}
+                isVisible={isHovered || isHandleHovered || isResizing}
+                onResizeStart={handleResizeStart}
+                currentSize={currentSize}
+                MIN_SIZE={MIN_SIZE}
+                MAX_SIZE={MAX_SIZE}
+                onHandleHover={setIsHandleHovered}
+            />
+        </>
     );
 };
 

@@ -3,16 +3,19 @@ import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import Colors from './components/Colors';
 import Fonts from './components/Fonts/Fonts';
 import Design from './components/Design/Design';
+import Logo from './components/Logo';
 import { useCallback, useMemo, useState } from 'react';
 import styles from './ThemeEditor.module.css';
 import { BiSolidColorFill } from 'react-icons/bi';
 import { FaFont } from 'react-icons/fa';
 import { MdOutlineDesignServices } from 'react-icons/md';
+import { MdImage } from 'react-icons/md';
 import FontLoader from './components/Fonts/FontLoader';
+import { produce } from 'immer';
 
 interface ThemeEditorProps {
     theme: Theme;
-    onThemeChange: (theme: Theme) => void;
+    onThemeChange: (theme: Theme | ((prevTheme: Theme) => Theme)) => void;
 }
 
 // export const generateColorPalette = (accentColor: string) => {
@@ -133,32 +136,47 @@ interface ThemeEditorProps {
 export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
     const handleColorsChange = useCallback(
         (colors: Partial<ThemeColors>) => {
-            onThemeChange({
-                ...theme,
-                colors: { ...theme.colors, ...colors },
-            });
+            onThemeChange(
+                produce((draft: Theme) => {
+                    Object.assign(draft.colors, colors);
+                })
+            );
         },
-        [theme, onThemeChange]
+        [onThemeChange]
     );
 
     const handleTypographyChange = useCallback(
         (typography: Partial<ThemeTypography>) => {
-            onThemeChange({
-                ...theme,
-                typography: { ...theme.typography, ...typography },
-            });
+            onThemeChange(
+                produce((draft: Theme) => {
+                    Object.assign(draft.typography, typography);
+                })
+            );
         },
-        [theme, onThemeChange]
+        [onThemeChange]
     );
 
     const handleDesignChange = useCallback(
-        (design: Partial<ThemeDesign>) => {
-            onThemeChange({
-                ...theme,
-                design: { ...theme.design, ...design },
-            });
+        (design: Partial<ThemeDesign> | ((currentTheme: Theme) => Partial<ThemeDesign>)) => {
+            onThemeChange(
+                produce((draft: Theme) => {
+                    const designUpdate = typeof design === 'function' ? design(draft) : design;
+                    Object.assign(draft.design, designUpdate);
+                })
+            );
         },
-        [theme, onThemeChange]
+        [onThemeChange]
+    );
+
+    const handleLogoChange = useCallback(
+        (logoUrl: string | null) => {
+            onThemeChange(
+                produce((draft: Theme) => {
+                    draft.logo = logoUrl || undefined;
+                })
+            );
+        },
+        [onThemeChange]
     );
 
     const items = useMemo(
@@ -184,8 +202,13 @@ export const ThemeEditor = ({ theme, onThemeChange }: ThemeEditorProps) => {
                 icon: <MdOutlineDesignServices />,
                 content: <Design theme={theme} handleDesignChange={handleDesignChange} />,
             },
+            {
+                label: 'Логотип',
+                icon: <MdImage />,
+                content: <Logo theme={theme} onLogoChange={handleLogoChange} />,
+            },
         ],
-        [theme, handleColorsChange, handleTypographyChange, handleDesignChange]
+        [theme, handleColorsChange, handleTypographyChange, handleDesignChange, handleLogoChange]
     );
 
     const [selectedTab, setSelectedTab] = useState(items[0].label);

@@ -6,6 +6,9 @@ export interface LLMRecording {
         type: 'chat' | 'image';
         data: any;
     };
+    inputTokens: number; // количество входящих токенов
+    outputTokens: number; // количество исходящих токенов
+    requestId: string; // идентификатор пользовательского запроса
 }
 
 export interface LLMRecordingStorage {

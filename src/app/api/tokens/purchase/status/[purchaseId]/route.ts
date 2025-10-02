@@ -1,11 +1,9 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
-/* eslint-disable prettier/prettier */
-/* eslint-disable indent */
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
-import { getYooKassaService } from '@/services/payments/yookassa';
 
 interface RouteParams {
     params: Promise<{
@@ -13,58 +11,27 @@ interface RouteParams {
     }>;
 }
 
-export async function GET(request: NextRequest, props: RouteParams) {
+async function GETHandler(request: NextRequest, props: RouteParams) {
     const params = await props.params;
     try {
         const session = await getServerSession(authOptions);
-
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
         const { purchaseId } = params;
-
         // Находим покупку
         const purchase = await prisma.tokenPurchase.findFirst({
             where: {
                 id: purchaseId,
-                userId: session.user.id, // Проверяем, что покупка принадлежит текущему пользователю
+                userId: session.user.id,
             },
             include: {
                 package: true,
             },
         });
-
         if (!purchase) {
             return NextResponse.json({ error: 'Purchase not found' }, { status: 404 });
         }
-
-        // Если есть paymentId, получаем актуальную информацию о платеже из YooKassa
-        let paymentInfo = null;
-        if (purchase.paymentId) {
-            try {
-                const yooKassaService = getYooKassaService();
-                paymentInfo = await yooKassaService.getPayment(purchase.paymentId);
-
-                // Обновляем статус в БД, если он изменился
-                if (paymentInfo.status !== (purchase.metadata as any)?.yookassaStatus) {
-                    await prisma.tokenPurchase.update({
-                        where: { id: purchase.id },
-                        data: {
-                            metadata: {
-                                ...((purchase.metadata as any) || {}),
-                                yookassaStatus: paymentInfo.status,
-                                lastChecked: new Date().toISOString(),
-                            },
-                        },
-                    });
-                }
-            } catch (error) {
-                logger.error('Error fetching payment info from YooKassa:', error);
-                // Не блокируем ответ, если не удалось получить данные из YooKassa
-            }
-        }
-
         // Формируем ответ
         const response = {
             purchase: {
@@ -81,18 +48,9 @@ export async function GET(request: NextRequest, props: RouteParams) {
                     description: purchase.package.description,
                     tokens: purchase.package.tokens,
                 },
+                metadata: purchase.metadata,
             },
-            payment: paymentInfo
-                ? {
-                      id: paymentInfo.id,
-                      status: paymentInfo.status,
-                      amount: paymentInfo.amount,
-                      createdAt: paymentInfo.created_at,
-                      confirmationUrl: paymentInfo.confirmation?.confirmation_url,
-                  }
-                : null,
         };
-
         return NextResponse.json(response);
     } catch (error) {
         logger.error('Error checking purchase status:', error);
@@ -105,3 +63,4 @@ export async function GET(request: NextRequest, props: RouteParams) {
         );
     }
 }
+export const GET = withLogging(GETHandler);

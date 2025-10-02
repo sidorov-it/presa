@@ -5,6 +5,7 @@ import { RecordingOptions } from '@/types/llm/recordings';
 import { RecordingService } from '../recordings/recordingService';
 import { replyConfig } from '../gigaChat/replyConfig';
 import { SYSTEM_PROMPT } from '@/prompts';
+import logger from '@/utils/logger';
 
 interface YaGPTMessage {
     role: 'system' | 'user' | 'assistant';
@@ -55,6 +56,25 @@ export class YaGptService implements LLMService {
         }
     }
 
+    async getTokensCount(text: string): Promise<number> {
+        const apiKey = process.env.YAGPT_IAM_TOKEN;
+
+        const tokenResponse = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Api-Key ${apiKey}`,
+                'x-folder-id': this.folderId,
+            },
+            body: JSON.stringify({
+                modelUri: `gpt://${this.folderId}/yandexgpt-lite`,
+                text,
+            }),
+        });
+
+        const result = await tokenResponse.json();
+        return result.tokens.length;
+    }
     static createYaGptService(config: YaGptConfig) {
         return new YaGptService(config);
     }
@@ -101,16 +121,19 @@ export class YaGptService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
+            requestId?: string;
         } = {}
     ): Promise<LLMResponse> {
         const start = Date.now();
 
+        logger.debug('YaGPT generate', { prompt, options });
         // ------------------------------------------------------------------
         //  RecordingService replay mode: return cached response if available
         // ------------------------------------------------------------------
         if (this.recordingOptions.replayMode && this.recordingService) {
             const cachedRecording = await this.recordingService.findRecording(prompt, options);
             if (cachedRecording && cachedRecording.response.type === 'chat') {
+                logger.debug('YaGPT generate: cached response found', { cachedRecording, options });
                 return cachedRecording.response.data as LLMResponse;
             }
         }
@@ -128,6 +151,7 @@ export class YaGptService implements LLMService {
 
         const body = this.buildRequestBody(prompt, chatOptions);
 
+        logger.debug('YaGPT generate: request llm', { body });
         const responseJson = await this.withRateLimit(async () => {
             const res = await fetch(endpoint, {
                 method: 'POST',
@@ -146,6 +170,7 @@ export class YaGptService implements LLMService {
             return res.json();
         });
 
+        logger.debug('YaGPT generate: response llm', { responseJson });
         const yaResult = responseJson.result || responseJson;
         const firstAlt = yaResult.alternatives?.[0] || {};
         const message =
@@ -159,17 +184,20 @@ export class YaGptService implements LLMService {
         let functionCall: LLMResponse['function_call'];
 
         if (message?.toolCallList?.toolCalls?.length) {
+            logger.debug('YaGPT generate: function call found', { message });
             const tool = message.toolCallList.toolCalls[0];
             functionCall = {
                 name: tool.functionCall?.name,
                 arguments: tool.functionCall?.arguments,
             };
         } else if (message?.function_call) {
+            logger.debug('YaGPT generate: function call found', { message });
             functionCall = {
                 name: message.function_call.name,
                 arguments: message.function_call.arguments,
             };
         } else {
+            logger.debug('YaGPT generate: text response found', { message });
             const textResponse: string = message?.text || message?.content || '';
 
             elements = textResponse
@@ -192,18 +220,22 @@ export class YaGptService implements LLMService {
                 });
         }
 
+        logger.debug('YaGPT generate: elements', { elements });
+
         const duration = Date.now() - start;
 
         // Attempt to read token information if provided (YaGPT may not provide it)
-        const totalTokens: number = responseJson.usage?.total_tokens ?? 0;
-        const inputTokens: number = responseJson.usage?.prompt_tokens ?? 0;
-        const outputTokens: number = responseJson.usage?.completion_tokens ?? 0;
+        const totalTokens: number = parseInt(responseJson.result.usage?.totalTokens, 10) ?? 0;
+        const inputTokens: number = parseInt(responseJson.result.usage?.inputTextTokens, 10) ?? 0;
+        const outputTokens: number = parseInt(responseJson.result.usage?.completionTokens, 10) ?? 0;
 
         const cost = this.calculateCost(totalTokens);
 
         const logData: LLMRequestData = {
             userId: this.userId,
+            provider: 'yagpt',
             presentationId: options.presentationId,
+            requestId: options.requestId,
             requestType: 'generate_content',
             prompt,
             inputTokens,
@@ -219,16 +251,19 @@ export class YaGptService implements LLMService {
             },
         };
 
-        await LLMHistoryService.logRequest(logData);
-
         // Check if function call is required but absent
         if (requireFunctionCall && !functionCall) {
             if (__attemptCount >= 2) {
+                logger.debug('YaGPT generate: function call required but not found. Attempts exceeded', {
+                    chatOptions,
+                    __attemptCount,
+                });
                 throw new Error(
                     `Required function ${chatOptions.function_call?.name || ''} was not called after 3 attempts`
                 );
             }
 
+            logger.debug('YaGPT generate: function call required but absent', { chatOptions, __attemptCount });
             const functionSpec = (chatOptions.functions || []).find(
                 (f: any) => f.name === chatOptions.function_call?.name
             );
@@ -251,6 +286,11 @@ export class YaGptService implements LLMService {
             ...(functionCall ? { function_call: functionCall } : {}),
         };
 
+        logger.debug('YaGPT generate: response data', { responseData });
+
+        logData.responseContent = JSON.stringify(responseData);
+        await LLMHistoryService.logRequest(logData);
+
         // Save recording if enabled
         if (this.recordingOptions.enabled && this.recordingService) {
             await this.recordingService.saveRecording({
@@ -260,6 +300,9 @@ export class YaGptService implements LLMService {
                     type: 'chat',
                     data: responseData,
                 },
+                inputTokens,
+                outputTokens,
+                requestId: options.requestId || '',
             });
         }
 
@@ -319,7 +362,7 @@ export class YaGptService implements LLMService {
 
     async generateImage(
         prompt: string,
-        options: { presentationId?: string; userId: string }
+        options: { presentationId?: string; userId: string; requestId: string }
     ): Promise<{ imageUrl: string; imageId: string }> {
         const startTime = Date.now();
 
@@ -408,7 +451,8 @@ export class YaGptService implements LLMService {
             const buffer = Buffer.from(imageBase64, 'base64');
             const path = await import('path');
             const fs = await import('fs/promises');
-            const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+            const { getUploadPath } = await import('@/utils/uploadPath');
+            const UPLOAD_DIR = getUploadPath();
             await fs.mkdir(UPLOAD_DIR, { recursive: true });
             const filePath = path.join(UPLOAD_DIR, `${imageId}.jpg`);
             await fs.writeFile(filePath, buffer, 'binary');
@@ -428,7 +472,9 @@ export class YaGptService implements LLMService {
 
             const logMessage: LLMRequestData = {
                 userId: this.userId,
+                provider: 'yagpt',
                 presentationId: options.presentationId,
+                requestId: options.requestId,
                 requestType: 'generate_image',
                 prompt,
                 inputTokens: 0,
@@ -455,6 +501,9 @@ export class YaGptService implements LLMService {
                     type: 'image',
                     data: result,
                 },
+                inputTokens: 0,
+                outputTokens: 0,
+                requestId: options.requestId || '',
             });
         }
 

@@ -19,7 +19,7 @@ export type ImagePlaceholderProps = {
 };
 
 import styles from './ImagePlaceholder.module.css';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 
 const LinkPopup = ({
     onClose,
@@ -218,7 +218,7 @@ export const ImagePlaceholder = ({
 
     useEffect(() => {
         if (isSmallImage && isOpenImageEditBox) {
-            useMenuStore.getState().openSideMenu('image-edit', {
+            useUIStateStore.getState().openSideMenu('image-edit', {
                 imageUrl,
                 onClearImage,
                 onUpdateLink,
@@ -280,7 +280,7 @@ export const ImagePlaceholder = ({
     const onGenerate = () => {
         // Open image edit panel in AI mode
         if (isWidthRightMenu) {
-            useMenuStore.getState().openSideMenu('image-edit', {
+            useUIStateStore.getState().openSideMenu('image-edit', {
                 imageUrl,
                 onClearImage,
                 onUpdateLink,
@@ -334,7 +334,7 @@ export const ImagePlaceholder = ({
                             className={styles.imagePlaceholderUploadButton}
                             onKeyDown={handleKeyDown(() => {
                                 if (isWidthRightMenu) {
-                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                    useUIStateStore.getState().openSideMenu('image-edit', {
                                         imageUrl,
                                         onClearImage,
                                         onUpdateLink,
@@ -352,7 +352,7 @@ export const ImagePlaceholder = ({
                             onClick={e => {
                                 e.stopPropagation();
                                 if (isWidthRightMenu) {
-                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                    useUIStateStore.getState().openSideMenu('image-edit', {
                                         imageUrl,
                                         onClearImage,
                                         onUpdateLink,
@@ -387,7 +387,7 @@ export const ImagePlaceholder = ({
                             onClick={e => {
                                 e.stopPropagation();
                                 if (isWidthRightMenu) {
-                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                    useUIStateStore.getState().openSideMenu('image-edit', {
                                         imageUrl,
                                         onClearImage,
                                         onUpdateLink,
@@ -404,7 +404,7 @@ export const ImagePlaceholder = ({
                             }}
                             onKeyDown={handleKeyDown(() => {
                                 if (isWidthRightMenu) {
-                                    useMenuStore.getState().openSideMenu('image-edit', {
+                                    useUIStateStore.getState().openSideMenu('image-edit', {
                                         imageUrl,
                                         onClearImage,
                                         onUpdateLink,

@@ -1,0 +1,86 @@
+
+.slideDivider {
+    position: absolute;
+    transform: translateY(50%);
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 10;
+}
+
+.slideDividerHovered {
+    opacity: 1;
+}
+
+.slideDividerButton {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-text-light);
+    transition: all 0.2s ease-in-out;
+    font-size: var(--font-size);
+}
+
+.slideDividerButton:first-child {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.slideDividerButton:last-child {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.slideDividerButton:hover {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+.slideDividerButton.aiButton svg {
+    width: 16px;
+    height: 16px;
+}
+
+.slideDividerButton.testButton svg {
+    width: 14px;
+    height: 14px;
+}
+
+.aiButton svg {
+    width: 14px;
+    height: 14px;
+}
+
+
+.buttons {
+    display: flex;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* Dark theme support */
+:global(.dark) .buttons {
+    background-color: var(--chakra-colors-neutral-menu-background, #1E1E1E);
+    border-color: var(--chakra-colors-neutral-subtle-border, #3A3F4B);
+}
+
+:global(.dark) .slideDividerButton {
+    color: var(--chakra-colors-neutral-menu-text, #d0cfd2);
+}
+
+:global(.dark) .slideDividerButton:hover {
+    background-color: var(--chakra-colors-neutral-menu-background-hover, #2D2D2D);
+    color: var(--chakra-colors-text-white, #ffffff);
+}

@@ -218,7 +218,7 @@ export const useDndStore = create<{
         slideId?: string,
         dragElementType?: DragElementType
     ) => void;
-    startNewElementDrag: (element: MenuItem & { isSlideTemplate?: boolean }) => void;
+    startNewElementDrag: (element: MenuItem) => void;
     completeDrop: () => void;
     cancelDrag: () => void;
     setReadyToDrop: (isReady: boolean) => void;
@@ -442,7 +442,7 @@ export const useDndStore = create<{
     startNewElementDrag: (menuItem: MenuItem) => {
         const isTable = menuItem.elementTypeId.startsWith('table');
 
-        if (menuItem.isSlideTemplate && menuItem.templateConfig) {
+        if (menuItem.templateConfig) {
             const newSlide = createSlideFromTemplate(menuItem.templateConfig);
             if (!newSlide) {
                 console.error(`Slide template with type ${menuItem.elementTypeId} not found in registry`);

@@ -1,9 +1,11 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
 import logger from '@/utils/logger';
+import { getUploadPath } from '@/utils/uploadPath';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+const UPLOAD_DIR = getUploadPath();
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 const MIME_TYPES: Record<string, string> = {
     jpg: 'image/jpeg',
@@ -13,7 +15,7 @@ const MIME_TYPES: Record<string, string> = {
     gif: 'image/gif',
 };
 
-export const GET = async (req: NextRequest, props: { params: Promise<{ filename: string }> }) => {
+const GETHandler = async (req: NextRequest, props: { params: Promise<{ filename: string }> }) => {
     const params = await props.params;
     const { filename } = params;
     const ext = filename.split('.').pop()?.toLowerCase();
@@ -36,3 +38,4 @@ export const GET = async (req: NextRequest, props: { params: Promise<{ filename:
         return new NextResponse('Not found', { status: 404 });
     }
 };
+export const GET = withLogging(GETHandler);

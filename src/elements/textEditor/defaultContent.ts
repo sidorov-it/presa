@@ -16,7 +16,7 @@ import { TextType } from '@/types';
 //     className = 'body-text normal-text';
 //     break;
 
-export const getTextContent = (textType: TextType, text: string | string[]) => {
+export const getTextContent = (textType: TextType, text: string | string[], textAlign?: string) => {
     switch (textType) {
         case TextType.TITLE:
             return `<span class="heading-text title-text">${text}</span>`;
@@ -37,29 +37,29 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
         case TextType.BULLET_LIST:
             if (Array.isArray(text)) {
                 return `<ul>
-    ${text.map(item => `<li>${item}</li>`).join('')}
+    ${text.map(item => `<li><span class="body-text normal-text">${item}</span></li>`).join('')}
 </ul>`;
             }
             return `<ul>
-    <li>${text}</li>
+    <li><span class="body-text normal-text">${text}</span></li>
 </ul>`;
         case TextType.NUMERED_LIST:
             if (Array.isArray(text)) {
                 return `<ol>
-    ${text.map(item => `<li>${item}</li>`).join('')}
+    ${text.map(item => `<li><span class="body-text normal-text">${item}</span></li>`).join('')}
 </ol>`;
             }
             return `<ol>
-    <li>${text}</li>
+    <li><span class="body-text normal-text">${text}</span></li>
 </ol>`;
         case TextType.TODO_LIST:
             if (Array.isArray(text)) {
                 return `<ul data-type="taskList">
-    ${text.map(item => `<li data-type="taskItem" data-checked="false">${item}</li>`).join('')}
+    ${text.map(item => `<li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${item}</span></li>`).join('')}
 </ul>`;
             }
             return `<ul data-type="taskList">
-    <li data-type="taskItem" data-checked="false">${text}</li>
+    <li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${text}</span></li>
 </ul>`;
 
         default:
@@ -71,18 +71,18 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
                     const htmlParts: string[] = [];
 
                     for (const line of lines) {
-                        const trimmed = line.trim();
+                        // const trimmed = line.trim();
 
-                        if (!trimmed) {
-                            htmlParts.push('<br />');
-                            continue;
-                        }
+                        // if (!trimmed) {
+                        //     htmlParts.push('<br />');
+                        //     continue;
+                        // }
 
-                        const headingMatch = trimmed.match(/^\*\*(.+?)\*\*$/);
+                        const headingMatch = line.match(/^\*\*(.+?)\*\*$/);
                         if (headingMatch) {
                             htmlParts.push(`<span class="heading-text heading-1">${headingMatch[1].trim()}</span>`);
                         } else {
-                            htmlParts.push(`<p>${trimmed}</p>`);
+                            htmlParts.push(`<p class="body-text normal-text">${line}</p>`);
                         }
                     }
 
@@ -92,8 +92,10 @@ export const getTextContent = (textType: TextType, text: string | string[]) => {
                 return convertAiTextToHtml(text);
             }
 
+            // eslint-disable-next-line no-case-declarations
+            const pStyle = textAlign ? `style="text-align: ${textAlign};"` : '';
             // Fallback to simple paragraph handling
-            return `<p>${Array.isArray(text) ? text.join(' ') : text}</p>`;
+            return `<p ${pStyle}>${Array.isArray(text) ? text.join(' ') : text}</p>`;
     }
 };
 
@@ -181,13 +183,13 @@ const editorsDefaultContent = {
     <li data-type="taskItem" data-checked="true">Первый элемент списка</li>
     <li data-type="taskItem" data-checked="false">Второй элемент списка</li>
 </ul>`,
-    box: `<p>Простой блок текста</p>`,
-    noteBox: `<p>Важная заметка</p>`,
-    infoBox: `<p>Полезная информация</p>`,
-    warningBox: `<p>Предупреждение</p>`,
-    cautionBox: `<p>Внимание!</p>`,
-    successBox: `<p>Успешно выполнено</p>`,
-    questionBox: `<p>Частый вопрос</p>`,
+    box: `<p><span class="body-text normal-text">Простой блок текста</span></p>`,
+    noteBox: `<p><span class="body-text normal-text">Важная заметка</span></p>`,
+    infoBox: `<p><span class="body-text normal-text">Полезная информация</span></p>`,
+    warningBox: `<p><span class="body-text normal-text">Предупреждение</span></p>`,
+    cautionBox: `<p><span class="body-text normal-text">Внимание!</span></p>`,
+    successBox: `<p><span class="body-text normal-text">Успешно выполнено</span></p>`,
+    questionBox: `<p><span class="body-text normal-text">Частый вопрос</span></p>`,
     button: `<button data-type="button">Текст кнопки</button>`,
     toggle: `
       <details>

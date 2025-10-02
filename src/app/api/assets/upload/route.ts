@@ -1,14 +1,16 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs/promises';
 import logger from '@/utils/logger';
+import { getUploadPath } from '@/utils/uploadPath';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const UPLOAD_DIR = getUploadPath();
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-export const POST = async (req: NextRequest) => {
+const POSTHandler = async (req: NextRequest) => {
     logger.info('POST /api/assets/upload');
     const contentType = req.headers.get('content-type') || '';
     if (!contentType.startsWith('multipart/form-data')) {
@@ -44,3 +46,4 @@ export const POST = async (req: NextRequest) => {
     const fileUrl = `/uploads/${filename}`;
     return NextResponse.json({ url: fileUrl, name: filename });
 };
+export const POST = withLogging(POSTHandler);

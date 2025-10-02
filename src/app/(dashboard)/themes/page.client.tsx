@@ -7,14 +7,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import styles from './page.module.css';
 import ThemePreviewBlock from './components/ThemePreviewBlock';
-import { useRouter } from 'next/navigation';
 import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
 import { getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
+import { Heading } from '@/components/ui/heading';
 
 export default function ThemesPage() {
     const { themes, allThemes, defaultThemes, loadThemes, addTheme, deleteTheme } = useThemeStore();
-    const router = useRouter();
     const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(() => {
@@ -68,7 +67,20 @@ export default function ThemesPage() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Темы</h1>
+                <Heading
+                    title="Темы"
+                    // description="Создавайте и настраивайте темы для ваших презентаций."
+                    description={
+                        <>
+                            Создавайте и настраивайте темы для ваших презентаций.
+                            <br />
+                            <span style={{ fontSize: '14px', fontStyle: 'italic' }}>
+                                При выборе стандартной темы, создастся новая на её основе.
+                            </span>
+                        </>
+                    }
+                    withoutMargin={true}
+                />
                 <Link href="/themes/new">
                     <Button className={styles.addButton}>
                         <Plus className={styles.buttonIcon} />
@@ -101,15 +113,14 @@ export default function ThemesPage() {
                     ) : (
                         <div className={styles.themesGrid}>
                             {themes.map(theme => (
-                                <ThemePreviewBlock
-                                    key={theme.id}
-                                    theme={theme}
-                                    onClickEdit={() => {
-                                        router.push(`/themes/${theme.id}`);
-                                    }}
-                                    onClickDuplicate={() => handleDuplicate(theme.id)}
-                                    onClickDelete={() => handleDelete(theme.id)}
-                                />
+                                <Link href={`/themes/${theme.id}`} key={theme.id}>
+                                    <ThemePreviewBlock
+                                        key={theme.id}
+                                        theme={theme}
+                                        onClickDuplicate={() => handleDuplicate(theme.id)}
+                                        onClickDelete={() => handleDelete(theme.id)}
+                                    />
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -117,14 +128,9 @@ export default function ThemesPage() {
                 <ChakraTabs.Content value="standard">
                     <div className={styles.themesGrid}>
                         {defaultThemes.map(theme => (
-                            <ThemePreviewBlock
-                                key={theme.id}
-                                theme={theme}
-                                isReadOnly={true}
-                                onClickEdit={() => {
-                                    router.push(`/themes/new?template=${theme.id}`);
-                                }}
-                            />
+                            <Link href={`/themes/new?template=${theme.id}`} key={theme.id}>
+                                <ThemePreviewBlock key={theme.id} theme={theme} isReadOnly={true} />
+                            </Link>
                         ))}
                     </div>
                 </ChakraTabs.Content>

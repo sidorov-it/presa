@@ -39,10 +39,10 @@ echo -e "${YELLOW}Проверка статуса replica set...${NC}"
 docker exec mongodb mongosh --eval 'rs.status()'
 
 echo -e "${GREEN}Готово! Проверьте вашу строку подключения в .env.local:${NC}"
-echo 'DATABASE_URL="mongodb://localhost:27017/presa3?replicaSet=rs0"'
+echo 'DATABASE_URL="mongodb://localhost:27017/slydle?replicaSet=rs0"'
 
 echo -e "${YELLOW}Для проверки доступа к базе данных:${NC}"
 echo "docker exec -it mongodb mongosh"
 
 echo -e "${YELLOW}Для подключения через MongoDB Compass используйте:${NC}"
-echo "mongodb://localhost:27017/presa3?replicaSet=rs0" 
+echo "mongodb://localhost:27017/slydle?replicaSet=rs0" 

@@ -35,7 +35,7 @@ Prisma требует, чтобы MongoDB работал в режиме replica
 
 5. Обновите вашу строку подключения в файле `.env.local`:
    ```
-   DATABASE_URL="mongodb://localhost:27017/presa3?replicaSet=rs0"
+   DATABASE_URL="mongodb://localhost:27017/slydle?replicaSet=rs0"
    ```
 
 ### Решение распространенных проблем
@@ -60,7 +60,7 @@ Prisma требует, чтобы MongoDB работал в режиме replica
 
 1. Что строка подключения правильная:
    ```
-   DATABASE_URL="mongodb://localhost:27017/presa3?replicaSet=rs0"
+   DATABASE_URL="mongodb://localhost:27017/slydle?replicaSet=rs0"
    ```
 
 2. Что replica set действительно работает:
@@ -71,7 +71,7 @@ Prisma требует, чтобы MongoDB работал в режиме replica
 
 3. Попробуйте добавить `directConnection=true` в строку подключения:
    ```
-   DATABASE_URL="mongodb://localhost:27017/presa3?directConnection=true&replicaSet=rs0"
+   DATABASE_URL="mongodb://localhost:27017/slydle?directConnection=true&replicaSet=rs0"
    ```
 
 ### Проверка работы replica set

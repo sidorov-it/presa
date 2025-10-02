@@ -1,16 +1,19 @@
+import { withLogging } from '@/hooks/withLoging';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import rewriteSlideContent from '@/services/llm/rewriteSlideContent';
 import { withTokenDeduction, TokenCalculators, MetadataExtractors } from '@/utils/aiTokenMiddleware';
 import logger from '@/utils/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 interface RequestBody {
     slideId: string;
     presentationId: string;
 }
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/shorten');
+    const requestId = uuidv4();
     return withTokenDeduction(
         request,
         {
@@ -43,10 +46,13 @@ export async function POST(request: NextRequest) {
             const content = await rewriteSlideContent(
                 session.user.id,
                 currentSlide,
-                'Сократи текст, сохраняя основные мысли.'
+                'Сократи текст, сохраняя основные мысли.',
+                requestId
             );
 
             return { content };
         }
     );
 }
+
+export const POST = withLogging(POSTHandler);

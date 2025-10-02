@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -6,7 +7,7 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import { parsePresentations } from '@/utils/json';
 
 // Get deleted presentations
-export async function GET() {
+async function GETHandler() {
     try {
         const presentations = await prisma.presentation.findMany({
             where: { isDeleted: true },
@@ -22,7 +23,7 @@ export async function GET() {
 }
 
 // Restore a presentation
-export async function PUT(request: NextRequest) {
+async function PUTHandler(request: NextRequest) {
     try {
         const { id } = await request.json();
 
@@ -45,7 +46,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // Permanently delete a presentation
-export async function DELETE(req: NextRequest) {
+async function DELETEHandler(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -83,3 +84,6 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const PUT = withLogging(PUTHandler);
+export const DELETE = withLogging(DELETEHandler);

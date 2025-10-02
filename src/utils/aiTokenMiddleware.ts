@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
 import { getTokenCostForOperation, TOKEN_COSTS } from '@/utils/getTokenCostForOperation';
 import logger from '@/utils/logger';
+import { handleApiError } from './errorHandler';
 
 interface AIOperationConfig {
     operation: keyof typeof TOKEN_COSTS;
@@ -20,9 +21,10 @@ interface AIOperationConfig {
 export async function withTokenDeduction<T>(
     request: NextRequest,
     config: AIOperationConfig,
-    operation: (session: any, requestData: any) => Promise<T>
+    operation: (session: any, requestData: any, formData?: FormData) => Promise<T>
 ): Promise<NextResponse> {
     let requestData: any;
+    let formData: FormData | undefined;
 
     try {
         // Check authentication
@@ -31,20 +33,36 @@ export async function withTokenDeduction<T>(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Parse request data
-        try {
-            requestData = await request.json();
-        } catch (parseError) {
-            logger.error(`Error parsing request data: ${String(parseError)}`);
-            return NextResponse.json({ error: 'Invalid JSON data' }, { status: 400 });
+        // Parse request data - handle both JSON and FormData
+        const contentType = request.headers.get('content-type') || '';
+
+        if (contentType.includes('multipart/form-data')) {
+            // Handle FormData (for file uploads)
+            try {
+                formData = await request.formData();
+                // For FormData, create a simple object with non-file fields for token calculation
+                requestData = {};
+                for (const [key, value] of formData.entries()) {
+                    if (typeof value === 'string') {
+                        requestData[key] = value;
+                    }
+                }
+            } catch (parseError) {
+                logger.error(`Error parsing FormData: ${String(parseError)}`);
+                return NextResponse.json({ error: 'Invalid form data' }, { status: 400 });
+            }
+        } else {
+            // Handle JSON data
+            try {
+                requestData = await request.json();
+            } catch (parseError) {
+                logger.error(`Error parsing request data: ${String(parseError)}`);
+                return NextResponse.json({ error: 'Invalid JSON data' }, { status: 400 });
+            }
         }
 
         // Calculate required tokens server-side only
         const requiredTokens = config.calculateTokens(requestData);
-
-        if (requiredTokens <= 0) {
-            return NextResponse.json({ error: 'Invalid token calculation' }, { status: 400 });
-        }
 
         // Check if user has enough tokens
         const hasTokens = await hasEnoughTokens(session.user.id, requiredTokens);
@@ -61,7 +79,7 @@ export async function withTokenDeduction<T>(
         }
 
         // Execute the AI operation
-        const result = await operation(session, requestData);
+        const result = await operation(session, requestData, formData);
 
         // Deduct tokens after successful operation
         try {
@@ -72,6 +90,7 @@ export async function withTokenDeduction<T>(
                 amount: requiredTokens,
                 description: config.description,
                 metadata,
+                llmRequestId: request.headers.get('x-llm-request-id') || '',
             });
         } catch (tokenError) {
             logger.error(`Error deducting tokens: ${String(tokenError)}`);
@@ -85,14 +104,7 @@ export async function withTokenDeduction<T>(
             tokensUsed: requiredTokens,
         });
     } catch (error) {
-        logger.error(`Error in AI operation: ${String(error)}`);
-        return NextResponse.json(
-            {
-                error: 'Internal server error',
-                details: error instanceof Error ? error.message : 'Unknown error',
-            },
-            { status: 500 }
-        );
+        return handleApiError(error, 'AI operation', 'withTokenDeduction');
     }
 }
 
@@ -101,6 +113,11 @@ export async function withTokenDeduction<T>(
  * These functions ensure token calculation logic is secure and consistent
  */
 export const TokenCalculators = {
+    generatePresentationFromDocument: (requestData: any): number => {
+        const { numSlides } = requestData;
+        return getTokenCostForOperation('GENERATE_PRESENTATION_FROM_DOCUMENT') * numSlides;
+    },
+
     /**
      * Calculate tokens for slide generation based on number of topics
      */
@@ -126,6 +143,10 @@ export const TokenCalculators = {
         return getTokenCostForOperation('GENERATE_TEXT');
     },
 
+    generateTopics: (_requestData: any): number => {
+        return getTokenCostForOperation('GENERATE_TOPICS');
+    },
+
     /**
      * Fixed token cost for content improvement
      */
@@ -138,13 +159,6 @@ export const TokenCalculators = {
      */
     generateImage: (_requestData: any): number => {
         return getTokenCostForOperation('GENERATE_IMAGE');
-    },
-
-    /**
-     * Fixed token cost for theme generation
-     */
-    generateTheme: (_requestData: any): number => {
-        return getTokenCostForOperation('GENERATE_THEME');
     },
 };
 

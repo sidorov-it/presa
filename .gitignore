@@ -13,3 +13,12 @@ debug-pdfs/
 logs/
 .secrets
 test/recordings/test.json
+docs
+scripts
+deploy-package.tar.gz
+deploy-package/
+deploy.env
+deploy.env.example
+package-lock.json.hash
+package.json.hash
+.vscode

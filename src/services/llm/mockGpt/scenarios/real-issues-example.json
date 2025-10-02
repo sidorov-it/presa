@@ -1,0 +1,66 @@
+{
+  "name": "Real Issues Example",
+  "description": "Template for creating scenarios from real problematic LLM responses. Copy your problematic responses from logs here.",
+  "responses": [
+    {
+      "id": "paste-your-response-here-1",
+      "description": "Replace this with description of the problem you're testing",
+      "trigger": {
+        "type": "function_name",
+        "value": "generate_slide_text"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "_comment": "REPLACE THIS ENTIRE 'arguments' OBJECT WITH YOUR REAL PROBLEMATIC RESPONSE",
+            "title": "Paste your real problematic title here",
+            "content": "Paste your real problematic content here with all the formatting issues",
+            "example_field": "Add any other fields that were in your real response"
+          }
+        }
+      }
+    },
+    {
+      "id": "paste-your-response-here-2",
+      "description": "You can add multiple problematic responses to test different issues",
+      "trigger": {
+        "type": "template_id",
+        "value": "two-columns"
+      },
+      "response": {
+        "elements": [],
+        "function_call": {
+          "name": "generate_slide_text",
+          "arguments": {
+            "_comment": "This is another example - replace with your real response",
+            "left_content": "Real problematic left content from your logs",
+            "right_content": "Real problematic right content from your logs",
+            "title": "Real problematic title"
+          }
+        }
+      }
+    }
+  ],
+  "_instructions": {
+    "how_to_use": [
+      "1. Copy this file to a new file with a descriptive name (e.g., 'my-formatting-bug.json')",
+      "2. Replace the 'name' and 'description' fields with your own",
+      "3. For each response, replace the 'arguments' object with the real problematic response from your logs",
+      "4. Update the 'id' and 'description' fields to describe each specific issue",
+      "5. Adjust the 'trigger' to match when you want this response to be used",
+      "6. Save the file and use: node scripts/test-scenarios.js set your-scenario-name"
+    ],
+    "trigger_types": {
+      "function_name": "Triggers when a specific function is called (e.g., 'generate_slide_text')",
+      "prompt_contains": "Triggers when the prompt contains specific text (e.g., 'two-columns')",
+      "template_id": "Triggers when the prompt mentions a specific template ID"
+    },
+    "finding_logs": [
+      "Look in your browser console or server logs for LLM responses",
+      "Search for 'function_call' or 'arguments' in the logs",
+      "Copy the entire response object that caused formatting issues"
+    ]
+  }
+} 

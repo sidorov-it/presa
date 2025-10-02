@@ -370,7 +370,7 @@ const DropIndicator = () => {
 
             let styles: React.CSSProperties = {
                 position: 'fixed',
-                zIndex: 9999,
+                zIndex: 200,
                 pointerEvents: 'none',
                 backgroundColor: '#007BFF', // Electric Blue
                 transition: 'all 150ms ease-in-out',
@@ -456,7 +456,7 @@ const DropIndicator = () => {
 
         let styles: React.CSSProperties = {
             position: 'fixed',
-            zIndex: 9999,
+            zIndex: 200,
             pointerEvents: 'none',
             backgroundColor: 'transparent',
             border: 'none',

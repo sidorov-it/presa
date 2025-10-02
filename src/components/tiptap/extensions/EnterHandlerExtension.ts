@@ -2,7 +2,11 @@ import { Extension, JSONContent } from '@tiptap/core';
 
 // Создаем расширение для обработки нажатия Enter и Backspace
 export const EnterHandlerExtension = (
-    onEnterPressed: (contentBeforeCursor?: JSONContent, contentAfterCursor?: JSONContent) => void,
+    onEnterPressed: (
+        contentBeforeCursor?: JSONContent,
+        contentAfterCursor?: JSONContent,
+        preservedStyles?: any
+    ) => void,
     onBackspacePressed: (isEmpty: boolean, content: string) => void,
     onDeletePressed: (isEmpty: boolean, content: string) => void,
     standardEnterBehavior: boolean = false
@@ -17,7 +21,7 @@ export const EnterHandlerExtension = (
                     }
                     const { state } = editor;
                     const { selection } = state;
-                    const { $head } = selection;
+                    const { $head, $anchor } = selection;
 
                     // Проверяем, находится ли курсор внутри списка, поднимаясь по дереву узлов
                     let isInList = false;
@@ -43,19 +47,84 @@ export const EnterHandlerExtension = (
                         return false; // Передаем управление стандартному обработчику списков Tiptap
                     }
 
-                    // Получаем контент до и после курсора
-                    const contentBeforeCursor = editor.state.doc.slice(0, selection.from).toJSON();
-                    const contentAfterCursor = editor.state.doc.slice(selection.from).toJSON();
+                    // Проверяем, есть ли выделенный текст
+                    const hasSelection = !selection.empty;
+                    const selectionStart = hasSelection ? Math.min($head.pos, $anchor.pos) : $head.pos;
+                    const selectionEnd = hasSelection ? Math.max($head.pos, $anchor.pos) : $head.pos;
 
-                    onEnterPressed(contentBeforeCursor, contentAfterCursor);
+                    // Проверяем, выделен ли весь текст (от начала до конца документа)
+                    const isFullSelection =
+                        hasSelection && selectionStart <= 1 && selectionEnd >= state.doc.content.size - 1;
+
+                    // Сохраняем стили перед удалением текста, если выделен весь текст
+                    let preservedStyles = null;
+                    if (isFullSelection) {
+                        // Получаем текущие стили из редактора
+                        const currentLevel = editor.isActive('fontSize') ? editor.getAttributes('fontSize').level : 1;
+                        const currentColor = editor.getAttributes('textStyle').color || null;
+                        const currentBold = editor.isActive('bold');
+                        const currentItalic = editor.isActive('italic');
+                        const currentUnderline = editor.isActive('underline');
+                        const currentStrike = editor.isActive('strike');
+
+                        preservedStyles = {
+                            level: currentLevel,
+                            color: currentColor,
+                            bold: currentBold,
+                            italic: currentItalic,
+                            underline: currentUnderline,
+                            strike: currentStrike,
+                        };
+
+                        // Сохраняем стили в CustomPlaceholderExtension для текущего редактора
+                        if (editor.extensionManager.extensions.find(ext => ext.name === 'customPlaceholder')) {
+                            (editor.commands as any).customPlaceholder?.updatePlaceholderStyle(preservedStyles);
+                        }
+                    }
+
+                    // Получаем контент до выделения
+                    const contentBeforeSelection = state.doc.cut(0, selectionStart).toJSON();
+
+                    // Получаем контент после выделения
+                    const contentAfterSelection = state.doc.cut(selectionEnd).toJSON();
+
+                    // Удаляем выделенный текст из текущего редактора
+                    if (hasSelection) {
+                        editor
+                            .chain()
+                            .setMeta('handleEnter', true)
+                            .focus()
+                            .deleteRange({ from: selectionStart, to: selectionEnd })
+                            .run();
+                    }
+
+                    // Определяем, нужно ли создавать новые редакторы
+                    const hasContentBefore = contentBeforeSelection && contentBeforeSelection.content?.length > 0;
+                    const hasContentAfter = contentAfterSelection && contentAfterSelection.content?.length > 0;
+
+                    if (hasContentBefore && hasContentAfter) {
+                        // Есть контент до и после выделения - разбиваем на 2 редактора
+                        onEnterPressed(contentBeforeSelection, contentAfterSelection, preservedStyles);
+                    } else if (hasContentAfter) {
+                        // Есть только контент после выделения - создаем один новый редактор
+                        onEnterPressed(undefined, contentAfterSelection, preservedStyles);
+                    } else {
+                        // Нет контента после выделения - создаем пустой редактор
+                        onEnterPressed(undefined, undefined, preservedStyles);
+                    }
 
                     return true;
                 },
                 Backspace: ({ editor }) => {
                     const isEmpty = editor.isEmpty;
                     const textContent = editor.getText();
+                    const htmlContent = editor.getHTML();
 
-                    if (isEmpty || textContent.length === 0) {
+                    // Проверяем, действительно ли редактор пустой (только пустые параграфы или вообще ничего)
+                    const isActuallyEmpty =
+                        isEmpty || textContent.length === 0 || htmlContent === '<p></p>' || htmlContent === '';
+
+                    if (isActuallyEmpty) {
                         onBackspacePressed(true, '');
                         return true;
                     }
@@ -64,8 +133,26 @@ export const EnterHandlerExtension = (
                     const { selection } = state;
                     const { $head } = selection;
 
-                    // Если курсор в начале документа
-                    if ($head.pos === 0) {
+                    // Проверяем, находится ли курсор в начале первого текстового содержимого
+                    // Находим первую позицию с текстовым содержимым
+                    // let firstTextPos = 1; // Начинаем с позиции 1 (после корневого узла)
+
+                    // Проходим по документу, чтобы найти первую позицию с текстом
+                    state.doc.descendants((node: any) => {
+                        if (node.isText && node.text && node.text.length > 0) {
+                            // firstTextPos = pos;
+                            return false; // Останавливаем поиск
+                        }
+                        if (node.isBlock && node.content.size === 0) {
+                            // Пустой блок - курсор может быть в начале
+                            // firstTextPos = pos + 1;
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    // Если курсор в начале первого содержимого
+                    if ($head.pos <= 1) {
                         onBackspacePressed(false, editor.getHTML());
                         return true;
                     }
@@ -75,8 +162,13 @@ export const EnterHandlerExtension = (
                 Delete: ({ editor }) => {
                     const isEmpty = editor.isEmpty;
                     const textContent = editor.getText();
+                    const htmlContent = editor.getHTML();
 
-                    if (isEmpty || textContent.length === 0) {
+                    // Проверяем, действительно ли редактор пустой (только пустые параграфы или вообще ничего)
+                    const isActuallyEmpty =
+                        isEmpty || textContent.length === 0 || htmlContent === '<p></p>' || htmlContent === '';
+
+                    if (isActuallyEmpty) {
                         onDeletePressed(true, '');
                         return true;
                     }
@@ -85,8 +177,23 @@ export const EnterHandlerExtension = (
                     const { selection } = state;
                     const { $head } = selection;
 
-                    // Если курсор в конце документа
-                    if ($head.pos === state.doc.content.size) {
+                    // Проверяем, находится ли курсор в конце последнего текстового содержимого
+                    let lastTextPos = state.doc.content.size - 1;
+
+                    // Проходим по документу в обратном порядке, чтобы найти последнюю позицию с текстом
+                    state.doc.descendants((node, pos) => {
+                        if (node.isText && node.text && node.text.length > 0) {
+                            lastTextPos = pos + node.text.length;
+                        }
+                        if (node.isBlock && node.content.size === 0) {
+                            // Пустой блок - курсор может быть в конце
+                            lastTextPos = pos + 1;
+                        }
+                        return true;
+                    });
+
+                    // Если курсор в конце последнего содержимого
+                    if ($head.pos >= lastTextPos) {
                         onDeletePressed(false, editor.getHTML());
                         return true;
                     }

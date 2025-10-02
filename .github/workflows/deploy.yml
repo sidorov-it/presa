@@ -149,6 +149,7 @@ jobs:
             NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}"
             NODE_ENV=production
             PORT=3000
+            UPLOAD_PATH="${{ secrets.UPLOAD_PATH }}"
             EOF
             
             # Создаем директорию для логов

@@ -2,10 +2,10 @@
 import { SlideTemplateCore, TemplateElement } from '@/types/templates';
 import { createLLMService } from '@/services/llm';
 import { ElementType } from '@/types/elements';
-import { TextType } from '@/types';
 import getRandomString from '@/utils/getRandomString';
 import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
 import logger from '@/utils/logger';
+import { TextType } from '@/types';
 
 function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKeyMapping> {
     const mapping = new Map<string, SlotKeyMapping>();
@@ -93,9 +93,62 @@ function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKe
                     });
                 }
             });
+
+            // elementsByCell.forEach((elements, col) => {
+            //     elements.forEach((element, elementIndex) => {
+            //         if (element.elementTypeId === ElementType.SMART_LAYOUT) {
+            //             const uniqueKey = `slot_${getRandomString(8)}`;
+
+            //             const llmHints = element.llmHints || {};
+
+            //             const items = element.props?.itemsSchema?.map(schema => {
+            //                 const originalKey = schema.key;
+            //                 const key = `${uniqueKey}_${originalKey}`;
+            //                 return {
+            //                     key,
+            //                     originalKey,
+            //                     type: schema.type || 'string',
+            //                     description: llmHints.items?.[originalKey]?.description || 'Контент для элемента',
+            //                     contextRules: llmHints.items?.[originalKey]?.contextRules,
+            //                 };
+            //             }) || [];
+
+            //             mapping.set(uniqueKey, {
+            //                 uniqueKey,
+            //                 originalSlot: 'items',
+            //                 layoutIndex,
+            //                 column: col,
+            //                 elementIndex,
+            //                 items,
+            //                 elementTypeId: element.elementTypeId,
+            //                 llmHints: element.llmHints,
+            //             });
+            //         } else if (element.slot) {
+            //             let uniqueKey = element.slot;
+            //             let counter = 0;
+
+            //             while (usedSlots.has(uniqueKey)) {
+            //                 counter++;
+            //                 uniqueKey = `${element.slot}_${counter}`;
+            //             }
+
+            //             usedSlots.add(uniqueKey);
+
+            //             mapping.set(uniqueKey, {
+            //                 uniqueKey,
+            //                 originalSlot: element.slot,
+            //                 layoutIndex,
+            //                 column: col,
+            //                 elementIndex,
+            //                 elementTypeId: element.elementTypeId,
+            //                 textType: element.elementTypeId === ElementType.TEXT ? element.props?.textType : undefined,
+            //                 llmHints: element.llmHints,
+            //             });
+            //         }
+            //     });
+            // });
         });
     });
-
     return mapping;
 }
 
@@ -229,6 +282,35 @@ function generateSlotDescription(template: SlideTemplateCore, slotsMapping: Map<
     );
 }
 
+const getContentAmountGuidance = (contentAmount?: string) => {
+    switch (contentAmount) {
+        case 'concise':
+            return `
+**КРАТКИЙ КОНТЕНТ:**
+- Минимизируй объем текста на слайде
+- Используй только ключевые моменты и основные идеи
+- Предпочитай тезисы и короткие фразы
+- Избегай длинных объяснений и деталей
+- Фокусируйся на самом важном`;
+        case 'detailed':
+            return `
+**ПОДРОБНЫЙ КОНТЕНТ:**
+- Создавай развернутые объяснения и описания
+- Включай детали, примеры и дополнительную информацию
+- Предоставляй контекст и обоснования
+- Используй полные предложения и абзацы
+- Добавляй поясняющие материалы где это уместно`;
+        case 'medium':
+        default:
+            return `
+**СРЕДНИЙ ОБЪЕМ КОНТЕНТА:**
+- Баланс между краткостью и детальностью
+- Включай основную информацию с умеренным количеством деталей
+- Используй структурированные списки и короткие абзацы
+- Добавляй контекст там, где это необходимо для понимания`;
+    }
+};
+
 function createPromptGenerateSlideContent({
     topic,
     slideIndex,
@@ -236,6 +318,7 @@ function createPromptGenerateSlideContent({
     template,
     slotsMapping,
     instructions,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -248,6 +331,7 @@ function createPromptGenerateSlideContent({
     template: SlideTemplateCore;
     slotsMapping: Map<string, SlotKeyMapping>;
     instructions?: string;
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -267,7 +351,7 @@ function createPromptGenerateSlideContent({
 
 ${goal ? `Цель презентации: ${goal}\n` : ''}${audience ? `Аудитория: ${audience}\n` : ''}${tone ? `Тон/стиль: ${tone}\n` : ''}${
     Number.isInteger(durationMinutes) ? `Длительность доклада: ${durationMinutes} минут\n` : ''
-}
+}${getContentAmountGuidance(contentAmount)}
 
 ${previousSlidesSection}
 
@@ -283,7 +367,11 @@ ${slotsDescription}
 6. Для заголовков используй символы #, ##, ###.
 7. Для списков используй символы -, 1. 2. 3.
 8. Для цитат используй символы >
-${instructions ? `9. Дополнительные инструкции: ${instructions}` : ''}`;
+9. **ВАЖНО**: Строго следуй указаниям по объему контента выше.
+${instructions ? `10. Дополнительные инструкции: ${instructions}` : ''}
+
+ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_slide_text!
+`;
 }
 
 // function parseGeneratedContent(content: Array<Array<SlotContent>>): Array<Record<string, string | SmartLayoutContent>> {
@@ -304,6 +392,7 @@ export default async function generateSlideContent({
     totalSlides,
     template,
     instructions,
+    contentAmount,
     durationMinutes,
     goal,
     audience,
@@ -316,6 +405,7 @@ export default async function generateSlideContent({
     totalSlides: number;
     template: SlideTemplateCore;
     instructions?: string;
+    contentAmount?: string;
     durationMinutes?: number;
     goal?: string;
     audience?: string;
@@ -334,6 +424,7 @@ export default async function generateSlideContent({
         template,
         slotsMapping: slotMapping,
         instructions,
+        contentAmount,
         durationMinutes,
         goal,
         audience,
@@ -347,6 +438,7 @@ export default async function generateSlideContent({
     const response = await llmService.generate(prompt, {
         functions: [functionSchema],
         function_call: { name: 'generate_slide_text' },
+        ...(options.requestId ? { requestId: options.requestId } : {}),
     });
 
     logger.debug('LLM response (generateSlideContent):', JSON.stringify(response));

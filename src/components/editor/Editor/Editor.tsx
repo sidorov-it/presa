@@ -1,33 +1,36 @@
-import React, { useState, useEffect, useCallback, useMemo, MutableRefObject } from 'react';
+import { memo, MutableRefObject, useEffect, useMemo } from 'react';
 import { usePresentationStore } from '@/store/presentationStore';
 import ElementsPanel from '@/components/editor/ElementsPanel/ElementsPanel';
 import { DndProvider } from '@/contexts/DragDropContext';
 import Presentation from '../Presentation';
 import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { useEditorStore } from '@/store/editorStore';
 import { useClipboardStore } from '@/store/clipboardStore';
 import { generateId } from '@/utils/id';
 import getColumnWidths from '@/utils/getColumnWidths';
 import { TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
+import GlobalHeaderFooterModal from '../GlobalHeaderFooterModal/GlobalHeaderFooterModal';
+import { useReadOnly } from '@/contexts/ReadOnlyContext';
+import { Theme } from '@/types/theme';
 
 import styles from './Editor.module.css';
-import { useReadOnly } from '@/contexts/ReadOnlyContext';
 
 interface EditorProps {
     presentationId: string;
     tiptapRefs: MutableRefObject<TipTapRefs>;
+    theme: Theme;
 }
 
 // Separate content component that only re-renders when its specific props change
 const EditorContent: React.FC<{
     presentationId: string;
-    activeSlideId: string | null;
-    onSlideSelect: (slideId: string, scroll?: boolean) => void;
+    // activeSlideId: string | null;
     tiptapRefs: MutableRefObject<TipTapRefs>;
-}> = React.memo(({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }) => {
+    theme: Theme;
+}> = memo(({ presentationId, tiptapRefs, theme }) => {
     const isReadOnly = useReadOnly();
 
     return (
@@ -36,17 +39,10 @@ const EditorContent: React.FC<{
 
             <div>
                 {/* Main editing area */}
-                <Presentation
-                    presentationId={presentationId}
-                    activeSlideId={activeSlideId}
-                    onSlideSelect={onSlideSelect}
-                    tiptapRefs={tiptapRefs}
-                />
+                <Presentation presentationId={presentationId} tiptapRefs={tiptapRefs} theme={theme} />
 
                 {/* Tools panel */}
-                {!isReadOnly && activeSlideId && (
-                    <ElementsPanel presentationId={presentationId} slideId={activeSlideId} />
-                )}
+                {!isReadOnly && <ElementsPanel />}
             </div>
             {!isReadOnly && <SlideMenu tiptapRefs={tiptapRefs} />}
             {!isReadOnly && <DragDropIndicator />}
@@ -54,8 +50,8 @@ const EditorContent: React.FC<{
     );
 });
 
-const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
-    const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
+const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) => {
+    // const [activeSlideId, setActiveSlideId] = useState<string | null>(null);
     const isReadOnly = useReadOnly();
 
     // const [isBgModalOpen, setIsBgModalOpen] = useState(false);
@@ -70,9 +66,13 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
     );
 
     useEffect(() => {
-        const { setPresentationId } = useMenuStore.getState();
-        setPresentationId(presentationId);
+        const { setCurrentPresentationId } = useUIStateStore.getState();
+        setCurrentPresentationId(presentationId);
     }, [presentationId]);
+
+    const isGlobalHeaderFooterModalOpen = useUIStateStore(state => state.isGlobalHeaderFooterModalOpen);
+    const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
+    const currentSlideId = useUIStateStore(state => state.currentSlideId);
 
     // Memoize not found UI
     const notFoundUI = useMemo(
@@ -85,54 +85,66 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
     );
 
     // Handle slide selection with useCallback
-    const handleSlideSelect = useCallback(
-        (slideId: string, scroll: boolean = false) => {
-            if (isReadOnly) {
-                return;
-            }
+    // const handleSlideSelect = useCallback(
+    //     (slideId: string, scroll: boolean = false) => {
+    //         if (isReadOnly) {
+    //             return;
+    //         }
 
-            setActiveSlideId(slideId);
+    //         useUIStateStore.getState().setSelectedSlideId(slideId);
+    //         // setActiveSlideId(slideId);
 
-            if (scroll) {
-                document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                });
-            }
-        },
-        [isReadOnly]
-    );
+    //         if (scroll) {
+    //             document.querySelector(`[data-slide-id="${slideId}"]`)?.scrollIntoView({
+    //                 behavior: 'smooth',
+    //                 block: 'center',
+    //             });
+    //         }
+    //     },
+    //     [isReadOnly]
+    // );
 
     useEffect(() => {
         // Set the first slide as active by default if there are slides
-        if (slideIds.length > 0 && !activeSlideId) {
-            setActiveSlideId(slideIds[0]);
+        if (slideIds.length > 0 && !useUIStateStore.getState().selectedSlideId) {
+            useUIStateStore.getState().setSelectedSlideId(slideIds[0]);
         }
-    }, [slideIds, activeSlideId]);
+    }, [slideIds]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key !== 'Delete' && e.key !== 'Backspace') return;
 
+            // Проверяем, что событие произошло не внутри текстового редактора
+            const target = e.target as HTMLElement;
+            const isInsideTextEditor =
+                target.closest('[data-tiptap-editor]') ||
+                target.closest('.ProseMirror') ||
+                target.closest('[contenteditable="true"]') ||
+                target.closest('.tiptap-editor-wrapper') ||
+                target.closest('.tiptap') ||
+                target.closest('.custom-tiptap-editor');
+
+            if (isInsideTextEditor) {
+                return; // Не обрабатываем события внутри текстового редактора
+            }
+
             const {
-                elementId,
-                slideId,
-                layoutId,
-                presentationId: menuPresentationId,
-                isTextEditor,
+                selectedElementId: elementId,
+                selectedSlideId: slideId,
+                selectedLayoutId: layoutId,
+                currentPresentationId: menuPresentationId,
+                isContextMenuOnTextEditor: isTextEditor,
                 selectedSmartLayoutItemId,
-            } = useMenuStore.getState();
+            } = useUIStateStore.getState();
             const activeEditor = useEditorStore.getState().activeEditor;
 
-            if (
-                activeEditor ||
-                isReadOnly ||
-                !elementId ||
-                !slideId ||
-                !layoutId ||
-                !menuPresentationId ||
-                isTextEditor
-            ) {
+            // Дополнительная проверка: если есть активный TipTap редактор, не обрабатываем событие
+            if (activeEditor) {
+                return;
+            }
+
+            if (isReadOnly || !elementId || !slideId || !layoutId || !menuPresentationId || isTextEditor) {
                 return;
             }
 
@@ -142,10 +154,10 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
                 usePresentationStore
                     .getState()
                     .removeSmartLayoutItem(menuPresentationId, slideId, layoutId, elementId, selectedSmartLayoutItemId);
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             } else {
                 usePresentationStore.getState().deleteElement(menuPresentationId, slideId, layoutId, elementId);
-                useMenuStore.getState().closeMenu();
+                useUIStateStore.getState().closeContextMenu();
             }
         };
 
@@ -290,13 +302,33 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
         return notFoundUI;
     }
 
-    // Формируем стили для фона
+    // Формируем стили для фона с учетом настроек темы и презентации
+    const getBackgroundStyle = () => {
+        // Если есть переопределение для презентации, используем его
+        if (backgroundSettings?.backgroundColor || backgroundSettings?.backgroundImage) {
+            return {
+                backgroundColor: backgroundSettings.backgroundColor || undefined,
+                backgroundImage: backgroundSettings.backgroundImage
+                    ? `url(${backgroundSettings.backgroundImage})`
+                    : undefined,
+                backgroundSize: backgroundSettings.backgroundImage ? 'cover' : undefined,
+                backgroundPosition: backgroundSettings.backgroundImage ? 'center' : undefined,
+                backgroundAttachment: backgroundSettings.backgroundImage ? 'fixed' : undefined,
+            };
+        }
+
+        // Иначе используем настройки из темы
+        if (theme?.colors?.slideBackground) {
+            return {
+                backgroundColor: theme.colors.slideBackground,
+            };
+        }
+
+        return {};
+    };
+
     const editorBgStyle: React.CSSProperties = {
-        backgroundColor: backgroundSettings?.backgroundColor || undefined,
-        backgroundImage: backgroundSettings?.backgroundImage ? `url(${backgroundSettings.backgroundImage})` : undefined,
-        backgroundSize: backgroundSettings?.backgroundImage ? 'cover' : undefined,
-        backgroundPosition: backgroundSettings?.backgroundImage ? 'center' : undefined,
-        backgroundAttachment: backgroundSettings?.backgroundImage ? 'fixed' : undefined,
+        ...getBackgroundStyle(),
         minHeight: 'calc(100vh - 75px - 38px)',
         transition: 'background 0.3s',
     };
@@ -314,16 +346,25 @@ const Editor: React.FC<EditorProps> = ({ presentationId, tiptapRefs }) => {
         <DndProvider presentationId={presentationId}>
             <div style={editorBgStyle}>
                 <EditorContent
+                    theme={theme}
                     presentationId={presentationId}
-                    activeSlideId={activeSlideId}
+                    // activeSlideId={activeSlideId}
                     tiptapRefs={tiptapRefs}
-                    onSlideSelect={handleSlideSelect}
+                    // onSlideSelect={handleSlideSelect}
                 />
             </div>
+
+            {/* Global Header/Footer Modal */}
+            <GlobalHeaderFooterModal
+                isOpen={isGlobalHeaderFooterModalOpen}
+                onClose={() => setGlobalHeaderFooterModalOpen(false)}
+                presentationId={presentationId}
+                slideId={currentSlideId}
+            />
         </DndProvider>
     );
 };
 
 EditorContent.displayName = 'EditorContent';
 
-export default React.memo(Editor);
+export default memo(Editor);

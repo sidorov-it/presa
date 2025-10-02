@@ -7,14 +7,13 @@ import { BoxElement } from '@/types';
 import SettingsSelector from '@/components/ui/SettingsSelector/SettingsSelector';
 
 import { ColorPicker } from '@/components/tiptap/ColorPicker';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import DeleteIcon from '@/components/icons/DeleteIcon';
 
 import { BoxIconOptions } from './BoxIconOptions';
 
 import styles from './BoxBubbleMenu.module.css';
 import { ElementRegistry } from '@/elements/commonRegisrty';
-import { RiResetLeftFill } from 'react-icons/ri';
 
 interface BubbleMenuProps {
     editor: Editor;
@@ -74,7 +73,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
         }
     };
 
-    const handleResetColor = useCallback(() => {
+    const handleColorReset = useCallback(() => {
         const defaultBackgroundColor = elementConfig?.props?.backgroundColor;
 
         updateElement({
@@ -103,7 +102,7 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
 
     const handleDelete = () => {
         deleteElement(presentationId, slideId, layoutId, elementId);
-        useMenuStore.getState().closeMenu();
+        useUIStateStore.getState().closeContextMenu();
     };
 
     return (
@@ -115,12 +114,8 @@ const BoxBubbleMenu: React.FC<BubbleMenuProps> = ({ presentationId, slideId, lay
                 onColorChange={handleBackgroundColorChange}
                 mode="icon"
                 className={styles.button}
-                customFooter={
-                    <button onClick={handleResetColor} className={styles.resetColorButton} aria-label="Удалить блок">
-                        <RiResetLeftFill />
-                        Сбросить цвет
-                    </button>
-                }
+                isShowResetColor={true}
+                onColorReset={handleColorReset}
             />
 
             <button onClick={handleDelete} className={styles.deleteButton} aria-label="Удалить блок">

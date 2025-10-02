@@ -163,22 +163,96 @@ export const getBlockColors = (
 };
 
 /**
- * Generates a palette of chart colors based on slide background and accent color.
- * Colors are rotated around the accent hue and adjusted for contrast.
+ * Generates a palette of chart colors based on slide background and primary color.
+ * Ensures each color is harmonious with the primary color and readable on the background.
+ * Always returns unique, non-black, non-white colors.
  */
-export const getChartColors = (slideBgColor: string, accentColor: string, count = 5): string[] => {
-    const isDark = tinycolor(slideBgColor).isDark();
-    const base = tinycolor(accentColor);
+export const getChartColors = (slideBgColor: string, primaryColor: string, count = 5): string[] => {
+    const bg = tinycolor(slideBgColor);
+    const primary = tinycolor(primaryColor);
     const step = 360 / count;
-    const result: string[] = [];
+    const palette: string[] = [];
+    let attempts = 0;
+    const maxAttempts = count * 12; // allow more attempts for uniqueness
+    const MIN_HUE_DIFF = 30; // минимальная разница по hue
 
-    for (let i = 0; i < count; i++) {
-        let color = base.clone().spin(step * i);
-        color = isDark ? color.lighten(10) : color.darken(10);
-        result.push(color.toHexString());
+    // Helper to check contrast
+    const isReadableStrict = (fg: string) => tinycolor.isReadable(fg, slideBgColor, { level: 'AA', size: 'small' });
+    const isReadableLoose = (fg: string) => tinycolor.readability(fg, slideBgColor) > 2.5; // looser than AA
+    const isBlackOrWhite = (color: string) => {
+        const c = tinycolor(color);
+        return (c.isDark() && c.getBrightness() < 10) || (c.isLight() && c.getBrightness() > 245);
+    };
+    const isDuplicate = (color: string) => palette.some(existing => tinycolor.equals(existing, color));
+    const getHue = (color: string) => tinycolor(color).toHsl().h;
+    const isHueTooClose = (color: string) =>
+        palette.some(existing => {
+            const h1 = getHue(existing);
+            const h2 = getHue(color);
+            const diff = Math.abs(h1 - h2);
+            return Math.min(diff, 360 - diff) < MIN_HUE_DIFF;
+        });
+
+    for (let i = 0; palette.length < count && attempts < maxAttempts; i++, attempts++) {
+        // Spin hue from primary, keep saturation and lightness
+        const hue = (primary.toHsl().h + step * i) % 360;
+        let color = tinycolor({
+            h: hue,
+            s: primary.toHsl().s,
+            l: primary.toHsl().l,
+        });
+        // Blend slightly with background for harmony
+        color = tinycolor.mix(color, bg, 15);
+        // Try strict contrast, then loose, then adjust
+        let tries = 0;
+        let found = false;
+        let candidate = color.clone();
+        while (tries < 8 && !found) {
+            const hex = candidate.toHexString();
+            if (!isBlackOrWhite(hex) && !isDuplicate(hex) && !isHueTooClose(hex) && isReadableStrict(hex)) {
+                palette.push(hex);
+                found = true;
+                break;
+            }
+            if (!isBlackOrWhite(hex) && !isDuplicate(hex) && !isHueTooClose(hex) && isReadableLoose(hex)) {
+                palette.push(hex);
+                found = true;
+                break;
+            }
+            // Try adjusting lightness/saturation/hue
+            candidate = candidate.isDark() ? candidate.lighten(12) : candidate.darken(12);
+            if (tries % 2 === 1) candidate = candidate.saturate(10);
+            if (tries % 3 === 2) candidate = candidate.spin(30);
+            tries++;
+        }
+        // If not found, skip to next hue
     }
-
-    return result;
+    // Fallback: if not enough, fill with default accessible colors (но не дублировать и не близко по hue)
+    const fallbackColors = [
+        '#3366CC',
+        '#DC3912',
+        '#FF9900',
+        '#109618',
+        '#990099',
+        '#0099C6',
+        '#DD4477',
+        '#66AA00',
+        '#B82E2E',
+        '#316395',
+    ];
+    let fallbackIdx = 0;
+    while (palette.length < count && fallbackIdx < fallbackColors.length) {
+        const fallback = fallbackColors[fallbackIdx++];
+        if (!isDuplicate(fallback) && !isBlackOrWhite(fallback) && !isHueTooClose(fallback)) palette.push(fallback);
+    }
+    // If still not enough, generate random unique colors (и не близко по hue)
+    let randomTries = 0;
+    while (palette.length < count && randomTries < 30) {
+        const random = tinycolor.random().toHexString();
+        if (!isDuplicate(random) && !isBlackOrWhite(random) && !isHueTooClose(random)) palette.push(random);
+        randomTries++;
+    }
+    return palette.slice(0, count);
 };
 
 /**

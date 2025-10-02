@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 
 import lightThemeVars from './cssVariables/lightTheme.json';
@@ -20,7 +20,7 @@ export interface ColorModeProviderProps {
 }
 
 export function ColorModeProvider({ children }: ColorModeProviderProps) {
-    const [colorMode, setColorMode] = useState<ColorMode>('light');
+    const [colorMode, setColorMode1] = useState<ColorMode>('light');
 
     // Применяем CSS-переменные Chakra при изменении темы
     useEffect(() => {
@@ -35,6 +35,11 @@ export function ColorModeProvider({ children }: ColorModeProviderProps) {
             });
         }
     }, [colorMode]);
+
+    const setColorMode = useCallback((mode: ColorMode) => {
+        console.log('setColorMode', mode);
+        setColorMode1(mode);
+    }, []);
 
     return <ColorModeContext.Provider value={{ colorMode, setColorMode }}>{children}</ColorModeContext.Provider>;
 }

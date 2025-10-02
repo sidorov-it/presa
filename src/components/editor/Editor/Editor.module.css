@@ -5,28 +5,6 @@
     background-color: var(--color-background);
 }
 
-.slide {
-    display: flex;
-    top: 0px;
-    left: 0px;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    justify-content: center;
-    cursor: default;
-    font-size: 1rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    padding-left: calc(2em + 190px + 0px);
-    padding-right: calc(2em + 60px + 0px);
-    margin: 0px auto;
-    transition-property: transform, padding;
-    transition-duration: 200ms;
-}
-
 .notFoundUI {
     display: flex; 
     justify-content: center; 
@@ -38,4 +16,30 @@
     font-size: 1.125rem;
     line-height: 1.75rem; 
     color: #6B7280; 
+}
+
+/* Mobile optimizations */
+@media (max-width: 1023px) {
+    .editorContainer {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Ensure slides are centered and properly sized on mobile */
+    .editorContainer > div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* padding: 0 1rem; */
+    }
+
+    /* Hide elements panel and slide menu on mobile */
+    .elementsPanel,
+    .slideMenu,
+    .dragDropIndicator {
+        display: none !important;
+    }
 }

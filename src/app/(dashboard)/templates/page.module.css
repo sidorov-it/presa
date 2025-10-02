@@ -1,26 +1,16 @@
 .container {
-    flex: 1;
-    padding: 1rem;
-    padding-top: 1.5rem;
+    /* Layout is now handled by the main dashboard layout */
 }
 
-@media (min-width: 768px) {
-    .container {
-        padding: 2rem;
-        padding-top: 1.5rem;
-    }
+.cardsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-@media (max-width: 1023px) {
-    .header {
-        padding-left: 3rem;
-    }
+    /* Styling is now handled by the Heading component */
 }
 
 .addButton {
@@ -82,11 +72,12 @@
 }
 
 .templateCard {
-    cursor: pointer;
     transition: box-shadow 0.2s;
     position: relative;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
+    width: 360px;
+    background-color: #fff;
 }
 
 .templateCard:hover {
@@ -97,23 +88,78 @@
     position: relative;
     width: 100%;
     height: 10rem;
-    background-color: var(--color-background);
+    background-color: var(--color-surface);
     border-radius: var(--radius-md);
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.cap {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+.templateActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.previewButton {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: none;
     cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.previewButton:hover {
+    background-color: var(--color-surface);
+}
+
+.useButton {
+    padding: 0.5rem 1rem;
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    color: #fff;
+}
+
+.useButton:hover {
+    background-color: var(--color-accent);
+    color: var(--color-background);
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #f3f3f3;
+  display: block;
 }
 
 .title {
     font-size: 1.875rem;
     font-weight: 700;
     margin-bottom: 2rem;
+}
+
+.cardTitle {
+    letter-spacing: 0;
+    line-height: 1.25;
+    font-weight: 500;
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cardHeader {
+    /* height: 88px; */
+    padding-bottom: 16px;
+    /* padding-top: 0; */
+    /* padding-bottom: 0; */
 }

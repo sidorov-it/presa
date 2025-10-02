@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -7,7 +8,7 @@ interface Params {
     id: string;
 }
 
-export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+async function GETHandler(request: Request, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
     try {
         const themeData = await prisma.theme.findUnique({
@@ -51,7 +52,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
     }
 }
 
-export async function DELETE(request: Request, props: { params: Promise<Params> }) {
+async function DELETEHandler(request: Request, props: { params: Promise<Params> }) {
     const params = await props.params;
     try {
         const { id } = params;
@@ -75,7 +76,7 @@ export async function DELETE(request: Request, props: { params: Promise<Params> 
     }
 }
 
-export async function PUT(request: Request, props: { params: Promise<Params> }) {
+async function PUTHandler(request: Request, props: { params: Promise<Params> }) {
     const params = await props.params;
     try {
         const { id } = params;
@@ -99,6 +100,7 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
             where: { id },
             data: {
                 name: theme.name,
+                logo: theme.logo,
                 colors: {
                     set: theme.colors,
                 },
@@ -117,7 +119,10 @@ export async function PUT(request: Request, props: { params: Promise<Params> }) 
 
         return NextResponse.json(updatedTheme);
     } catch (error) {
-        logger.error('Failed to update theme:', error);
+        logger.error('Failed to update theme:', error.message);
         return NextResponse.json({ error: 'Failed to update theme' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const PUT = withLogging(PUTHandler);
+export const DELETE = withLogging(DELETEHandler);

@@ -1,9 +1,10 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { createLLMService } from '@/services/llm';
 import { MetadataExtractors, TokenCalculators, withTokenDeduction } from '@/utils/aiTokenMiddleware';
 
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     return withTokenDeduction(
         request,
         {
@@ -93,3 +94,4 @@ export async function POST(request: NextRequest) {
         }
     );
 }
+export const POST = withLogging(POSTHandler);

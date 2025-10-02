@@ -58,6 +58,8 @@ export const TextStyle = Mark.create<TextStyleOptions>({
 
     priority: 101,
 
+    keepOnSplit: true,
+
     addOptions() {
         return {
             HTMLAttributes: {},
@@ -71,24 +73,50 @@ export const TextStyle = Mark.create<TextStyleOptions>({
                 tag: 'span',
                 getAttrs: element => {
                     const hasStyles = (element as HTMLElement).hasAttribute('style');
+                    const hasClass = (element as HTMLElement).hasAttribute('class');
 
-                    const result = {
-                        class: element.className,
-                    };
-
-                    if (hasStyles && this.options.mergeNestedSpanStyles) {
-                        mergeNestedSpanStyles(element);
+                    // Если нет ни классов, ни стилей, не создаем textStyle mark
+                    if (!hasClass && !hasStyles) {
+                        return false;
                     }
 
+                    // Всегда возвращаем атрибуты, даже если span пустой
+                    // Это позволяет сохранить пустые span'ы с классами
+                    const result: any = {
+                        class: (element as HTMLElement).className || null,
+                    };
+
+                    // Добавляем поддержку цвета из style атрибута
+                    const styleAttr = (element as HTMLElement).getAttribute('style');
+                    if (styleAttr) {
+                        const colorMatch = styleAttr.match(/color:\s*([^;]+)/);
+                        if (colorMatch) {
+                            result.color = colorMatch[1].trim();
+                        }
+                    }
+
+                    if (hasStyles && this.options.mergeNestedSpanStyles) {
+                        mergeNestedSpanStyles(element as HTMLElement);
+                    }
+
+                    // Возвращаем результат для span'ов с классами или стилями
                     return result;
-                    // return {}
                 },
             },
         ];
     },
 
     renderHTML({ HTMLAttributes }) {
-        return ['span', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes), 0];
+        const attrs: any = { ...HTMLAttributes };
+
+        // Если есть color атрибут, добавляем его в style
+        if (attrs.color) {
+            const style = attrs.style || '';
+            attrs.style = style ? `${style}; color: ${attrs.color}` : `color: ${attrs.color}`;
+            delete attrs.color; // Удаляем color атрибут, так как он теперь в style
+        }
+
+        return ['span', mergeAttributes(this.options.HTMLAttributes, attrs), 0];
     },
 
     addCommands() {

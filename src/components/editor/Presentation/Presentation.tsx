@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/Button';
 import styles from './Presentation.module.css';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import SlidesList from '../SlidesList';
+import SlideDropIndicator from '@/components/SlideDropIndicator';
+import { Theme } from '@/types/theme';
 interface PresentationProps {
     presentationId: string;
-    activeSlideId: string | null;
-    onSlideSelect: (slideId: string) => void;
     tiptapRefs: MutableRefObject<TipTapRefs>;
+    theme: Theme;
 }
 
 // Create a SlideEditorWrapper component to handle rendering individual slides
@@ -19,19 +20,16 @@ const SlideEditorWrapper = memo(
     ({
         slideId,
         presentationId,
-        isSelected,
-        onSlideSelect,
         tiptapRefs,
         isLast,
+        theme,
     }: {
         slideId: string;
         presentationId: string;
-        isSelected: boolean;
-        onSlideSelect: (slideId: string) => void;
         tiptapRefs: MutableRefObject<TipTapRefs>;
         isLast: boolean;
+        theme: Theme;
     }) => {
-        const isReadOnly = useReadOnly();
         const slideLayoutIds = usePresentationStore(
             useShallow((state: PresentationState) => {
                 const presentation = state.presentations.find((p: IPresentation) => p.id === presentationId);
@@ -50,9 +48,8 @@ const SlideEditorWrapper = memo(
                 slideLayoutIds={slideLayoutIds}
                 presentationId={presentationId}
                 slideId={slideId}
-                handleSelectSlide={onSlideSelect}
-                isSelected={isSelected && !isReadOnly}
                 isLast={isLast}
+                theme={theme}
             />
         );
     }
@@ -60,7 +57,7 @@ const SlideEditorWrapper = memo(
 
 SlideEditorWrapper.displayName = 'SlideEditorWrapper';
 
-function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs }: PresentationProps) {
+function Presentation({ presentationId, tiptapRefs, theme }: PresentationProps) {
     const isReadOnly = useReadOnly();
 
     const slideIds = usePresentationStore(
@@ -84,14 +81,18 @@ function Presentation({ presentationId, activeSlideId, onSlideSelect, tiptapRefs
                     key={slideId}
                     slideId={slideId}
                     presentationId={presentationId}
-                    isSelected={activeSlideId === slideId}
-                    onSlideSelect={onSlideSelect}
                     tiptapRefs={tiptapRefs}
+                    theme={theme}
                     isLast={index === slideIds.length - 1}
                 />
             ))}
 
-            <SlidesList presentationId={presentationId} activeSlideId={activeSlideId} onSlideSelect={onSlideSelect} />
+            {!isReadOnly && (
+                <>
+                    <SlidesList presentationId={presentationId} />
+                    <SlideDropIndicator />
+                </>
+            )}
         </div>
     );
 }

@@ -89,6 +89,12 @@ DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/slydle"
 | `DATABASE_URL` | Строка подключения к БД | `mongodb://...` |
 | `NEXTAUTH_SECRET` | Секрет для NextAuth | `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | URL приложения | `https://ваш-домен.com` |
+| `VK_CLIENT_ID` | ID приложения VK | `123456` |
+| `VK_CLIENT_SECRET` | Секрет VK приложения | `abcdef` |
+| `MAILRU_CLIENT_ID` | ID приложения Mail.ru | `123456` |
+| `MAILRU_CLIENT_SECRET` | Секрет Mail.ru | `abcdef` |
+| `YANDEX_CLIENT_ID` | ID приложения Yandex | `123456` |
+| `YANDEX_CLIENT_SECRET` | Секрет Yandex | `abcdef` |
 
 #### 4.2 Генерация NEXTAUTH_SECRET
 ```bash
@@ -233,6 +239,30 @@ sudo -u deploy npm ci --only=production
 sudo -u deploy npx prisma generate
 sudo -u deploy npx prisma db push
 sudo -u deploy pm2 restart slydle
+```
+
+### Локальный скрипт деплоя
+Для запуска деплоя прямо со своей машины используйте `scripts/deploy-local.sh`.
+Перед запуском задайте переменные окружения с параметрами сервера и приложения:
+
+```bash
+SERVER_HOST=your.server \
+SERVER_USER=deploy \
+SERVER_PORT=22 \
+SERVER_PASSWORD=your_password \
+DATABASE_URL="mongodb://..." \
+NEXTAUTH_SECRET="secret" \
+NEXTAUTH_URL="https://example.com" \
+bash scripts/deploy-local.sh
+# export SERVER_HOST=your.server
+# export SERVER_USER=deploy
+# export SERVER_PORT=22
+# export SERVER_PASSWORD=your_password
+# export DATABASE_URL="mongodb://..."
+# export NEXTAUTH_SECRET="secret"
+# export NEXTAUTH_URL="https://example.com"
+
+# bash scripts/deploy-local.sh
 ```
 
 ## 📊 Мониторинг

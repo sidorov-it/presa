@@ -5,11 +5,13 @@ import { Theme } from '@/types/theme';
 import styles from './ThemePreviewBlock.module.css';
 import { FaCopy, FaEye, FaTrash } from 'react-icons/fa';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { getRequiredFontsFromTheme, loadFontsInContainer } from '@/utils/fontLoader';
 
 interface ThemePreviewProps {
     theme: Theme;
     isReadOnly?: boolean;
-    onClickEdit?: () => void;
+    isSelected?: boolean;
+    onClick?: () => void;
     onClickDuplicate?: () => void;
     onClickDelete?: () => void;
 }
@@ -17,31 +19,113 @@ interface ThemePreviewProps {
 const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     theme,
     isReadOnly = false,
-    onClickEdit,
+    isSelected = false,
+    onClick,
     onClickDuplicate,
     onClickDelete,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [menuPosition, setMenuPosition] = useState<{
+        top?: number;
+        left?: number;
+        right?: number;
+        bottom?: number;
+    } | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const menuButtonRef = useRef<HTMLButtonElement>(null);
-    const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
+    const previewRef = useRef<HTMLDivElement>(null);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const [fontStyles, setFontStyles] = useState<{ [key: string]: string }>({});
+
+    // Intersection Observer для ленивой загрузки
+    useEffect(() => {
+        if (!previewRef.current) return;
+
+        observerRef.current = new IntersectionObserver(
+            entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
+                        // Отключаем observer после первого появления
+                        if (observerRef.current) {
+                            observerRef.current.disconnect();
+                        }
+                    }
+                });
+            },
+            {
+                rootMargin: '50px', // Начинаем загрузку за 50px до появления элемента
+                threshold: 0.1,
+            }
+        );
+
+        observerRef.current.observe(previewRef.current);
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, []);
+
+    // Загрузка ресурсов только когда элемент становится видимым
+    useEffect(() => {
+        if (!isVisible || !theme || !previewRef.current || isLoaded) return;
+
+        const loadResources = async () => {
+            try {
+                // Get required font URLs from theme
+                const fontUrls = getRequiredFontsFromTheme(theme);
+
+                // Load the fonts in the preview container
+                await loadFontsInContainer(fontUrls, previewRef.current!);
+
+                setFontStyles({
+                    '--presentation-body-font': `'${theme.typography.bodyFont}', sans-serif`,
+                    '--presentation-heading-font': `'${theme.typography.headingFont}', sans-serif`,
+                });
+
+                setIsLoaded(true);
+            } catch (error) {
+                console.error('Error loading theme resources:', error);
+            }
+        };
+
+        loadResources();
+    }, [isVisible, theme, isLoaded]);
+
+    // Очистка ресурсов при размонтировании
+    // useEffect(() => {
+    //     return () => {
+    //         if (previewRef.current && isLoaded) {
+    //             const fontUrls = getRequiredFontsFromTheme(theme);
+    //             unloadFontsFromContainer(fontUrls, previewRef.current);
+    //         }
+    //     };
+    // }, [theme, isLoaded]);
 
     useEffect(() => {
         if (menuButtonRef.current) {
             const rect = menuButtonRef.current.getBoundingClientRect();
 
-            let right;
-            let left;
-            let top;
-            let bottom;
+            let right: number | undefined;
+            let left: number | undefined;
+            let top: number | undefined;
+            let bottom: number | undefined;
 
             if (rect.right + 200 > window.innerWidth) {
                 right = 0;
-                left = 'unset';
+                left = undefined;
+            } else {
+                left = rect.left;
             }
 
             if (rect.bottom + 130 > window.innerHeight) {
                 bottom = 0;
-                top = 'unset';
+                top = undefined;
+            } else {
+                top = rect.bottom;
             }
 
             setMenuPosition({ top, left, right, bottom });
@@ -65,9 +149,9 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
 
     const getBorderWidth = (borderWidth: string) => {
         if (borderWidth === 'none') return '0';
-        if (borderWidth === 'thin') return '1px';
-        if (borderWidth === 'medium') return '2px';
-        return '3px';
+        if (borderWidth === 'thin') return '0.0625em';
+        if (borderWidth === 'medium') return '0.125em';
+        return '0.175em';
     };
 
     const getBoxShadow = (shadow: string) => {
@@ -77,7 +161,13 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
     };
 
     return (
-        <div className={styles.themeCard} onClick={onClickEdit}>
+        <div
+            ref={previewRef}
+            className={`${styles.themeCard} ${isSelected ? styles.selected : ''}`}
+            id={`theme-${theme.id}`}
+            style={isLoaded ? fontStyles : {}}
+            onClick={onClick}
+        >
             <div className={styles.cardContent}>
                 {/* Theme Preview */}
                 <div
@@ -88,61 +178,72 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                                 ? theme.colors.pageBackground.color
                                 : theme.colors.slideBackground,
                         backgroundImage:
-                            theme.colors.pageBackground.type === 'image'
+                            isVisible && theme.colors.pageBackground.type === 'image'
                                 ? `url(${theme.colors.pageBackground.imageUrl})`
                                 : undefined,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                     }}
                 >
-                    {/* Sample Slide Card */}
-                    <div
-                        className={styles.slideCard}
-                        style={{
-                            backgroundColor: theme.colors.slideBackground,
-                            borderRadius: theme.design.slide.borderRadius,
-                            borderWidth: getBorderWidth(theme.design.slide.borderWidth),
-                            borderColor: theme.design.slide.borderColor,
-                            boxShadow: getBoxShadow(theme.design.slide.shadow),
-                            '--slide-opacity': theme.design.slide.opacity,
-                        } as React.CSSProperties}
-                    >
-                        {/* Sample Content */}
-                        <div className={styles.slideContent}>
-                            <h3
-                                className={styles.slideTitle}
-                                style={{
-                                    fontFamily: theme.typography.headingFont,
-                                    fontWeight: theme.typography.headingWeight,
-                                    color: theme.typography.headingColor,
-                                    lineHeight: theme.typography.headingLineHeight,
-                                    // letterSpacing: `${theme.typography.headingLetterSpacing}px`,
-                                    textTransform: theme.typography.headingCapitalization,
-                                }}
-                            >
-                                Title
-                            </h3>
-                            <p
-                                className={styles.slideText}
-                                style={{
-                                    fontFamily: theme.typography.bodyFont,
-                                    fontWeight: theme.typography.bodyWeight,
-                                    color: theme.typography.bodyColor,
-                                    lineHeight: theme.typography.bodyLineHeight,
-                                    // letterSpacing: `${theme.typography.bodyLetterSpacing}px`,
-                                    textTransform: theme.typography.bodyCapitalization,
-                                }}
-                            >
-                                Body &{' '}
-                                <span
-                                    className={styles.slideLink}
-                                    style={{ color: theme.design.buttons.linkColor || theme.colors.primaryAccent }}
-                                >
-                                    link
-                                </span>
-                            </p>
+                    {/* Показываем placeholder пока ресурсы не загружены */}
+                    {!isLoaded && (
+                        <div className={styles.loadingPlaceholder}>
+                            <div className={styles.loadingSpinner}></div>
                         </div>
-                    </div>
+                    )}
+
+                    {/* Sample Slide Card - показываем только после загрузки */}
+                    {isLoaded && (
+                        <div
+                            className={styles.slideCard}
+                            style={
+                                {
+                                    backgroundColor: theme.colors.slideBackground,
+                                    borderRadius: theme.design.slide.borderRadius,
+                                    borderWidth: getBorderWidth(theme.design.slide.borderWidth),
+                                    borderColor: theme.design.slide.borderColor,
+                                    boxShadow: getBoxShadow(theme.design.slide.shadow),
+                                    '--slide-opacity': theme.design.slide.opacity,
+                                } as React.CSSProperties
+                            }
+                        >
+                            {/* Sample Content */}
+                            <div className={styles.slideContent}>
+                                <h3
+                                    className={styles.slideTitle}
+                                    style={{
+                                        fontFamily: 'var(--presentation-heading-font)',
+                                        fontWeight: theme.typography.headingWeight,
+                                        color: theme.typography.headingColor,
+                                        lineHeight: theme.typography.headingLineHeight,
+                                        textTransform: theme.typography.headingCapitalization,
+                                    }}
+                                >
+                                    Заголовок
+                                </h3>
+                                <p
+                                    className={styles.slideText}
+                                    style={{
+                                        fontFamily: 'var(--presentation-body-font)',
+                                        fontWeight: theme.typography.bodyWeight,
+                                        color: theme.typography.bodyColor,
+                                        lineHeight: theme.typography.bodyLineHeight,
+                                        textTransform: theme.typography.bodyCapitalization,
+                                    }}
+                                >
+                                    Текст &{' '}
+                                    <span
+                                        className={styles.slideLink}
+                                        style={{
+                                            color: /* theme.design.buttons.linkColor || */ theme.colors.primaryAccent,
+                                        }}
+                                    >
+                                        ссылка
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Theme Info */}
@@ -158,8 +259,8 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                             <HiOutlineDotsVertical />
 
                             {isMenuOpen && (
-                                <div className={styles.menuDropdown} style={menuPosition}>
-                                    <button onClick={onClickEdit} className={styles.menuItem}>
+                                <div className={styles.menuDropdown} style={menuPosition || {}}>
+                                    <button onClick={onClick} className={styles.menuItem}>
                                         <FaEye className={styles.menuIcon} />
                                         Редактировать
                                     </button>
@@ -178,16 +279,6 @@ const ThemePreviewBlock: React.FC<ThemePreviewProps> = ({
                             )}
                         </button>
                     )}
-
-                    {/* <button
-                        className={styles.menuButton}
-                        onClick={handleMenuClick}
-                        onKeyDown={handleKeyDown}
-                        aria-label={`Открыть меню темы ${theme.name}`}
-                        tabIndex={0}
-                    >
-                        <span className={styles.menuDots}>⋯</span>
-                    </button> */}
                 </div>
             </div>
         </div>

@@ -1,0 +1,30 @@
+.earlyTestBanner {
+    position: sticky;
+    top: 0;
+    background: var(--color-secondary);
+    color: white;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    height: 37px;
+    z-index: 30;
+    display: none;
+}
+
+.closeButton {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+    .earlyTestBanner {
+        display: block;
+    }
+}

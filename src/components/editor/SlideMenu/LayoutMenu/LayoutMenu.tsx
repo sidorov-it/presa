@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { useMenuStore } from '@/store/menuStore';
+import { useSelectedState, useUIStateStore } from '@/store/uiStateStore';
 import { BaseMenu, MenuItem } from '../BaseMenu';
 import { AlignTopIcon, AlignCenterIcon, AlignBottomIcon, DeleteIcon } from '@/components/icons';
 
-import { useMenuSelectedSlide } from '@/store/menuStore';
+import { usePresentationStore } from '@/store/presentationStore';
 import { LayoutType } from '@/types';
 import LayoutTemplateDropdown from '../LayoutTemplateDropdown/LayoutTemplateDropdown';
 
@@ -13,41 +13,97 @@ interface LayoutMenuProps {
 }
 
 export default function LayoutMenu({ position, layoutId }: LayoutMenuProps) {
-    const { updateAlignLayout, deleteLayout, closeMenu, getLayout, changeTemplate } = useMenuStore();
+    const { closeContextMenu } = useUIStateStore();
+    const { updateAlignLayout, deleteLayout, getLayout, changeTemplate, getCommonAlignment } = usePresentationStore();
 
-    const commonAlignment = useMenuStore(state => state.getCommonAlignment());
+    const selectedState = useSelectedState();
+    const commonAlignment = getCommonAlignment(
+        selectedState.presentationId!,
+        selectedState.selectedSlideId!,
+        selectedState.selectedLayoutId!
+    );
 
-    const slideId = useMenuSelectedSlide();
-    const layout = slideId && layoutId ? getLayout(slideId, layoutId) : null;
+    const slideId = selectedState.selectedSlideId;
+    const layout = slideId && layoutId ? getLayout(selectedState.presentationId!, slideId, layoutId) : null;
 
     const currentLayoutType = layout?.type || 'custom';
 
     const handleAlignTop = useCallback(() => {
-        updateAlignLayout('top');
-        closeMenu();
-    }, [updateAlignLayout, closeMenu]);
+        updateAlignLayout(
+            selectedState.presentationId!,
+            selectedState.selectedSlideId!,
+            selectedState.selectedLayoutId!,
+            'top'
+        );
+        closeContextMenu();
+    }, [
+        updateAlignLayout,
+        selectedState.presentationId,
+        selectedState.selectedSlideId,
+        selectedState.selectedLayoutId,
+        closeContextMenu,
+    ]);
 
     const handleAlignCenter = useCallback(() => {
-        updateAlignLayout('center');
-        closeMenu();
-    }, [updateAlignLayout, closeMenu]);
+        updateAlignLayout(
+            selectedState.presentationId!,
+            selectedState.selectedSlideId!,
+            selectedState.selectedLayoutId!,
+            'center'
+        );
+        closeContextMenu();
+    }, [
+        updateAlignLayout,
+        selectedState.presentationId,
+        selectedState.selectedSlideId,
+        selectedState.selectedLayoutId,
+        closeContextMenu,
+    ]);
 
     const handleAlignBottom = useCallback(() => {
-        updateAlignLayout('bottom');
-        closeMenu();
-    }, [updateAlignLayout, closeMenu]);
+        updateAlignLayout(
+            selectedState.presentationId!,
+            selectedState.selectedSlideId!,
+            selectedState.selectedLayoutId!,
+            'bottom'
+        );
+        closeContextMenu();
+    }, [
+        updateAlignLayout,
+        selectedState.presentationId,
+        selectedState.selectedSlideId,
+        selectedState.selectedLayoutId,
+        closeContextMenu,
+    ]);
 
     const handleDeleteLayout = useCallback(() => {
-        deleteLayout();
-        closeMenu();
-    }, [deleteLayout, closeMenu]);
+        deleteLayout(selectedState.presentationId!, selectedState.selectedSlideId!, selectedState.selectedLayoutId!);
+        closeContextMenu();
+    }, [
+        deleteLayout,
+        selectedState.presentationId,
+        selectedState.selectedSlideId,
+        selectedState.selectedLayoutId,
+        closeContextMenu,
+    ]);
 
     const handleChangeTemplate = useCallback(
         (templateType: LayoutType) => {
-            changeTemplate(templateType);
-            closeMenu();
+            changeTemplate(
+                selectedState.presentationId!,
+                selectedState.selectedSlideId!,
+                selectedState.selectedLayoutId!,
+                templateType
+            );
+            closeContextMenu();
         },
-        [changeTemplate, closeMenu]
+        [
+            changeTemplate,
+            closeContextMenu,
+            selectedState.presentationId,
+            selectedState.selectedLayoutId,
+            selectedState.selectedSlideId,
+        ]
     );
 
     if (!layout) {

@@ -94,7 +94,9 @@ interface Theme {
     updatedAt: Date;
 }
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+import { getUploadPath } from '@/utils/uploadPath';
+
+const UPLOAD_DIR = getUploadPath();
 
 // Helper function to get first color from gradient
 function getFirstColor(colorString: string): string {

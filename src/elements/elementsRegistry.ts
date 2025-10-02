@@ -3,7 +3,6 @@ import HeadingBubbleMenu from '@/components/editor/Menus/BubbleMenus/HeadingBubb
 import QuoteBubbleMenu from '@/components/editor/Menus/BubbleMenus/QuoteBubbleMenu';
 import TableBubbleMenu from '@/components/editor/Menus/BubbleMenus/TableBubbleMenu';
 import ListBubbleMenu from '@/components/editor/Menus/BubbleMenus/ListBubbleMenu';
-import ButtonMenu from '@/components/editor/Menus/ButtonMenu';
 import ChartSettings from './chart/ChartSettings/ChartSettings';
 import SmartLayoutSettings from './smartLayout/components/SmartLayoutSettings/SmartLayoutSettings';
 import ImageBubbleMenu from '@/components/editor/Menus/BubbleMenus/ImageBubbleMenu/ImageBubbleMenu';
@@ -70,7 +69,7 @@ export const elementTypes: Record<string, ElementTypeConfig> = {
         elementTypeId: 'button',
         hasTextEditor: true,
         customMenu: true,
-        MenuComponent: ButtonMenu,
+        // MenuComponent: ButtonMenu,
         hasLimitedTextFormatting: true,
     },
     toggle: {

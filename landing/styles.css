@@ -780,3 +780,7 @@ section:nth-child(even) {
   margin-top: 1.5rem;
   text-align: center;
 } 
+/* Beta banner */
+.beta-banner { background: var(--accent); color: #fff; text-align: center; padding: 12px; font-size: 1rem; }
+.beta-banner a { color: #fff; text-decoration: underline; }
+

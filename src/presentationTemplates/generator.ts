@@ -36,7 +36,7 @@ export interface PresentationDescriptor {
 }
 
 function mapElement(desc: ElementDescriptor) {
-    const type = desc.type.toLowerCase();
+    const type = desc?.type?.toLowerCase() || 'text';
     switch (type) {
         case 'heading':
         case 'title':
@@ -111,7 +111,7 @@ function mapElement(desc: ElementDescriptor) {
     }
 }
 
-export function generatePresentationTemplate(desc: PresentationDescriptor): IPresentation {
+export function generatePresentationTemplate(desc: PresentationDescriptor): IPresentation & { themeName: string } {
     const presentationId = generateId();
     const now = Date.now();
 
@@ -167,6 +167,7 @@ export function generatePresentationTemplate(desc: PresentationDescriptor): IPre
         description: desc.description,
         slides,
         themeId: desc.themeId,
+        themeName: desc.themeName,
         createdAt: now,
         updatedAt: now,
     };

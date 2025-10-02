@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import { Input } from '@/components/ui/Input/Input';
 import { Popover } from '@/components/ui/Popover/Popover';
@@ -16,6 +16,25 @@ interface ColorPickerProps {
     onChange: (value: string) => void;
 }
 
+// Debounce utility function with cancel support
+const debounce = <T extends (...args: any[]) => void>(func: T, wait: number): T & { cancel: () => void } => {
+    let timeout: NodeJS.Timeout | null = null;
+
+    const debouncedFunction = ((...args: any[]) => {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    }) as T & { cancel: () => void };
+
+    debouncedFunction.cancel = () => {
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+    };
+
+    return debouncedFunction;
+};
+
 // Utility functions to prevent rounding errors
 const hexToAlpha = (hex: string): number => {
     if (hex.length === 2) {
@@ -30,11 +49,13 @@ const alphaToHex = (alpha: number): string => {
 };
 
 const parseColorValue = (value: string) => {
-    if (!value || !value.startsWith('#')) {
+    if (!value) {
         return { baseColor: '#000000', alpha: 1, isValid: false };
     }
 
-    const match = value.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
+    const colorWithHash = value.startsWith('#') ? value : `#${value}`;
+
+    const match = colorWithHash.match(/^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})?$/);
     if (match) {
         return {
             baseColor: `#${match[1]}`,
@@ -44,7 +65,7 @@ const parseColorValue = (value: string) => {
     }
 
     // Handle 3-digit hex colors
-    const shortMatch = value.match(/^#([0-9A-Fa-f]{3})$/);
+    const shortMatch = colorWithHash.match(/^#([0-9A-Fa-f]{3})$/);
     if (shortMatch) {
         const expanded = shortMatch[1]
             .split('')
@@ -76,20 +97,27 @@ export const ColorPicker = ({
     const [inputValue, setInputValue] = useState(value);
     const [alpha, setAlpha] = useState(parsedValue.alpha);
 
-    // Update local state only when external value changes significantly
+    // Create debounced onChange for external updates
+    const debouncedOnChange = useRef(
+        debounce((color: string) => {
+            onChange(color);
+        }, 16) // ~60fps for smooth updates
+    ).current;
+
+    // Sync local state when external value changes
     useEffect(() => {
-        const currentParsed = parseColorValue(inputValue);
-        const newParsed = parseColorValue(value);
+        const parsed = parseColorValue(value);
+        setInputValue(value);
+        setAlpha(parsed.alpha);
+    }, [value]);
 
-        // Only update if the values are significantly different to prevent infinite loops
-        const colorChanged = currentParsed.baseColor.toLowerCase() !== newParsed.baseColor.toLowerCase();
-        const alphaChanged = allowAlpha && Math.abs(currentParsed.alpha - newParsed.alpha) > 0.01;
-
-        if (colorChanged || alphaChanged || !currentParsed.isValid) {
-            setInputValue(value);
-            setAlpha(newParsed.alpha);
-        }
-    }, [value, allowAlpha, inputValue]);
+    // Cleanup debounced function on unmount
+    useEffect(() => {
+        return () => {
+            // Cancel any pending debounced calls
+            debouncedOnChange.cancel?.();
+        };
+    }, [debouncedOnChange]);
 
     const handleColorChange = useCallback(
         (newColor: string) => {
@@ -98,10 +126,12 @@ export const ColorPicker = ({
                 const alphaHex = alphaToHex(alpha);
                 finalColor = `${newColor}${alphaHex}`;
             }
+            // Update local state immediately for UI responsiveness
             setInputValue(finalColor);
-            onChange(finalColor);
+            // Debounce external onChange to prevent rapid updates
+            debouncedOnChange(finalColor);
         },
-        [allowAlpha, alpha, onChange]
+        [allowAlpha, alpha, debouncedOnChange]
     );
 
     const handleAlphaChange = useCallback(
@@ -115,33 +145,41 @@ export const ColorPicker = ({
                 finalColor = `${parsed.baseColor}${alphaHex}`;
             }
 
+            // Update local state immediately for UI responsiveness
             setInputValue(finalColor);
-            onChange(finalColor);
+            // Debounce external onChange to prevent rapid updates
+            debouncedOnChange(finalColor);
         },
-        [allowAlpha, inputValue, onChange]
+        [allowAlpha, inputValue, debouncedOnChange]
     );
 
-    const handleInputChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const newValue = e.target.value;
-            setInputValue(newValue);
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setInputValue(newValue);
 
-            const parsed = parseColorValue(newValue);
-            if (parsed.isValid) {
-                setAlpha(parsed.alpha);
-                onChange(newValue);
-            }
-        },
-        [onChange]
-    );
+        const parsed = parseColorValue(newValue);
+        if (parsed.isValid) {
+            setAlpha(parsed.alpha);
+        }
+    }, []);
 
     const handleInputBlur = useCallback(() => {
-        const parsed = parseColorValue(inputValue);
-        if (!parsed.isValid) {
+        let newValue = inputValue.trim();
+        if (!newValue.startsWith('#')) {
+            newValue = `#${newValue}`;
+        }
+
+        const parsed = parseColorValue(newValue);
+        if (parsed.isValid) {
+            setInputValue(newValue);
+            setAlpha(parsed.alpha);
+            // For manual input, call onChange immediately (not debounced)
+            onChange(newValue);
+        } else {
             setInputValue(value);
             setAlpha(parseColorValue(value).alpha);
         }
-    }, [inputValue, value]);
+    }, [inputValue, value, onChange]);
 
     const colorButton = useMemo(
         () => (
@@ -211,14 +249,12 @@ export const ColorPicker = ({
     return (
         <div className={`${styles.colorPickerContainer}${className ? ` ${className}` : ''}`}>
             <Popover
+                forceColorMode={'light'}
                 trigger={colorButton}
                 content={colorPickerContent}
                 isOpen={isOpen}
                 onOpen={() => setIsOpen(true)}
-                onClose={() => {
-                    console.log('close');
-                    setIsOpen(false);
-                }}
+                onClose={() => setIsOpen(false)}
             />
             <div style={{ position: 'relative', flex: '1 1 0%' }}>
                 <Input

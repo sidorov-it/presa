@@ -155,7 +155,7 @@ class CommandsList {
         if (this.items.length === 0) {
             const noResults = document.createElement('div');
             noResults.className = 'slash-menu-no-results';
-            noResults.textContent = 'No matching elements found';
+            noResults.textContent = 'Не найдено совпадений';
             this.element.appendChild(noResults);
             return;
         }

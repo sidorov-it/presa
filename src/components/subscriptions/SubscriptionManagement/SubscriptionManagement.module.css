@@ -1,0 +1,682 @@
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.errorMessage {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+}
+
+.errorIcon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.retryButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.retryButton:hover:not(:disabled) {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.retryButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.noSubscription {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.infoIcon {
+    font-size: 48px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.noSubscription h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+}
+
+.noSubscription p {
+    color: #6b7280;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.startSubscriptionButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #3b82f6;
+    color: white;
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin: 0 auto;
+}
+
+.startSubscriptionButton:hover:not(:disabled) {
+    background: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.startSubscriptionButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.subscriptionCard {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-bottom: 16px;
+}
+
+/* Card variants based on subscription status */
+.subscriptionCard.active {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+}
+
+.subscriptionCard.cancelled {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+}
+
+.subscriptionCard.expired {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.subscriptionCard.pending {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.subscriptionCard.failed {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.subscriptionCard.upcoming {
+    border-color: #8b5cf6;
+    background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+}
+
+.subscriptionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.subscriptionTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.subscriptionTitle h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.crownIcon {
+    color: #f59e0b;
+    font-size: 20px;
+}
+
+.statusBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 2px solid;
+}
+
+.statusBadge.active {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #10b981;
+}
+
+.statusBadge.cancelled {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+.statusBadge.expired {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.statusBadge.pending {
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: #3b82f6;
+}
+
+.statusBadge.failed {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.statusIcon {
+    font-size: 10px;
+}
+
+.subscriptionDetails {
+    margin-bottom: 24px;
+}
+
+.planInfo {
+    margin-bottom: 20px;
+}
+
+.planName {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+}
+
+.planDescription {
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    line-height: 1.5;
+}
+
+.planPrice {
+    font-size: 18px;
+    font-weight: 700;
+    color: #059669;
+}
+
+.subscriptionMetadata {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.metadataItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.metadataIcon {
+    color: #6b7280;
+    font-size: 14px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.metadataLabel {
+    display: block;
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.metadataValue {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.metadataValue.expiringSoon {
+    color: #dc2626;
+}
+
+.metadataValue.expired {
+    color: #ef4444;
+    text-decoration: line-through;
+}
+
+.subscriptionFeatures {
+    margin-bottom: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.subscriptionFeatures h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+}
+
+.featuresList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.featuresList li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.featureIcon {
+    color: #10b981;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.subscriptionActions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.statusMessage {
+    font-size: 16px;
+    color: #374151;
+    font-weight: 500;
+    padding: 12px 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.refreshButton {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.refreshButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.refreshButton.loading {
+    opacity: 0.7;
+}
+
+.cancelButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #ef4444;
+    color: white;
+    border: 1px solid #ef4444;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+.cancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.changePlanButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #3b82f6;
+    color: white;
+    border: 1px solid #3b82f6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.changePlanButton:hover:not(:disabled) {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.changePlanButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.renewButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #10b981;
+    color: white;
+    border: 1px solid #10b981;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.renewButton:hover:not(:disabled) {
+    background: #059669;
+    border-color: #059669;
+}
+
+.renewButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.retryButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f59e0b;
+    color: white;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.retryButton:hover:not(:disabled) {
+    background: #d97706;
+    border-color: #d97706;
+}
+
+.retryButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancelPlanChangeButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #6b7280;
+    color: white;
+    border: 1px solid #6b7280;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.cancelPlanChangeButton:hover:not(:disabled) {
+    background: #4b5563;
+    border-color: #4b5563;
+}
+
+.cancelPlanChangeButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Warning messages */
+.expirationWarning,
+.cancelledWarning,
+.expiredWarning {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.expirationWarning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+}
+
+.cancelledWarning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+}
+
+.expiredWarning {
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #dc2626;
+}
+
+.warningIcon {
+    font-size: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.expirationWarning .warningIcon {
+    color: #f59e0b;
+}
+
+.cancelledWarning .warningIcon {
+    color: #f59e0b;
+}
+
+.expiredWarning .warningIcon {
+    color: #ef4444;
+}
+
+/* Modal styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalContent h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+}
+
+.modalContent p {
+    color: #6b7280;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+}
+
+.modalActions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modalCancelButton {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modalCancelButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.modalConfirmButton {
+    padding: 8px 16px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modalConfirmButton:hover:not(:disabled) {
+    background: #b91c1c;
+}
+
+.modalConfirmButton:disabled,
+.modalCancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .subscriptionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .subscriptionActions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .refreshButton,
+    .cancelButton,
+    .renewButton {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .subscriptionMetadata {
+        gap: 16px;
+    }
+    
+    .modalContent {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .modalActions {
+        flex-direction: column;
+    }
+    
+    .modalCancelButton,
+    .modalConfirmButton {
+        width: 100%;
+        justify-content: center;
+    }
+} 

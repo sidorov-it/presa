@@ -19,6 +19,12 @@ type BackgroundSettings {
   backgroundImage String?
 }
 
+type GlobalHeaderFooterConfig {
+  header  Json
+  footer  Json
+  applyTo String
+}
+
 enum BackgroundType {
   color
   image
@@ -83,51 +89,85 @@ type PageBackground {
 }
 
 model User {
-  id                   String            @id @default(auto()) @map("_id") @db.ObjectId
-  email                String            @unique
-  password             String
-  name                 String
-  image                String?
-  isVerified           Boolean           @default(false)
-  role                 String            @default("user")
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
-  emailPreferences     EmailPreferences?
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  id                       String            @id @default(auto()) @map("_id") @db.ObjectId
+  email                    String            @unique
+  passwordHash             String?           @map("password")
+  name                     String
+  image                    String?
+  isVerified               Boolean           @default(false)
+  emailVerified            DateTime?
+  verificationToken        String?
+  verificationTokenExpires DateTime?
+  role                     String            @default("user")
+  createdVia               CreatedVia        @default(email)
+  resetPasswordToken       String?
+  resetPasswordExpires     DateTime?
+  emailPreferences         EmailPreferences?
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
 
   // Relationships
-  presentations     Presentation[]
-  themes            Theme[]
-  llmRequests       LLMRequestHistory[]
-  tokens            UserTokens?
-  tokenPurchases    TokenPurchase[]
-  tokenTransactions TokenTransaction[]
+  presentations      Presentation[]
+  themes             Theme[]
+  llmRequests        LLMRequestHistory[]
+  tokens             UserTokens?
+  tokenPurchases     TokenPurchase[]
+  tokenTransactions  TokenTransaction[]
+  pdfGenerationTasks PdfGenerationTask[]
+  oauthAccounts      OAuthAccount[]
+  subscriptions      UserSubscription[]
+}
+
+enum CreatedVia {
+  email
+  vk
+  ya
+  mailru
+}
+
+model OAuthAccount {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String    @db.ObjectId
+  provider       String
+  providerUserId String
+  accessToken    String
+  refreshToken   String?
+  tokenExpiresAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerUserId])
 }
 
 model Presentation {
-  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String                    @id @default(auto()) @map("_id") @db.ObjectId
   title              String
   description        String?
   durationMinutes    Int?
   goal               String?
   audience           String?
   tone               String?
+  contentAmount      String?                   @default("medium")
   slides             Json
-  themeId            String?             @db.ObjectId
-  userId             String              @db.ObjectId
-  user               User                @relation(fields: [userId], references: [id])
-  isDeleted          Boolean             @default(false)
+  themeId            String?                   @db.ObjectId
+  userId             String                    @db.ObjectId
+  user               User                      @relation(fields: [userId], references: [id])
+  isDeleted          Boolean                   @default(false)
   deletedAt          DateTime?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
   backgroundSettings BackgroundSettings?
+  headerFooterConfig GlobalHeaderFooterConfig?
   llmRequests        LLMRequestHistory[]
+  pdfGenerationTasks PdfGenerationTask[]
 }
 
 type ThemeColors {
   primaryAccent          String
   primaryAccentTextColor String?
+  secondaryAccents       String[]       @default([])
   slideBackground        String
   pageBackground         PageBackground
 }
@@ -187,19 +227,20 @@ type ThemeDesign {
 }
 
 model Theme {
-  id          String          @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  logo        String?
-  colors      ThemeColors
-  typography  ThemeTypography
-  design      ThemeDesign
-  isDefault   Boolean         @default(false)
-  isActive    Boolean         @default(true)
-  userId      String?         @db.ObjectId
-  user        User?          @relation(fields: [userId], references: [id])
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id                         String          @id @default(auto()) @map("_id") @db.ObjectId
+  name                       String
+  description                String?
+  logo                       String?
+  colors                     ThemeColors
+  typography                 ThemeTypography
+  design                     ThemeDesign
+  isDefault                  Boolean         @default(false)
+  isActive                   Boolean         @default(true)
+  defaultForNewPresentations Boolean         @default(false)
+  userId                     String?         @db.ObjectId
+  user                       User?           @relation(fields: [userId], references: [id])
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @updatedAt
 }
 
 model LLMRequestHistory {
@@ -210,6 +251,8 @@ model LLMRequestHistory {
   presentation   Presentation? @relation(fields: [presentationId], references: [id])
 
   // Request details
+  requestId   String? // Unique request ID for grouping related LLM calls
+  provider    String
   requestType String // e.g. 'generate_slides', 'generate_image'
   prompt      String // Original prompt
   timestamp   DateTime @default(now())
@@ -235,6 +278,10 @@ model LLMRequestHistory {
   functionCall      String?
   functionArguments String?
   responseContent   String?
+
+  @@index([requestId])
+  @@index([userId])
+  @@index([timestamp])
 }
 
 // Token system models
@@ -249,16 +296,16 @@ model UserTokens {
 }
 
 model TokenPackage {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  packageType String  @unique
   name        String // e.g. "Starter Pack", "Professional Pack"
   description String?
   tokens      Int // Number of tokens in the package
   price       Float // Price in USD
-  currency    String   @default("USD")
-  isActive    Boolean  @default(true)
-  isPopular   Boolean  @default(false) // For highlighting popular packages
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  currency    String  @default("RUB")
+  isActive    Boolean @default(true)
+  isPopular   Boolean @default(false) // For highlighting popular packages
+  isHidden    Boolean @default(false) // For hiding packages from the UI
 
   purchases TokenPurchase[]
 }
@@ -272,29 +319,29 @@ enum PurchaseStatus {
 }
 
 model TokenPurchase {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String       @db.ObjectId
-  user      User         @relation(fields: [userId], references: [id])
-  packageId String       @db.ObjectId
-  package   TokenPackage @relation(fields: [packageId], references: [id])
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String       @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id])
+  packageId   String       @db.ObjectId
+  packageType String       @default("welcome")
+  package     TokenPackage @relation(fields: [packageId], references: [id])
 
   // Purchase details
-  tokensAmount Int // Number of tokens purchased
-  price        Float // Amount paid
+  tokensAmount Int
+  price        Float
   currency     String         @default("USD")
   status       PurchaseStatus @default(pending)
 
   // Payment details
-  paymentProvider String? // e.g. "stripe", "paypal"
-  paymentId       String? // External payment ID
-  sessionId       String? // Payment session ID
+  paymentProvider   String?
+  paymentId         String?
+  sessionId         String?
+  cloudpaymentsTxId String? // 🔸 больше не уникальное
 
-  // Timestamps
   purchasedAt DateTime  @default(now())
-  completedAt DateTime? // When the purchase was completed
+  completedAt DateTime?
 
-  // Metadata
-  metadata Json? // Additional payment data
+  metadata Json?
 }
 
 model TokenTransaction {
@@ -325,4 +372,156 @@ enum TransactionType {
   bonus // Free tokens given
   refund // Tokens refunded
   admin_adjustment // Manual adjustment by admin
+}
+
+enum PdfGenerationStatus {
+  pending
+  in_progress
+  completed
+  failed
+}
+
+model PdfGenerationTask {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String       @db.ObjectId
+  user           User         @relation(fields: [userId], references: [id])
+  presentationId String       @db.ObjectId
+  presentation   Presentation @relation(fields: [presentationId], references: [id])
+
+  // Task details
+  status     PdfGenerationStatus @default(pending)
+  slideIndex Int? // null for all slides, number for specific slide
+
+  // Progress tracking
+  totalSlides     Int @default(0)
+  completedSlides Int @default(0)
+
+  // File details
+  fileName String? // Generated filename
+  filePath String? // Path to generated file in public folder
+  fileSize Int? // File size in bytes
+
+  // Error handling
+  errorMessage String? // Error message if failed
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime? // When processing started
+  completedAt DateTime? // When processing completed
+
+  // Metadata
+  metadata Json? // Additional task data
+}
+
+model CloudPaymentsWebhookLog {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime @default(now())
+  transactionId String
+  invoiceId     String
+  accountId     String
+  status        String
+  operationType String
+  rawData       Json // Полный JSON-пакет от CloudPayments
+  testMode      Boolean
+}
+
+// Subscription system models
+enum SubscriptionInterval {
+  monthly
+  quarterly
+  semiannual
+  daily
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
+  pending
+  failed
+}
+
+model SubscriptionPlan {
+  id          String               @id @default(auto()) @map("_id") @db.ObjectId
+  name        String // e.g. "Месячная подписка"
+  description String?
+  interval    SubscriptionInterval // monthly, quarterly, semiannual
+  price       Float // Price per billing cycle
+  currency    String               @default("RUB")
+  isActive    Boolean              @default(true)
+  isPopular   Boolean              @default(false)
+
+  // Features included in this plan
+  features Json? // JSON object with plan features
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions UserSubscription[]
+  payments      SubscriptionPayment[]
+  // @@unique([interval])
+}
+
+model UserSubscription {
+  id     String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId String           @db.ObjectId
+  user   User             @relation(fields: [userId], references: [id])
+  subscriptionPlanId String           @db.ObjectId
+  subscriptionPlan   SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+
+  // Subscription details
+  status          SubscriptionStatus @default(pending)
+  startDate       DateTime
+  endDate         DateTime
+  nextBillingDate DateTime?
+
+  // Payment tracking
+  cloudpaymentsSubscriptionId String? // если подписка пришла от CloudPayments
+  cloudpaymentsTransactionId String? // CloudPayments transaction ID
+  lastPaymentId   String? // Reference to last successful payment
+
+  // Cancellation tracking
+  cancelledAt  DateTime?
+  cancelReason String?
+
+  // Metadata for additional data
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments SubscriptionPayment[]
+
+  // @@unique([userId, planId, status]) // User can have only one active subscription per plan
+}
+
+model SubscriptionPayment {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  userSubscriptionId String           @db.ObjectId
+  userSubscription   UserSubscription @relation(fields: [userSubscriptionId], references: [id])
+
+  subscriptionPlanId String           @db.ObjectId
+  subscriptionPlan   SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+
+  invoiceId String?
+
+  // Payment details
+  amount   Float
+  currency String         @default("RUB")
+  status   PurchaseStatus @default(pending)
+
+  // CloudPayments integration
+  cloudpaymentsSubscriptionId            String? // CloudPayments transaction ID
+  cloudpaymentsTransactionId String? // CloudPayments transaction ID
+
+  paymentMethod String? // Payment method used
+
+  // Billing period this payment covers
+  billingStart DateTime
+  billingEnd   DateTime?
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  metadata Json?
 }

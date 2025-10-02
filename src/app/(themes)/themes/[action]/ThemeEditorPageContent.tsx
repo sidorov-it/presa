@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ThemeEditor } from '@/components/theme/ThemeEditor';
 import { ThemePreview } from '@/components/theme/ThemePreview';
@@ -11,25 +11,30 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/Input/Input';
 import { Label } from '@/components/ui/Label';
 import { generateId } from '@/utils/id';
+import { getSlideLayoutVars } from '@/utils/themeUtils';
 
 import styles from './page.module.css';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import createNewTheme from '@/utils/theme/createNewTheme';
 
-const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) => {
-    const params = use(props.params);
+const ThemeEditorPageContent = (props: { params: { action: string } }) => {
+    const params = props.params;
     const router = useRouter();
     const searchParams = useSearchParams();
     const { addTheme, updateTheme, loadTheme, allThemes, defaultThemes, loadThemes } = useThemeStore();
+    const previewContainerRef = useRef<HTMLDivElement>(null);
+    const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
 
     const isNewTheme = params.action === 'new';
     const existingTheme = !isNewTheme ? allThemes.find(t => t.id === params.action) : undefined;
 
-    const [theme, setTheme] = useState<Theme | undefined>(null);
+    const [theme, setTheme] = useState<Theme | undefined>();
 
     const [isLoading, setIsLoading] = useState(params.action !== 'new' && !existingTheme);
     const [notFound, setNotFound] = useState(false);
+
+    const [fontSize, setFontSize] = useState('1em');
 
     useEffect(() => {
         loadThemes().catch(err => {
@@ -66,8 +71,6 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
                 updatedAt: new Date(),
             });
         }
-
-        return existingTheme;
     }, [defaultThemes, existingTheme, isNewTheme, params.action, searchParams]);
 
     useEffect(() => {
@@ -98,6 +101,48 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
                 setTimeout(() => setIsLoading(false), delay);
             });
     }, [loadTheme, params.action, existingTheme]);
+
+    const calculateFontSize = useCallback(() => {
+        return `calc(1 * var(--card-font-scale, 1) * var(--editor-font-size, 1rem) * ${(window.innerWidth - 40 * 16) / window.innerWidth} * var(--viewport-scale-factor, 1.125))`;
+    }, []);
+
+    useEffect(() => {
+        if (theme && !notFound && !isLoading) {
+            setFontSize(calculateFontSize());
+        }
+    }, [theme, notFound, isLoading, calculateFontSize]);
+
+    useEffect(() => {
+        window.addEventListener('resize', () => {
+            setFontSize(calculateFontSize());
+        });
+        calculateFontSize();
+        return () => {
+            window.removeEventListener('resize', () => {});
+        };
+    }, []);
+
+    // Измеряем размеры контейнера превью
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (previewContainerRef.current) {
+                const rect = previewContainerRef.current.getBoundingClientRect();
+                setContainerDimensions({
+                    width: rect.width,
+                    height: rect.height,
+                });
+            }
+        };
+
+        updateDimensions();
+
+        const resizeObserver = new ResizeObserver(updateDimensions);
+        if (previewContainerRef.current) {
+            resizeObserver.observe(previewContainerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, []);
 
     const handleSave = async () => {
         try {
@@ -135,8 +180,25 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
         return <NotFoundPage />;
     }
 
+    // Рассчитываем CSS переменные для превью
+    const layoutVars = getSlideLayoutVars({
+        aspectRatio: 1.7777777777777777,
+        cardFontScale: 1,
+        renderMode: 'view',
+        containerWidth: containerDimensions.width,
+        containerHeight: containerDimensions.height,
+        useContainerScaling: true,
+    });
+
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            style={
+                {
+                    '--font-size': fontSize,
+                } as React.CSSProperties & { '--font-size': string }
+            }
+        >
             {/* Left section with editor */}
             <div className={styles.leftSection}>
                 <div className={styles.leftSectionContent}>
@@ -167,7 +229,7 @@ const ThemeEditorPageContent = (props: { params: Promise<{ action: string }> }) 
             </div>
 
             {/* Right section with preview */}
-            <div className={styles.rightSection}>
+            <div ref={previewContainerRef} className={styles.rightSection} style={layoutVars as React.CSSProperties}>
                 <ThemePreview theme={theme!} />
             </div>
         </div>

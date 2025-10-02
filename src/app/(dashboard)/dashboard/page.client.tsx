@@ -13,6 +13,7 @@ import { IPresentation } from '@/types';
 import { pluralize, formatRelativeTime } from '@/utils/helpers';
 import styles from './page.module.css';
 import { Button } from '@/components/ui/Button';
+import { Heading } from '@/components/ui/heading';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 
@@ -21,6 +22,8 @@ export default function DashboardPage() {
     const { presentations, createPresentation, loadPresentationsList, deletePresentation } = usePresentationStore();
     const { setCurrentTheme, loadThemes, defaultThemes, allThemes } = useThemeStore();
     const [userPresentations, setUserPresentations] = useState<IPresentation[]>([]);
+    const [isLoadingPresentations, setIsLoadingPresentations] = useState(true);
+    const [isLoadingThemes, setIsLoadingThemes] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [showRenameModal, setShowRenameModal] = useState(false);
@@ -36,26 +39,39 @@ export default function DashboardPage() {
     const [sortBy, setSortBy] = useState<SortOption>('updatedAt');
 
     useEffect(() => {
-        loadThemes().catch(err => {
-            console.error('Failed to load themes:', err);
-        });
+        setIsLoadingThemes(true);
+        loadThemes()
+            .catch(err => {
+                console.error('Failed to load themes:', err);
+            })
+            .finally(() => {
+                setIsLoadingThemes(false);
+            });
     }, [loadThemes]);
 
     // Fetch user's presentations from the database
     useEffect(() => {
         const loadPresentations = async () => {
             try {
-                setIsLoading(true);
+                setIsLoadingPresentations(true);
                 await loadPresentationsList();
             } catch (error) {
                 console.error('Не удалось загрузить презентации:', error);
             } finally {
-                setIsLoading(false);
+                setIsLoadingPresentations(false);
             }
         };
 
         loadPresentations();
     }, [loadPresentationsList]);
+
+    useEffect(() => {
+        if (isLoadingPresentations || isLoadingThemes) {
+            setIsLoading(true);
+        } else {
+            setIsLoading(false);
+        }
+    }, [isLoadingPresentations, isLoadingThemes]);
 
     // Update local state when presentations or sorting change
     useEffect(() => {
@@ -71,7 +87,8 @@ export default function DashboardPage() {
 
     // Handle creating an empty presentation
     const handleCreateEmptyPresentation = async () => {
-        setCurrentTheme(defaultThemes[0]);
+        const defaultTheme = defaultThemes.find(theme => theme.defaultForNewPresentations);
+        setCurrentTheme(defaultTheme);
 
         const presentationId = await createPresentation('Новая презентация');
         router.push(`/docs/${presentationId}`);
@@ -101,9 +118,13 @@ export default function DashboardPage() {
     const toggleMenu = useCallback(
         (id: string, e: React.MouseEvent) => {
             e.stopPropagation();
+            e.preventDefault();
             const isOpen = activeMenu !== id;
             setActiveMenu(isOpen ? id : null);
             if (isOpen) {
+                // удаляем старый обработчик, чтобы он не закрыл открывашееся меню
+                document.removeEventListener('click', handleDocumentClick);
+                // и добавляем новый обработчик, чтобы закрывать меню при клике вне меню
                 document.addEventListener('click', handleDocumentClick);
             }
         },
@@ -218,12 +239,16 @@ export default function DashboardPage() {
         [toggleMenu]
     );
 
-    const defaultTheme = defaultThemes[0];
+    const defaultTheme = defaultThemes.find(theme => theme.defaultForNewPresentations);
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Мои презентации</h1>
+                <Heading
+                    title="Мои презентации"
+                    description="Управление и редактирование ваших презентаций"
+                    withoutMargin={true}
+                />
                 <div className={styles.buttonGroup}>
                     <Button variant="premium" onClick={handleCreateWithAI}>
                         <FaMagic className={styles.buttonIcon} />

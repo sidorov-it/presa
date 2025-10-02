@@ -1,5 +1,5 @@
 'use client';
-import { ChartElement, Element, ImageElement, SmartLayoutElement } from '@/types';
+import { ChartElement, Element, ImageElement, SmartLayoutElement, ButtonElement } from '@/types';
 import { ViewerElement } from '@/types/elements';
 import ChartComponent from '@/elements/chart/ChartComponent';
 
@@ -11,6 +11,8 @@ import SmartLayoutView from '@/elements/smartLayout/SmartLayoutView';
 
 import { Theme } from '@/types/theme';
 import ImageComponentView from '@/elements/image/ImageComponentView';
+import { getContrastingTextColor } from '@/utils/themeUtils';
+import { CSSProperties } from 'react';
 
 interface ElementViewerProps {
     element: Element & ViewerElement;
@@ -19,6 +21,9 @@ interface ElementViewerProps {
     slideBackground?: string;
     primaryAccentColor?: string;
     theme: Theme;
+    isTable?: boolean;
+    blockFillColorsType?: string;
+    blockBackgroundCustomColors?: string[];
 }
 
 const ElementViewer = ({
@@ -27,7 +32,10 @@ const ElementViewer = ({
     layoutId,
     slideBackground,
     primaryAccentColor,
+    blockFillColorsType,
+    blockBackgroundCustomColors,
     theme,
+    isTable,
 }: ElementViewerProps) => {
     // Get element-specific styles
     // const getElementStyles = () => {
@@ -134,7 +142,66 @@ const ElementViewer = ({
                         layoutId={layoutId}
                         tiptapRefs={null}
                         isFocused={false}
+                        blockFillColorsType={blockFillColorsType}
+                        blockBackgroundCustomColors={blockBackgroundCustomColors}
+                        primaryAccentColor={primaryAccentColor}
+                        backgroundBlockFillType={theme.design.blocks.backgroundBlockFillType}
                     />
+                );
+            }
+
+            case ElementType.BUTTON: {
+                const btnElement = element as ButtonElement;
+                const style: CSSProperties = {
+                    display: 'flex',
+                    gap: '0.5rem',
+                    flexWrap: 'wrap',
+                    width: '100%',
+                };
+
+                switch (btnElement.alignment) {
+                    case 'left':
+                        style.justifyContent = 'flex-start';
+                        break;
+                    case 'center':
+                        style.justifyContent = 'center';
+                        break;
+                    case 'right':
+                        style.justifyContent = 'flex-end';
+                        break;
+                    default:
+                        style.justifyContent = 'flex-start';
+                        break;
+                }
+
+                return (
+                    <div style={style}>
+                        {btnElement.items.map(item => {
+                            const style: { [key: string]: string } = {};
+
+                            if (item.buttonStyle === 'filled') {
+                                if (item?.color) {
+                                    style.backgroundColor = item?.color;
+                                    style['--presentation-text-color'] = getContrastingTextColor(item?.color);
+                                } else {
+                                    style.backgroundColor = 'var(--presentation-primary-accent)';
+                                    style['--presentation-text-color'] =
+                                        'var(--presentation-primary-accent-contrast-text-color)';
+                                }
+                            } else {
+                                style.backgroundColor = 'transparent';
+                                style['--presentation-text-color'] = 'var(--presentation-primary-accent)';
+                                style.border = `1px solid var(--presentation-primary-accent)`;
+                            }
+                            style.borderRadius = 'var(--presentation-slide-border-radius)';
+
+                            return (
+                                <button key={item.id} className={styles.viewerButton} style={style}>
+                                    <span dangerouslySetInnerHTML={{ __html: item.text }} />
+                                </button>
+                            );
+                        })}
+                    </div>
                 );
             }
 
@@ -161,11 +228,15 @@ const ElementViewer = ({
                 const blockType = boxElement.iconType || element.elementVariant || 'info-box';
 
                 // Get colors using new logic
-                const blockColors = getBlockColors(primaryAccentColor!, blockType, {
-                    blockBgColor: boxElement.customBackgroundColor || boxElement.backgroundColor,
-                    iconColor: (boxElement as any).iconColor,
-                    textColor: (boxElement as any).textColor,
-                });
+                const blockColors = getBlockColors(
+                    slideBackground || theme?.colors.slideBackground || '#000000',
+                    blockType,
+                    {
+                        blockBgColor: boxElement.customBackgroundColor || boxElement.backgroundColor,
+                        iconColor: (boxElement as any).iconColor,
+                        textColor: (boxElement as any).textColor,
+                    }
+                );
 
                 // Get icon component
                 const IconInfo = BoxIconOptions.find(option => option.id === boxElement.iconType);
@@ -178,7 +249,7 @@ const ElementViewer = ({
                             // ...getElementStyles(),
                             display: 'flex',
                             flexDirection: 'row',
-                            gap: '1rem',
+                            gap: '1em',
                             padding: '1.25em',
                             backgroundColor: blockColors.blockBgColor,
                             color: blockColors.textColor,
@@ -212,11 +283,11 @@ const ElementViewer = ({
         <div
             style={{
                 // ...getElementStyles(),
-                margin: '0.9em 0',
+                margin: isTable ? '0.4em 0 0.3em' : '0',
                 zIndex: 0,
                 transform: element.transform || 'none',
+                fontSize: 'var(--font-size)',
             }}
-            // className="element-viewer"
         >
             {renderElementContent()}
         </div>

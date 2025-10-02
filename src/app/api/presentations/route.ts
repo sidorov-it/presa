@@ -1,3 +1,4 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -8,7 +9,7 @@ import { getNewEditorElement } from '@/utils/getNewEditorElement';
 import { parsePresentations } from '@/utils/json';
 
 // Get list of presentations for a user (lightweight version for dashboard)
-export async function GET() {
+async function GETHandler() {
     try {
         const session = await getServerSession(authOptions);
 
@@ -51,7 +52,7 @@ export async function GET() {
 }
 
 // Create a new presentation
-export async function POST(request: NextRequest) {
+async function POSTHandler(request: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -125,3 +126,5 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Error creating presentation' }, { status: 500 });
     }
 }
+export const GET = withLogging(GETHandler);
+export const POST = withLogging(POSTHandler);

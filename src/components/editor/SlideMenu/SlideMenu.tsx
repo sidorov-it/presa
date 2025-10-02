@@ -14,14 +14,7 @@ import {
 } from '@/components/icons';
 import RowTableMenu from './RowTableMenu/RowTableMenu';
 import ColumnTableMenu from './ColumnTableMenu/ColumnTableMenu';
-import {
-    useMenuIsOpen,
-    useMenuStore,
-    useMenuSelectedElement,
-    useMenuSelectedLayout,
-    useMenuSelectedSlide,
-    useMenuSelectedCell,
-} from '@/store/menuStore';
+import { useIsContextMenuOpen, useUIStateStore } from '@/store/uiStateStore';
 import { usePresentationStore } from '@/store/presentationStore';
 import { TipTapRefs } from '@/types';
 import TableMenu from './TableMenu/TableMenu';
@@ -30,11 +23,22 @@ import { getElementMenuComponent } from '@/utils/getElementMenuComponent';
 
 const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tiptapRefs }) => {
     const {
+        currentPresentationId,
+        selectedSlideId,
+        selectedLayoutId,
+        selectedElementId,
+        selectedCellId,
+        contextMenuColumnIndex,
+        contextMenuTableColumnIndex,
+        contextMenuTableRowIndex,
+        closeContextMenu,
+    } = useUIStateStore();
+
+    const {
         duplicateSlide,
         deleteSlide,
         duplicateElement,
         deleteElement,
-        editElement,
         getElement,
         addColumnLeft,
         addColumnRight,
@@ -46,30 +50,30 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
         getCell,
         getSlide,
         mergeSlideWithPrevious,
-    } = useMenuStore();
+    } = usePresentationStore();
 
     const { activeEditor } = useEditorStore();
 
     const [isTable, setIsTable] = useState(false);
 
-    const slideId = useMenuSelectedSlide();
-    const layoutId = useMenuSelectedLayout();
-    const cellId = useMenuSelectedCell();
-    const elementId = useMenuSelectedElement();
-    const presentationId = useMenuStore(state => state.presentationId);
+    const slideId = selectedSlideId;
+    const layoutId = selectedLayoutId;
+    const cellId = selectedCellId;
+    const elementId = selectedElementId;
+    const presentationId = currentPresentationId;
     const presentation = usePresentationStore(state => state.getPresentation(presentationId ?? ''));
-    const elementType = useMenuStore(state => state.elementType);
-    const isOpen = useMenuIsOpen();
+    const elementType = useUIStateStore(state => state.contextMenuElementType);
+    const isOpen = useIsContextMenuOpen();
 
-    const isTextEditor = useMenuStore(state => state.isTextEditor);
-    const isInTable = useMenuStore(state => state.isInTable);
+    const isTextEditor = useUIStateStore(state => state.isContextMenuOnTextEditor);
+    const isInTable = useUIStateStore(state => state.isContextMenuInTable);
 
-    const tableRowIndex = useMenuStore(state => state.tableRowIndex);
-    const tableColumnIndex = useMenuStore(state => state.tableColumnIndex);
-    const columnIndex = useMenuStore(state => state.columnIndex);
+    const tableRowIndex = contextMenuTableRowIndex;
+    const tableColumnIndex = contextMenuTableColumnIndex;
+    const columnIndex = contextMenuColumnIndex;
 
-    const cell = getCell(slideId, layoutId, cellId);
-    const element = getElement(slideId, layoutId, elementId);
+    const cell = getCell(presentationId ?? '', slideId ?? '', layoutId ?? '', cellId ?? '');
+    const element = getElement(presentationId ?? '', slideId ?? '', layoutId ?? '', elementId ?? '');
 
     useEffect(() => {
         if (!presentationId || !slideId || !layoutId) return;
@@ -83,7 +87,7 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
 
     let slideIndex = 0;
     if (elementType === 'slide') {
-        const slide = getSlide(slideId);
+        const slide = getSlide(presentationId ?? '', slideId ?? '');
         if (slide) {
             slideIndex = presentation?.slides.findIndex(s => s.id === slide.id) ?? 0;
         }
@@ -153,50 +157,60 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     }, [isOpen, slideId, elementId, elementType, layoutId, tableRowIndex, tableColumnIndex, cell, isInTable]);
 
     const handleAddCellLeft = useCallback(() => {
-        if (Number.isInteger(columnIndex)) {
-            addColumnLeft(columnIndex!);
-            useMenuStore.getState().closeMenu();
+        if (Number.isInteger(columnIndex) && presentationId && slideId && layoutId) {
+            addColumnLeft(presentationId, slideId, layoutId, columnIndex!);
+            closeContextMenu();
         }
-    }, [columnIndex, addColumnLeft]);
+    }, [columnIndex, addColumnLeft, presentationId, slideId, layoutId, closeContextMenu]);
 
     const handleAddCellRight = useCallback(() => {
-        if (Number.isInteger(columnIndex)) {
-            addColumnRight(columnIndex!);
-            useMenuStore.getState().closeMenu();
+        if (Number.isInteger(columnIndex) && presentationId && slideId && layoutId) {
+            addColumnRight(presentationId, slideId, layoutId, columnIndex!);
+            closeContextMenu();
         }
-    }, [columnIndex, addColumnRight]);
+    }, [columnIndex, addColumnRight, presentationId, slideId, layoutId, closeContextMenu]);
 
     const handleDuplicateColumn = useCallback(() => {
-        duplicateColumn();
-        useMenuStore.getState().closeMenu();
-    }, [duplicateColumn]);
+        if (presentationId && slideId && layoutId && cellId) {
+            duplicateColumn(presentationId, slideId, layoutId, cellId);
+            closeContextMenu();
+        }
+    }, [duplicateColumn, presentationId, slideId, layoutId, cellId, closeContextMenu]);
 
     const handleAlignColumnTop = useCallback(() => {
-        alignColumnTop();
-        useMenuStore.getState().closeMenu();
-    }, [alignColumnTop]);
+        if (presentationId && slideId && layoutId && cellId) {
+            alignColumnTop(presentationId, slideId, layoutId, cellId);
+            closeContextMenu();
+        }
+    }, [alignColumnTop, presentationId, slideId, layoutId, cellId, closeContextMenu]);
 
     const handleAlignColumnCenter = useCallback(() => {
-        alignColumnCenter();
-        useMenuStore.getState().closeMenu();
-    }, [alignColumnCenter]);
+        if (presentationId && slideId && layoutId && cellId) {
+            alignColumnCenter(presentationId, slideId, layoutId, cellId);
+            closeContextMenu();
+        }
+    }, [alignColumnCenter, presentationId, slideId, layoutId, cellId, closeContextMenu]);
 
     const handleAlignColumnBottom = useCallback(() => {
-        alignColumnBottom();
-        useMenuStore.getState().closeMenu();
-    }, [alignColumnBottom]);
+        if (presentationId && slideId && layoutId && cellId) {
+            alignColumnBottom(presentationId, slideId, layoutId, cellId);
+            closeContextMenu();
+        }
+    }, [alignColumnBottom, presentationId, slideId, layoutId, cellId, closeContextMenu]);
 
     const handleDeleteCell = useCallback(() => {
-        deleteCell();
-        useMenuStore.getState().closeMenu();
-    }, [deleteCell]);
+        if (presentationId && slideId && layoutId && cellId) {
+            deleteCell(presentationId, slideId, layoutId, cellId);
+            closeContextMenu();
+        }
+    }, [deleteCell, presentationId, slideId, layoutId, cellId, closeContextMenu]);
 
     const handleMergeSlide = useCallback(() => {
-        if (slideId) {
-            mergeSlideWithPrevious();
-            useMenuStore.getState().closeMenu();
+        if (slideId && presentationId) {
+            mergeSlideWithPrevious(presentationId, slideId);
+            closeContextMenu();
         }
-    }, [slideId, mergeSlideWithPrevious]);
+    }, [slideId, mergeSlideWithPrevious, presentationId, closeContextMenu]);
 
     // Render different menu items based on element type
     const renderMenuItems = () => {
@@ -204,16 +218,47 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
             case 'element':
                 return (
                     <>
-                        <MenuItem icon={<EditIcon />} label="Редактировать" onClick={editElement} />
-                        <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={duplicateElement} />
-                        <MenuItem icon={<DeleteIcon />} label="Удалить" onClick={deleteElement} color="#f00" />
+                        <MenuItem icon={<EditIcon />} label="Редактировать" onClick={() => closeContextMenu()} />
+                        <MenuItem
+                            icon={<DuplicateIcon />}
+                            label="Дублировать"
+                            onClick={() => {
+                                if (presentationId && slideId && elementId) {
+                                    duplicateElement(presentationId, slideId, elementId);
+                                    closeContextMenu();
+                                }
+                            }}
+                        />
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Удалить"
+                            onClick={() => {
+                                if (presentationId && slideId && elementId) {
+                                    const { findLayoutByElementId } = usePresentationStore.getState();
+                                    const layout = findLayoutByElementId(elementId);
+                                    if (layout) {
+                                        deleteElement(presentationId, slideId, layout.id, elementId);
+                                        closeContextMenu();
+                                    }
+                                }
+                            }}
+                            color="#f00"
+                        />
                     </>
                 );
             case 'cell':
                 return (
                     <>
-                        <MenuItem icon={<AddColumnLeftIcon />} label="Добавить ячейку слева" onClick={handleAddCellLeft} />
-                        <MenuItem icon={<AddColumnRightIcon />} label="Добавить ячейку справа" onClick={handleAddCellRight} />
+                        <MenuItem
+                            icon={<AddColumnLeftIcon />}
+                            label="Добавить ячейку слева"
+                            onClick={handleAddCellLeft}
+                        />
+                        <MenuItem
+                            icon={<AddColumnRightIcon />}
+                            label="Добавить ячейку справа"
+                            onClick={handleAddCellRight}
+                        />
                         <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={handleDuplicateColumn} />
                         <MenuItem
                             icon={<AlignTopIcon />}
@@ -233,15 +278,41 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
                             onClick={handleAlignColumnBottom}
                             active={cell?.alignment === 'bottom'}
                         />
-                        <MenuItem icon={<DeleteIcon />} label="Удалить ячейку" onClick={handleDeleteCell} color="#f00" />
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Удалить ячейку"
+                            onClick={handleDeleteCell}
+                            color="#f00"
+                        />
                     </>
                 );
             case 'slide':
                 return (
                     <>
-                        <MenuItem icon={<DuplicateIcon />} label="Дублировать" onClick={duplicateSlide} />
-                        {slideIndex > 0 && <MenuItem icon={<MergeIcon />} label="Объединить" onClick={handleMergeSlide} />}
-                        <MenuItem icon={<DeleteIcon />} label="Удалить" onClick={deleteSlide} color="#f00" />
+                        <MenuItem
+                            icon={<DuplicateIcon />}
+                            label="Дублировать"
+                            onClick={() => {
+                                if (presentationId && slideId) {
+                                    duplicateSlide(presentationId, slideId);
+                                    closeContextMenu();
+                                }
+                            }}
+                        />
+                        {slideIndex > 0 && (
+                            <MenuItem icon={<MergeIcon />} label="Объединить" onClick={handleMergeSlide} />
+                        )}
+                        <MenuItem
+                            icon={<DeleteIcon />}
+                            label="Удалить"
+                            onClick={() => {
+                                if (presentationId && slideId) {
+                                    deleteSlide(presentationId, slideId);
+                                    closeContextMenu();
+                                }
+                            }}
+                            color="#f00"
+                        />
                     </>
                 );
             case 'row':
@@ -276,6 +347,10 @@ const SlideMenu: React.FC<{ tiptapRefs: MutableRefObject<TipTapRefs> }> = ({ tip
     }
 
     if (elementType === 'chart') {
+        return null;
+    }
+
+    if (elementType === 'smart-layout-item') {
         return null;
     }
 

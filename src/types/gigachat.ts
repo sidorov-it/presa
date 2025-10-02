@@ -1,6 +1,6 @@
 import { Agent } from 'https';
-import { TemplateElement } from './templates';
-import { TextType } from '.';
+import { TemplateElement, TextType } from '@/types/templates';
+import { ElementType } from '@/types/elements';
 
 export interface GigaChatConfig {
     credentials: string;
@@ -34,8 +34,15 @@ export interface SlotKeyMapping {
     elementIndex: number;
     originalSlot: string;
     llmHints?: TemplateElement['llmHints'];
-    items?: Array<Record<string, TemplateElement['llmHints']>>;
+    items?: Array<{
+        key: string;
+        originalKey: string;
+        type: string;
+        description: string;
+        contextRules?: string[];
+    }>;
     column?: number;
+    elementTypeId?: ElementType;
     textType?: TextType;
 }
 
@@ -43,4 +50,5 @@ export interface LLMRequestContext {
     presentationId?: string;
     slideId?: string;
     userId: string;
+    requestId: string;
 }

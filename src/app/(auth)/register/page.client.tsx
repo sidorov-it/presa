@@ -11,24 +11,49 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [nameError, setNameError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('Пароль должен содержать не менее 8 символов');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const handleNameChange = (value: string) => {
+        setName(value);
+        setNameError(value.trim() ? '' : 'Имя обязательно');
+    };
+
+    const handleEmailChange = (value: string) => {
+        setEmail(value);
+        setEmailError(emailRegex.test(value) ? '' : 'Введите корректный email');
+    };
+
+    const handlePasswordChange = (value: string) => {
+        setPassword(value);
+        setPasswordError(value.length >= 8 ? '' : 'Пароль должен содержать не менее 8 символов');
+        if (confirmPassword) {
+            setConfirmPasswordError(value === confirmPassword ? '' : 'Пароли не совпадают');
+        }
+    };
+
+    const handleConfirmPasswordChange = (value: string) => {
+        setConfirmPassword(value);
+        setConfirmPasswordError(value === password ? '' : 'Пароли не совпадают');
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!name || !email || !password || !confirmPassword) {
-            setError('Пожалуйста, заполните все поля');
+        if (!agreeToTerms) {
+            setError('Необходимо согласиться с правилами и дать согласие на обработку персональных данных');
             return;
         }
 
-        if (password !== confirmPassword) {
-            setError('Пароли не совпадают');
-            return;
-        }
-
-        if (password.length < 8) {
-            setError('Пароль должен содержать не менее 8 символов');
+        if (!isFormValid) {
+            setError('Пожалуйста, исправьте ошибки в форме');
             return;
         }
 
@@ -59,6 +84,17 @@ export default function RegisterPage() {
         }
     };
 
+    const isFormValid =
+        !nameError &&
+        !emailError &&
+        !passwordError &&
+        !confirmPasswordError &&
+        name !== '' &&
+        email !== '' &&
+        password !== '' &&
+        confirmPassword !== '' &&
+        agreeToTerms;
+
     return (
         <div className={styles.container}>
             <div className={styles.formWrapper}>
@@ -85,10 +121,11 @@ export default function RegisterPage() {
                                 autoComplete="name"
                                 required
                                 value={name}
-                                onChange={e => setName(e.target.value)}
-                                className={`${styles.input} ${styles.inputFirst}`}
+                                onChange={e => handleNameChange(e.target.value)}
+                                className={`${styles.input} ${styles.inputFirst} ${nameError ? styles.inputError : ''}`}
                                 placeholder="Имя"
                             />
+                            {nameError && <p className={styles.fieldError}>{nameError}</p>}
                         </div>
                         <div>
                             <label htmlFor="email-address" className="sr-only">
@@ -101,10 +138,11 @@ export default function RegisterPage() {
                                 autoComplete="email"
                                 required
                                 value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                className={styles.input}
+                                onChange={e => handleEmailChange(e.target.value)}
+                                className={`${styles.input} ${emailError ? styles.inputError : ''}`}
                                 placeholder="Электронная почта"
                             />
+                            {emailError && <p className={styles.fieldError}>{emailError}</p>}
                         </div>
                         <div>
                             <label htmlFor="password" className="sr-only">
@@ -117,10 +155,11 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 required
                                 value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                className={styles.input}
+                                onChange={e => handlePasswordChange(e.target.value)}
+                                className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
                                 placeholder="Пароль"
                             />
+                            {passwordError && <p className={styles.fieldError}>{passwordError}</p>}
                         </div>
                         <div>
                             <label htmlFor="confirm-password" className="sr-only">
@@ -133,17 +172,41 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 required
                                 value={confirmPassword}
-                                onChange={e => setConfirmPassword(e.target.value)}
-                                className={`${styles.input} ${styles.inputLast}`}
+                                onChange={e => handleConfirmPasswordChange(e.target.value)}
+                                className={`${styles.input} ${styles.inputLast} ${confirmPasswordError ? styles.inputError : ''}`}
                                 placeholder="Подтвердить пароль"
                             />
+                            {confirmPasswordError && <p className={styles.fieldError}>{confirmPasswordError}</p>}
                         </div>
+                    </div>
+
+                    <div className={styles.checkboxGroup}>
+                        <input
+                            id="agree-terms"
+                            name="agree-terms"
+                            type="checkbox"
+                            checked={agreeToTerms}
+                            onChange={e => setAgreeToTerms(e.target.checked)}
+                            className={styles.checkbox}
+                            required
+                        />
+                        <label htmlFor="agree-terms" className={styles.checkboxLabel}>
+                            Создавая аккаунт, я соглашаюсь с{' '}
+                            <Link href="https://slydle.ru/terms.html" className={styles.checkboxLink} target="_blank">
+                                пользовательским соглашением
+                            </Link>{' '}
+                            и даю согласие на{' '}
+                            <Link href="https://slydle.ru/privacy.html" className={styles.checkboxLink} target="_blank">
+                                обработку персональных данных
+                            </Link>
+                            .
+                        </label>
                     </div>
 
                     {error && <div className={styles.error}>{error}</div>}
 
                     <div>
-                        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                        <button type="submit" className={styles.submitButton} disabled={isLoading || !isFormValid}>
                             {isLoading ? 'Создаем аккаунт...' : 'Создать аккаунт'}
                         </button>
                     </div>

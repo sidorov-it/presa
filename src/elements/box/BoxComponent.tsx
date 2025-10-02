@@ -2,7 +2,7 @@ import { BoxElement, TipTapRefs } from '@/types';
 import { Theme } from '@/types/theme';
 import { Box } from '@chakra-ui/react';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
-import { CSSProperties, RefObject, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, RefObject, useMemo } from 'react';
 import { BoxIconOptions } from '@/components/editor/Menus/BubbleMenus/BoxBubbleMenu/BoxIconOptions';
 import styles from './Box.module.css';
 import { getBlockColors } from '@/utils/colors';
@@ -17,6 +17,7 @@ interface BoxComponentProps {
     tiptapRefs: RefObject<TipTapRefs>;
     dragHandleRef?: RefObject<HTMLDivElement>;
     theme: Theme | null | undefined;
+    slideBackground?: string;
     onContentChange?: (content: string) => void;
 }
 
@@ -28,29 +29,30 @@ export default function BoxComponent({
     tiptapRefs,
     dragHandleRef,
     theme,
+    slideBackground,
     onContentChange,
 }: BoxComponentProps) {
     const isReadOnly = useReadOnly();
     const { elementTypeId, iconType, customBackgroundColor } = element;
 
-    const [fontSize, setFontSize] = useState<string>('1.125em');
-
-    useEffect(() => {
-        const newFontSize = tiptapRefs.current?.editors[element.id]?.editor.getAttributes('textStyle').fontSize;
-        if (typeof newFontSize === 'string') {
-            setFontSize(newFontSize);
-        } else if (newFontSize) {
-            setFontSize(newFontSize?.fontSize);
-        }
-    }, [element.content, element.id, tiptapRefs]);
-
     // const slideBgColor = theme?.colors.slideBackground;
     const { blockBgColor, iconColor, textColor } = useMemo(
         () =>
-            getBlockColors(theme?.colors.primaryAccent || '#000000', iconType || 'info-box', {
-                blockBgColor: customBackgroundColor,
+            getBlockColors(slideBackground || theme?.colors.slideBackground || '#000000', iconType || 'info-box', {
+                // blockBgColor: customBackgroundColor,
+                blockBgColor: element.customBackgroundColor || element.backgroundColor,
+                iconColor: (element as any).iconColor,
+                textColor: (element as any).textColor,
             }),
-        [customBackgroundColor, iconType, theme]
+        [
+            customBackgroundColor,
+            iconType,
+            theme,
+            element.customBackgroundColor,
+            element.backgroundColor,
+            element.iconColor,
+            element.textColor,
+        ]
     );
 
     const elementConfig = getElementConfig(elementTypeId);
@@ -64,6 +66,7 @@ export default function BoxComponent({
             className={styles.box}
             style={
                 {
+                    color: textColor,
                     '--presentation-text-color': textColor,
                     '--presentation-block-background': customBackgroundColor || blockBgColor || '#FFFFFF',
                     '--presentation-block-background-custom-type': 'primary',
@@ -73,9 +76,11 @@ export default function BoxComponent({
             }
         >
             {IconComponent && (
-                <span className={styles.icon} style={{ fontSize: fontSize }}>
-                    <IconComponent color={iconColor} width={1.25} height={1.25} />
-                </span>
+                <div className={styles.iconContainer}>
+                    <span className={styles.icon} style={{ fontSize: 'calc(1.125rem * var(--font-scale, 1))' }}>
+                        <IconComponent color={iconColor} width={1.25} height={1.25} />
+                    </span>
+                </div>
             )}
             <Tiptap
                 key={element.id}
@@ -92,6 +97,7 @@ export default function BoxComponent({
                 onContentChange={content => {
                     onContentChange?.(content);
                 }}
+                isInnerTiptap={true}
             />
         </Box>
     );

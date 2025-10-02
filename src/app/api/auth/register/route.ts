@@ -1,10 +1,13 @@
+import { withLogging } from '@/hooks/withLoging';
 import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
-import { sendEmail } from '@/lib/email';
+import { PurchaseStatus } from '@prisma/client';
+import { sendVerificationEmail, sendRegistrationNotification } from '@/server/email';
+import { v4 as uuidv4 } from 'uuid';
 
-export async function POST(req: NextRequest) {
+async function POSTHandler(req: NextRequest) {
     try {
         // Parse the request body
         const { name, email, password } = await req.json();
@@ -29,27 +32,74 @@ export async function POST(req: NextRequest) {
 
         // Hash the password
         const hashedPassword = await hashPassword(password);
+        const verificationToken = uuidv4();
+        const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-        // Create new user
-        const user = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password: hashedPassword,
-                isVerified: true, // For simplicity, we're setting users as verified by default
-                emailPreferences: { emailUpdates: true },
+        const newUser = await prisma.$transaction(
+            async (tx: any) => {
+                const user = await tx.user.create({
+                    data: {
+                        name,
+                        email,
+                        passwordHash: hashedPassword,
+                        verificationToken,
+                        verificationTokenExpires: verificationExpires,
+                        isVerified: false,
+                        emailPreferences: { emailUpdates: true },
+                        createdVia: 'email',
+                    },
+                });
+
+                const welcomePackage = await tx.tokenPackage.findFirst({
+                    where: { packageType: 'welcome' },
+                });
+                if (!welcomePackage) {
+                    throw new Error('Welcome package not found');
+                }
+
+                await tx.tokenPurchase.create({
+                    data: {
+                        userId: user.id,
+                        packageId: welcomePackage.id,
+                        packageType: 'welcome',
+                        tokensAmount: 200,
+                        price: 0,
+                        currency: 'RUB',
+                        status: PurchaseStatus.completed,
+                        paymentProvider: '',
+                        paymentId: 'welcome',
+                        sessionId: 'welcome',
+                        purchasedAt: new Date(),
+                        completedAt: new Date(),
+                        metadata: {
+                            welcomePackage: true,
+                        },
+                    },
+                });
+                await tx.userTokens.create({
+                    data: {
+                        userId: user.id,
+                        balance: 200,
+                        totalUsed: 0,
+                    },
+                });
+
+                return user;
             },
-        });
-
+            {
+                timeout: 1000000,
+            }
+        );
+        // Create new user
         // Send welcome email (errors are logged but do not block registration)
         try {
-            await sendEmail({
-                to: user.email,
-                subject: 'Добро пожаловать в slydle.ru',
-                text: `Здравствуйте, ${user.name}! Вы успешно зарегистрировались на slydle.ru.`,
+            await sendVerificationEmail(newUser.email, verificationToken);
+            await sendRegistrationNotification({
+                name: newUser.name,
+                email: newUser.email,
             });
         } catch (emailError) {
-            logger.error('Failed to send registration email:', emailError);
+            logger.error('Failed to send registration email notifications:', emailError);
         }
 
         // Return success response (without sensitive data)
@@ -57,9 +107,9 @@ export async function POST(req: NextRequest) {
             {
                 message: 'Пользователь успешно зарегистрирован',
                 user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
+                    id: newUser.id,
+                    name: newUser.name,
+                    email: newUser.email,
                 },
             },
             { status: 201 }
@@ -69,3 +119,4 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Внутренняя ошибка сервера' }, { status: 500 });
     }
 }
+export const POST = withLogging(POSTHandler);

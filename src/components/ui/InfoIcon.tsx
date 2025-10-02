@@ -11,7 +11,12 @@ interface InfoIconProps {
 export const InfoIcon = ({ tooltip, className }: InfoIconProps) => {
     return (
         <Tippy content={tooltip} theme="light" placement="top" arrow={true} maxWidth={300} className={styles.tooltip}>
-            <button type="button" className={`${styles.button}${className ? ` ${className}` : ''}`} aria-label="Информация" tabIndex={0}>
+            <button
+                type="button"
+                className={`${styles.button}${className ? ` ${className}` : ''}`}
+                aria-label="Информация"
+                tabIndex={0}
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"

@@ -13,13 +13,15 @@ export class TemplateTransformers {
             Icon: template.ui.icon,
             elementVariant: template.id,
             templateConfig: {
-                contentAlignment: 'center',
+                contentAlignment: template.contentAlignment || 'center',
+                elementVariant: template.id,
                 layouts: template.layouts.map(layout => ({
                     layout: layout.layout,
                     columnsCount: layout.columnsCount,
                     rowsCount: layout.rowsCount,
                     elements: layout.elements.map(elem => ({
                         elementTypeId: elem.elementTypeId,
+                        elementVariant: elem.elementVariant,
                         props: elem.props,
                         row: elem.row,
                         column: elem.column,
@@ -48,6 +50,16 @@ export class TemplateTransformers {
     }
 }
 
+const templatesCategoriesName = {
+    'image-text-templates': 'Изображения и текст',
+    'column-templates': 'Колонки',
+    'list-templates': 'Списки',
+    'image-templates': 'Колонки с изображениями',
+    'text-templates': 'Умные блоки',
+    'chart-templates': 'Графики',
+    'intro-templates': 'Вступление',
+    'final-templates': 'Заключение',
+};
 // Построители меню и конфигураций
 export class TemplateBuilders {
     // Построение структуры меню
@@ -59,7 +71,7 @@ export class TemplateBuilders {
             if (!categories.has(template.ui.category)) {
                 categories.set(template.ui.category, {
                     id: template.ui.category,
-                    label: template.ui.label,
+                    label: templatesCategoriesName[template.ui.category as keyof typeof templatesCategoriesName],
                     elements: [],
                 });
             }
@@ -72,7 +84,6 @@ export class TemplateBuilders {
             id: 'slide-templates',
             label: 'Шаблоны слайдов',
             Icon: LuLayoutDashboard,
-            isSlideTemplate: true,
             subCategories: Array.from(categories.values()),
         };
     }

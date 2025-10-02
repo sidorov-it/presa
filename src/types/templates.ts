@@ -59,6 +59,7 @@ export interface SlideTemplateCore {
     id: string;
     name: string;
     disabled?: boolean;
+    contentAlignment?: 'top' | 'center' | 'bottom';
     layouts: Array<{
         layout: LayoutType;
         columnsCount: number;
@@ -90,7 +91,6 @@ export interface MenuCategory {
     subCategories?: MenuSubCategory[];
     elements?: MenuItem[];
     excludeFromTable?: boolean;
-    isSlideTemplate?: boolean;
 }
 
 export interface MenuSubCategory {
@@ -106,6 +106,5 @@ export interface MenuItem {
     Icon?: IconType;
     props?: Record<string, any>;
     elementVariant?: string;
-    isSlideTemplate?: boolean;
     templateConfig?: SlideTemplateConfig;
 }

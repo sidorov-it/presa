@@ -1,8 +1,7 @@
-
 import { MenuCategory } from '@/types/templates';
 import { TemplateBuilders } from '@/templates/transformers';
 import { ElementRegistry } from './commonRegisrty';
-import { LuBox, LuType, LuImage, LuChartColumn } from 'react-icons/lu'
+import { LuBox, LuType, LuImage, LuChartColumn } from 'react-icons/lu';
 
 export const SlideTemplates: MenuCategory = TemplateBuilders.buildMenuRegistry();
 
@@ -61,6 +60,11 @@ export const menuRegistry: MenuCategory[] = [
                     ElementRegistry.SuccessBox,
                     ElementRegistry.QuestionBox,
                 ],
+            },
+            {
+                id: 'interactive',
+                label: 'Интерактивные',
+                elements: [ElementRegistry.Buttons],
             },
         ],
     },

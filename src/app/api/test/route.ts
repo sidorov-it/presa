@@ -1,4 +1,6 @@
-import { NextResponse } from 'next/server';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs/promises';
 import fsSync from 'fs';
@@ -7,9 +9,12 @@ import https from 'https';
 import { v4 as uuidv4 } from 'uuid';
 import { IncomingMessage } from 'http';
 import themes from './themes.json';
+import defaultTheme from './defaultTheme.json';
 import { FONT_URLS } from '@/utils/fontLoader';
+import { Theme } from '@prisma/client';
+import { getUploadPath } from '@/utils/uploadPath';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
+const UPLOAD_DIR = getUploadPath();
 
 // Helper function to get a random font from available fonts
 function getRandomFont(): string {
@@ -35,8 +40,8 @@ function getFirstColor(colorString: string): string {
 
 // Helper function to download image
 async function downloadImage(url: string): Promise<string> {
-    const filename = `${uuidv4()}.${url.split('.').pop()}`;
-    const filePath = path.join(UPLOAD_DIR, filename);
+    const filename = uuidv4();
+    // const filePath = path.join(UPLOAD_DIR, filename);
 
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
 
@@ -48,11 +53,16 @@ async function downloadImage(url: string): Promise<string> {
                     return;
                 }
 
-                const fileStream = fsSync.createWriteStream(filePath);
+                const contentType = response.headers['content-type'];
+
+                const fileExtension = contentType?.split('/')[1];
+                const newFilePath = path.join(UPLOAD_DIR, `${filename}.${fileExtension}`);
+
+                const fileStream = fsSync.createWriteStream(newFilePath);
                 response.pipe(fileStream);
 
                 fileStream.on('finish', () => {
-                    resolve(`/uploads/${filename}`);
+                    resolve(`/uploads/${filename}.${fileExtension}`);
                 });
 
                 fileStream.on('error', (error: Error) => {
@@ -65,7 +75,7 @@ async function downloadImage(url: string): Promise<string> {
     });
 }
 
-async function transformTheme(basicTheme: any) {
+async function transformTheme(basicTheme: any): Promise<Theme> {
     // Handle background image if exists
     let pageBackgroundImageUrl = '';
     if (basicTheme.pageBackgroundImage) {
@@ -78,11 +88,12 @@ async function transformTheme(basicTheme: any) {
 
     return {
         name: basicTheme.name,
-        description: `Theme imported from Gamma: ${basicTheme.name}`,
+        description: basicTheme.name || '',
         colors: {
             primaryAccent: getFirstColor(basicTheme.primaryAccent),
             primaryAccentTextColor: '#FFFFFF', // Default white text on accent
             slideBackground: basicTheme.cardColor,
+            secondaryAccents: basicTheme.secondaryColors || [],
             pageBackground: {
                 type: pageBackgroundImageUrl ? 'image' : 'color',
                 color: basicTheme.pageBackground?.value || '#FFFFFF',
@@ -99,7 +110,7 @@ async function transformTheme(basicTheme: any) {
             bodyFont: getValidFont(basicTheme.bodyFont || 'Inter'),
             bodyWeight: 400,
             bodyColor: getFirstColor(basicTheme.bodyColor),
-            bodyLineHeight: 1.25,
+            bodyLineHeight: 1.6,
             bodyLetterSpacing: 0,
             bodyCapitalization: 'none',
         },
@@ -131,19 +142,34 @@ async function transformTheme(basicTheme: any) {
     };
 }
 
-export async function GET() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function GETHandler(_request: NextRequest, _props: { params: Promise<{ default: string }> }) {
     try {
-        // Transform each theme
+        // if (params?.default === 'true') {
+        const transformedTheme = await transformTheme(defaultTheme);
+
+        transformedTheme.defaultForNewPresentations = true;
+        transformedTheme.isActive = true;
+
+        // Save to database
+        await prisma.theme.create({
+            data: transformedTheme,
+        });
+
+        // return NextResponse.json({ success: true, count: 1 });
+        // } else {
         const transformedThemes = await Promise.all(themes.map(transformTheme));
 
         // Save to database
         await prisma.theme.createMany({
             data: transformedThemes,
         });
-
         return NextResponse.json({ success: true, count: transformedThemes.length });
+        // }
     } catch (error) {
         console.error('Error importing themes:', error);
         return NextResponse.json({ error: 'Failed to import themes' }, { status: 500 });
     }
 }
+
+export const GET = () => NextResponse.json({}, { status: 403 });

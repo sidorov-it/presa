@@ -14,9 +14,17 @@ interface LayoutViewerProps {
     slideBackground?: string;
     primaryAccentColor: string;
     theme: Theme;
+    isSlidePreview?: boolean;
 }
 
-const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, theme }: LayoutViewerProps) => {
+const LayoutViewer = ({
+    layout,
+    slideId,
+    slideBackground,
+    primaryAccentColor,
+    theme,
+    isSlidePreview = false,
+}: LayoutViewerProps) => {
     // Calculate grid template columns based on column widths
     const getGridTemplateColumns = () => {
         if (layout.gridStructure.columnWidths) {
@@ -76,6 +84,8 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
         };
     };
 
+    if (!theme) return null;
+
     return (
         <div
             style={{
@@ -86,12 +96,12 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                 className={layout.isTable ? styles.tableLayout : ''}
                 style={{
                     display: 'grid',
-                    gap: layout.isTable ? '0' : '1rem',
-                    marginTop: '1.125em',
-                    marginBottom: '1.125em',
+                    gap: layout.isTable ? '0' : '1em',
+                    // marginTop: '1.125em',
+                    // marginBottom: '1.125em',
                     gridTemplateColumns: getGridTemplateColumns(),
                     gridTemplateAreas: gridTemplateAreas,
-                    fontSize: '18px',
+                    // fontSize: '18px',
                 }}
             >
                 {layout.gridStructure.rows.map((row, rowIndex) => (
@@ -119,7 +129,13 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                                         justifyContent,
                                         width: '100%',
                                         height: '100%',
-                                        minHeight: layout.isTable ? '3rem' : 'auto',
+                                        minHeight: layout.isTable ? '3em' : 'auto',
+                                        gap: '1em',
+                                        ...(isSlidePreview && {
+                                            overflow: 'hidden',
+                                            maxWidth: '100%',
+                                            boxSizing: 'border-box',
+                                        }),
                                         ...getCellStyles(rowIndex),
                                     }}
                                 >
@@ -131,7 +147,12 @@ const LayoutViewer = ({ layout, slideId, slideBackground, primaryAccentColor, th
                                             layoutId={layout.id}
                                             slideBackground={slideBackground}
                                             primaryAccentColor={primaryAccentColor}
+                                            blockFillColorsType={theme.design.blocks.blockFillColorsType}
+                                            blockBackgroundCustomColors={
+                                                theme.design.blocks.blockBackgroundCustomColors
+                                            }
                                             theme={theme}
+                                            isTable={layout.isTable}
                                         />
                                     ))}
                                 </div>

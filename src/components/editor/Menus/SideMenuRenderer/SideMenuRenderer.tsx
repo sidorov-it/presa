@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { useMenuStore } from '@/store/menuStore';
+import { useUIStateStore } from '@/store/uiStateStore';
 import { SideMenus } from '../menusComponents';
 
 import styles from './SideMenuRenderer.module.css';
@@ -11,7 +11,7 @@ const checkPopoverChildren = (element: HTMLElement) => {
 };
 
 const SideMenuRenderer: React.FC = () => {
-    const { sideMenuState } = useMenuStore();
+    const { sideMenuState } = useUIStateStore();
 
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -24,7 +24,7 @@ const SideMenuRenderer: React.FC = () => {
                 !(event.target as HTMLElement)?.id?.startsWith('select:') &&
                 !checkPopoverChildren(event.target as HTMLElement)
             ) {
-                useMenuStore.getState().closeSideMenu();
+                useUIStateStore.getState().closeSideMenu();
                 sideMenuState.sideMenuData.onCloseMenu?.();
             }
         };
@@ -46,7 +46,7 @@ const SideMenuRenderer: React.FC = () => {
             onClick={e => {
                 if ((e.target as HTMLElement).classList.contains(styles.sideMenuContainer)) {
                     e.stopPropagation();
-                    useMenuStore.getState().closeSideMenu();
+                    useUIStateStore.getState().closeSideMenu();
                 }
             }}
         >
