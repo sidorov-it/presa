@@ -2799,7 +2799,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         ],
         ui: {
             category: 'intro-templates',
-            label: 'Приветственный слайд',
+            label: 'Приветственный слайд со спикером',
             icon: FaRegAddressCard,
             description: 'Шаблон для начала презентации с темой',
         },
