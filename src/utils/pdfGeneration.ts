@@ -185,13 +185,6 @@ export const generatePdfAsync = async (
 
         const page = await browser.newPage();
 
-        // Set large initial viewport to ensure content fits
-        await page.setViewport({
-            width: 1034 + 16 * 6,
-            height: 580 + 40, // Increased height to accommodate variable content
-            deviceScaleFactor: 1, // Set to 1 to avoid scaling issues in PDF
-        });
-
         // Create PDF with individual pages for each slide
         const pdfPages: Buffer[] = [];
 
@@ -210,23 +203,32 @@ export const generatePdfAsync = async (
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
                 // Wait for slide content to be rendered
-                await page.waitForSelector('.presentation-viewer-provider, [class*="presentation-viewer-provider"]', {
+                await page.waitForSelector('.slide-page-container, [class*="slide-page-container"]', {
                     timeout: 15000,
                 });
 
                 // Get the actual slide content dimensions more accurately
-                const slideElement = await page.$(
-                    '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
-                );
+                const slideElement = await page.$('.slide-page-container, [class*="slide-page-container"]');
 
-                let slideWidth = 1032 + 16 * 6; // Standard slide width
-                let slideHeight = 580; // Default slide height
+                const slideWidth = 1032 + 16 * 6; // Standard slide width
+                let slideHeight = 4000; // Default slide height
+
+                // Calculate page dimensions including margins
+                const marginHorizontal = 16 * 6; // 96px total horizontal margin (48px each side)
+                const marginVertical = 40; // 40px total vertical margin (20px top + 20px bottom)
+
+                await page.setViewport({
+                    width: slideWidth,
+                    height: slideHeight,
+                    deviceScaleFactor: 1, // Set to 1 to avoid scaling issues in PDF
+                });
+
 
                 if (slideElement) {
                     // Use evaluate to get more accurate dimensions in CSS pixels
                     const dimensions = await page.evaluate(() => {
                         const element = document.querySelector(
-                            '.presentation-viewer-provider, [class*="presentation-viewer-provider"]'
+                            '.slide-page-container, [class*="slide-page-container"]'
                         );
                         if (!element) return null;
 
@@ -236,13 +238,11 @@ export const generatePdfAsync = async (
                         const actualWidth = element.scrollWidth || rect.width;
                         const actualHeight = element.scrollHeight || rect.height;
 
-                        // Also check document dimensions in case element is clipped
-                        const documentHeight = Math.max(
-                            document.body.scrollHeight,
-                            document.body.offsetHeight,
-                            document.documentElement.clientHeight,
-                            document.documentElement.scrollHeight,
-                            document.documentElement.offsetHeight
+                        // Get only the element's dimensions, not the entire document
+                        const elementHeight = Math.max(
+                            element.scrollHeight,
+                            (element as HTMLElement).offsetHeight,
+                            rect.height
                         );
 
                         return {
@@ -256,38 +256,52 @@ export const generatePdfAsync = async (
                             offsetHeight: (element as HTMLElement).offsetHeight,
                             rectWidth: rect.width,
                             rectHeight: rect.height,
-                            documentHeight: documentHeight,
+                            elementHeight: elementHeight,
                             windowHeight: window.innerHeight,
                         };
                     });
 
                     if (dimensions) {
-                        slideWidth = Math.ceil(dimensions.width);
-
-                        // Use the maximum height from all available measurements
-                        const maxHeight = Math.max(
-                            dimensions.height,
-                            dimensions.scrollHeight,
-                            dimensions.offsetHeight,
-                            dimensions.rectHeight,
-                            dimensions.documentHeight
-                        );
-
-                        // Add buffer to height to prevent content overflow
-                        slideHeight = maxHeight; // Add 150px buffer for safety
-                        // slideHeight = Math.ceil(maxHeight + 150); // Add 150px buffer for safety
+                        // Use only the element's height, not document height
+                        slideHeight = Math.ceil(dimensions.elementHeight);
 
                         logger.debug(`Slide ${i} dimensions:`, {
-                            finalWidth: slideWidth,
-                            finalHeight: slideHeight,
+                            slideWidth: slideWidth,
+                            slideHeight: slideHeight,
+                            elementHeight: dimensions.elementHeight,
+                            scrollHeight: dimensions.scrollHeight,
+                            offsetHeight: dimensions.offsetHeight,
                         });
                     }
                 }
 
-                // Generate PDF for this slide with proper dimensions
+                // Calculate page dimensions including margins
+                const pageWidth = slideWidth;
+                const pageHeight = slideHeight;
+
+                // Update viewport to match the page dimensions (slide + margins)
+                // This ensures background images are rendered for the entire page area
+                await page.setViewport({
+                    width: pageWidth,
+                    height: pageHeight - 20,
+                    deviceScaleFactor: 1, // Set to 1 to avoid scaling issues in PDF
+                });
+
+                // Wait a bit for viewport change to take effect
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Clear any cached dimensions by forcing a re-render
+                await page.evaluate(() => {
+                    // Force reflow to ensure dimensions are recalculated
+                    document.body.style.display = 'none';
+                    document.body.offsetHeight; // Trigger reflow
+                    document.body.style.display = '';
+                });
+
+                // Generate PDF for this slide with proper dimensions including margins
                 const pdf = await page.pdf({
-                    width: `${slideWidth}px`,
-                    height: `${slideHeight}px`,
+                    width: `${pageWidth}px`,
+                    height: `${pageHeight}px`,
                     printBackground: true,
                     margin: {
                         top: 0,
