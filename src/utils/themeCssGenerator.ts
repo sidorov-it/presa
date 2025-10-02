@@ -32,10 +32,10 @@ export interface CSSVariableGeneratorResult {
  */
 export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptions): CSSVariableGeneratorResult {
     const { theme, backgroundSettings, previousTheme } = options;
-    
+
     const variables: Record<string, string> = {};
     const backgroundStyles: React.CSSProperties = {};
-    
+
     // Helper function to set CSS variable
     const set = (prop: string, value: string | number | undefined) => {
         if (value === undefined) return;
@@ -56,7 +56,7 @@ export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptio
     // Page background
     let backgroundColor: string;
     let imageUrl: string | undefined;
-    
+
     if (theme.colors.pageBackground || backgroundSettings?.backgroundColor) {
         if (backgroundSettings?.backgroundColor) {
             backgroundColor = backgroundSettings.backgroundColor;
@@ -71,17 +71,20 @@ export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptio
         // Handle background image
         if (backgroundSettings?.backgroundImage && backgroundSettings.backgroundImage !== 'none') {
             imageUrl = backgroundSettings.backgroundImage;
-        } else if (theme.colors.pageBackground.imageUrl) {
+        } else if (theme.colors.pageBackground.imageUrl && backgroundSettings?.backgroundImage !== 'none') {
             imageUrl = theme.colors.pageBackground.imageUrl.trim();
         }
-        
-        if (imageUrl) {
+
+        if (imageUrl === 'none') {
+            // Don't set any background image variables when explicitly set to 'none'
+            // This allows the variables to be removed in useThemeApplication
+        } else if (imageUrl) {
             set('--presentation-page-background-image', `url(${imageUrl})`);
             set('--presentation-page-background-size', 'cover');
             set('--presentation-page-background-position', 'center');
             set('--presentation-page-background-repeat', 'no-repeat');
             set('--presentation-page-background-attachment', 'fixed');
-            
+
             // Set background styles for direct application
             backgroundStyles.backgroundImage = `url(${imageUrl})`;
             backgroundStyles.backgroundSize = 'cover';
@@ -133,7 +136,7 @@ export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptio
         sm: '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         md: 'rgba(0, 0, 0, 0.4) 4px 4px 0px 0px',
     };
-    
+
     if (theme.design.slide.shadow) {
         if (theme.design.slide.borderColor) {
             set('--presentation-slide-shadow', `${theme.design.slide.borderColor} 4px 4px 0px 0px`);
@@ -182,7 +185,7 @@ export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptio
             top: 'url(/masks/wiggle-top.svg)',
         },
     } as const;
-    
+
     const masks = maskMap[(theme.design.slide.imageShape ?? 'default') as keyof typeof maskMap];
     set('--presentation-slide-image-mask-image-left', masks.left);
     set('--presentation-slide-image-mask-image-right', masks.right);
@@ -190,7 +193,7 @@ export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptio
 
     // Block design
     set('--presentation-block-fill-type', theme.design.blocks.backgroundBlockFillType);
-    
+
     const blockOpacityMap = {
         fill: '1',
         semi: '0.5',
@@ -295,7 +298,7 @@ export function generateCSSVariablesFromTheme(options: CSSVariableGeneratorOptio
         backgroundStyles: {
             backgroundColor,
             ...backgroundStyles,
-        }
+        },
     };
 }
 

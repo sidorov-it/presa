@@ -38,6 +38,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
         initialSettings?.backgroundImage || themeBackgroundImage || ''
     );
 
+    const [isWithoutImage, setIsWithoutImage] = useState<boolean>(false);
     // Фокус-ловушка
     const modalRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -106,7 +107,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
     };
 
     const handleClearImage = () => {
-        setBackgroundImage('');
+        setBackgroundImage('none');
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -151,7 +152,7 @@ const BackgroundSettingsModal: React.FC<BackgroundSettingsModalProps> = ({
                         Изображение фона
                     </label>
 
-                    {backgroundImage ? (
+                    {backgroundImage && backgroundImage !== 'none' ? (
                         <div className={styles.imagePreview}>
                             <img src={backgroundImage} alt="Предпросмотр фона" className={styles.previewImage} />
                             <div className={styles.imageActions}>
