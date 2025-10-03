@@ -7,11 +7,14 @@ import DragDropIndicator from '@/components/DragDropIndicator';
 import SlideMenu from '../SlideMenu/SlideMenu';
 import { useUIStateStore } from '@/store/uiStateStore';
 import { useEditorStore } from '@/store/editorStore';
-import { TipTapRefs } from '@/types';
+import { BaseElement, Layout, TipTapRefs } from '@/types';
 import { useShallow } from 'zustand/react/shallow';
 import GlobalHeaderFooterModal from '../GlobalHeaderFooterModal/GlobalHeaderFooterModal';
 import { useReadOnly } from '@/contexts/ReadOnlyContext';
 import { Theme } from '@/types/theme';
+import { useClipboardStore } from '@/store/clipboardStore';
+import { generateId } from '@/utils/id';
+import getColumnWidths from '@/utils/getColumnWidths';
 
 import styles from './Editor.module.css';
 
@@ -159,6 +162,193 @@ const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) =>
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isReadOnly]);
+
+    useEffect(() => {
+        const handleCopyPaste = (event: KeyboardEvent) => {
+            const isModifierPressed = event.metaKey || event.ctrlKey;
+            if (!isModifierPressed) {
+                return;
+            }
+
+            const key = event.key.toLowerCase();
+            if (key !== 'c' && key !== 'v') {
+                return;
+            }
+
+            const target = event.target as HTMLElement | null;
+            const isInsideTextEditor = Boolean(
+                target?.closest('[data-tiptap-editor]') ||
+                    target?.closest('.ProseMirror') ||
+                    target?.closest('[contenteditable="true"]') ||
+                    target?.closest('.tiptap-editor-wrapper') ||
+                    target?.closest('.tiptap') ||
+                    target?.closest('.custom-tiptap-editor')
+            );
+
+            if (isInsideTextEditor) {
+                return;
+            }
+
+            const clipboardState = useClipboardStore.getState();
+
+            if (key === 'c') {
+                const {
+                    selectedElementId,
+                    selectedSlideId,
+                    selectedLayoutId,
+                    currentPresentationId,
+                    isContextMenuOnTextEditor,
+                } = useUIStateStore.getState();
+                const activeEditor = useEditorStore.getState().activeEditor;
+
+                if (
+                    activeEditor ||
+                    isReadOnly ||
+                    !selectedElementId ||
+                    !selectedSlideId ||
+                    !selectedLayoutId ||
+                    !currentPresentationId ||
+                    isContextMenuOnTextEditor
+                ) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const element = usePresentationStore
+                    .getState()
+                    .getElement(currentPresentationId, selectedSlideId, selectedLayoutId, selectedElementId);
+
+                if (element) {
+                    const clonedElement = JSON.parse(JSON.stringify(element)) as BaseElement;
+                    clipboardState.setElement(clonedElement);
+                }
+
+                return;
+            }
+
+            if (key === 'v') {
+                if (isReadOnly) {
+                    return;
+                }
+
+                const clipboardElement = clipboardState.element;
+                if (!clipboardElement) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const { selectedElementId, selectedSlideId, currentPresentationId, isContextMenuOnTextEditor } =
+                    useUIStateStore.getState();
+                const activeEditorId = useEditorStore.getState().activeEditorId;
+                const slideId = selectedSlideId;
+                const presentationKey = currentPresentationId || presentationId;
+
+                if (isContextMenuOnTextEditor) {
+                    return;
+                }
+
+                const insertAfter = (
+                    referenceElementId: string,
+                    targetSlideId: string,
+                    presId: string,
+                    sourceElement: BaseElement
+                ) => {
+                    const slide = usePresentationStore.getState().getSlide(presId, targetSlideId);
+                    if (!slide) {
+                        return;
+                    }
+
+                    const layout = slide.layouts.find(layoutItem =>
+                        layoutItem.elements.some(elementItem => elementItem.id === referenceElementId)
+                    );
+                    if (!layout) {
+                        return;
+                    }
+
+                    const referenceElement = layout.elements.find(elementItem => elementItem.id === referenceElementId);
+                    if (!referenceElement) {
+                        return;
+                    }
+
+                    const newElement = JSON.parse(JSON.stringify(sourceElement)) as BaseElement;
+                    newElement.id = generateId();
+
+                    if (layout.gridStructure.columns > 1) {
+                        const updatedElements = [...layout.elements];
+                        const referenceIndex = updatedElements.findIndex(
+                            elementItem => elementItem.id === referenceElementId
+                        );
+                        if (referenceIndex === -1) {
+                            return;
+                        }
+
+                        newElement.cellId = referenceElement.cellId;
+                        updatedElements.splice(referenceIndex + 1, 0, newElement);
+
+                        usePresentationStore.getState().updateLayout(presId, targetSlideId, layout.id, {
+                            elements: updatedElements,
+                        });
+
+                        return;
+                    }
+
+                    const cellId = generateId();
+                    newElement.cellId = cellId;
+
+                    const newLayout: Layout = {
+                        id: generateId(),
+                        gridStructure: {
+                            columns: 1,
+                            columnWidths: getColumnWidths(1),
+                            rows: [
+                                {
+                                    id: generateId(),
+                                    cells: [
+                                        {
+                                            id: cellId,
+                                            row: 1,
+                                            column: 1,
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                        elements: [newElement],
+                        type: layout.type,
+                        style: { ...layout.style },
+                        isTable: layout.isTable,
+                        parentId: layout.parentId,
+                    };
+
+                    const layouts = [...slide.layouts];
+                    const layoutIndex = layouts.findIndex(layoutItem => layoutItem.id === layout.id);
+                    if (layoutIndex === -1) {
+                        return;
+                    }
+                    layouts.splice(layoutIndex + 1, 0, newLayout);
+
+                    usePresentationStore.getState().updateSlide(presId, targetSlideId, { layouts }, true);
+                };
+
+                if (activeEditorId && slideId) {
+                    insertAfter(activeEditorId, slideId, presentationKey, clipboardElement);
+                } else if (selectedElementId && slideId) {
+                    insertAfter(selectedElementId, slideId, presentationKey, clipboardElement);
+                } else if (slideId) {
+                    const elementForLayout = JSON.parse(JSON.stringify(clipboardElement)) as BaseElement;
+                    usePresentationStore.getState().addLayoutWithElement(presentationKey, slideId, elementForLayout);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleCopyPaste);
+
+        return () => {
+            window.removeEventListener('keydown', handleCopyPaste);
+        };
+    }, [presentationId, isReadOnly]);
 
     const isGlobalHeaderFooterModalOpen = useUIStateStore(state => state.isGlobalHeaderFooterModalOpen);
     const setGlobalHeaderFooterModalOpen = useUIStateStore(state => state.setGlobalHeaderFooterModalOpen);
