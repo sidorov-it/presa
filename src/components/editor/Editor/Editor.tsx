@@ -184,8 +184,9 @@ const Editor: React.FC<EditorProps> = ({ presentationId, theme, tiptapRefs }) =>
                     target?.closest('.tiptap') ||
                     target?.closest('.custom-tiptap-editor')
             );
+            const isFormField = Boolean(target?.closest('input, textarea'));
 
-            if (isInsideTextEditor) {
+            if (isInsideTextEditor || isFormField) {
                 return;
             }
 
