@@ -222,6 +222,8 @@ export function getCloudPaymentsInterval(interval: SubscriptionInterval): {
     interval: 'Day' | 'Week' | 'Month';
 } {
     switch (interval) {
+        case SubscriptionInterval.daily:
+            return { period: 1, interval: 'Day' };
         case SubscriptionInterval.monthly:
             return { period: 1, interval: 'Month' };
         case SubscriptionInterval.quarterly:
