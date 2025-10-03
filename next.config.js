@@ -6,9 +6,9 @@ const isProd = process.env.NODE_ENV === 'production';
 const baseCsp = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mc.yandex.ru https://mc.yandex.com https://widget.cloudpayments.ru",
-    "connect-src 'self' https://mc.yandex.ru https://mc.yandex.com",
-    "img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com",
-    'frame-src https://mc.yandex.ru https://mc.yandex.com',
+    "connect-src 'self' https://mc.yandex.ru https://mc.yandex.com https://api.cloudpayments.ru",
+    "img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com https://widget.cloudpayments.ru",
+    'frame-src https://mc.yandex.ru https://mc.yandex.com https://widget.cloudpayments.ru',
     'worker-src blob:',
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",

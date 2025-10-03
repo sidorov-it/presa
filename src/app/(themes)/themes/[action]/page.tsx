@@ -3,6 +3,9 @@ import ThemeEditorPageContent from './ThemeEditorPageContent';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 
+// Force dynamic rendering to prevent static generation with local DB IDs
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(props: { params: Promise<{ action: string }> }): Promise<Metadata> {
     const { action } = await props.params;
     if (action === 'new') {

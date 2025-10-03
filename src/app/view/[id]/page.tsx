@@ -7,6 +7,9 @@ import { IPresentation } from '@/types';
 import ServerThemeStylesApplier from '@/components/viewer/theme/ServerThemeStylesApplier';
 import { checkUserSubscription } from '@/utils/subscriptionHelpers';
 
+// Force dynamic rendering to prevent static generation with local DB IDs
+export const dynamic = 'force-dynamic';
+
 type Props = {
     params: Promise<{ id: string }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

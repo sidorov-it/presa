@@ -23,7 +23,6 @@ export default async function SubscriptionsPage() {
         },
     });
 
-    console.log('tokensPackages!!!', tokensPackages);
     return (
         <Suspense>
             <Script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js" />

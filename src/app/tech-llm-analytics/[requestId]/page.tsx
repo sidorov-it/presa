@@ -7,6 +7,9 @@ import { notFound } from 'next/navigation';
 import ExportScenarioButton from './ExportScenarioButton';
 import LinkButton from '@/components/LinkButton';
 
+// Force dynamic rendering to prevent static generation with local DB IDs
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
     params: {
         requestId: string;

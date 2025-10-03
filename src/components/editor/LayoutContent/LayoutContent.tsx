@@ -358,7 +358,8 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         [handleResizeMoveTableColumn, handleResizeEndTableColumn, presentationId, slideId, layoutId]
     );
 
-    const isSelected = selectedLayoutId === layout.id && selectedElementId === null && selectedCellId === null;
+    // const isSelected = selectedLayoutId === layout.id && selectedElementId === null && selectedCellId === null;
+    const isSelected = selectedLayoutId === layout.id;
     const isFocused = useUIStateStore(state => state.selectedLayoutId === layout.id);
 
     // const isHovered = isLayoutHovered || isSelected;
@@ -402,7 +403,13 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
                     <DragHandler
                         className={styles.layoutDragHandle}
                         slideId={slideId}
-                        isActive={isSelected && isContextMenuOpen && !isTableContentSelected}
+                        isActive={
+                            isSelected &&
+                            isContextMenuOpen &&
+                            !isTableContentSelected &&
+                            !selectedElementId &&
+                            !selectedCellId
+                        }
                         ariaLabel="Перетащить этот макет"
                         dataAttributes={{
                             'data-layout-drag-handle': layout.id,

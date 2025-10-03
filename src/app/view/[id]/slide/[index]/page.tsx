@@ -13,6 +13,9 @@ import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { ThemeStylesApplier, ViewerProvider } from '@/components/viewer';
 import { Slide } from '@/types';
 
+// Force dynamic rendering to prevent static generation with local DB IDs
+export const dynamic = 'force-dynamic';
+
 export default async function SlidePage(props: {
     params: Promise<{ id: string; index: string }>;
     searchParams: Promise<{ pdf?: string; hideBranding?: string; hasActiveSubscription?: string }>;

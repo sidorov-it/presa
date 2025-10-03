@@ -37,6 +37,7 @@ const Subscriptions = ({
     } = useSubscriptions();
 
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+    const [cloudPaymentsLoaded, setCloudPaymentsLoaded] = useState(false);
 
     useEffect(() => {
         if (!tokensLoading && !subsLoading) {
@@ -44,11 +45,43 @@ const Subscriptions = ({
         }
     }, [tokensLoading, subsLoading]);
 
+    useEffect(() => {
+        // Проверяем загрузку CloudPayments
+        const checkCloudPayments = () => {
+            console.log('Checking CloudPayments availability...', {
+                windowCp: !!window.cp,
+                cloudPayments: !!window.cp?.CloudPayments,
+                windowCloudPayments: !!window.CloudPayments,
+            });
+
+            if (window.cp?.CloudPayments) {
+                setCloudPaymentsLoaded(true);
+                console.log('CloudPayments widget is ready');
+            } else {
+                // Повторяем проверку через 100мс
+                setTimeout(checkCloudPayments, 100);
+            }
+        };
+
+        // Начинаем проверку через небольшую задержку
+        const timeoutId = setTimeout(checkCloudPayments, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, []);
+
     const handleSubscriptionPurchase = async (planId: string) => {
         if (!session?.user) {
             setNotification({
                 type: 'error',
                 message: 'Необходимо войти в систему для оформления подписки',
+            });
+            return;
+        }
+
+        if (!cloudPaymentsLoaded) {
+            setNotification({
+                type: 'error',
+                message: 'Платежный виджет еще загружается, попробуйте через несколько секунд',
             });
             return;
         }
@@ -116,30 +149,38 @@ const Subscriptions = ({
                     // };
 
                     console.debug('CloudPayments payment params:', paymentParams);
-
-                    cp.pay('charge', paymentParams, {
-                        onSuccess: function (options: any) {
-                            console.log('Subscription payment successful:', options);
-                            setNotification({
-                                type: 'success',
-                                message: 'Подписка успешно оформлена!',
-                            });
-                            // Принудительно обновляем состояние подписки
-                            setTimeout(() => {
-                                refreshSubscriptionStatus();
-                            }, 1000);
-                        },
-                        onFail: function (reason: any, options: any) {
-                            console.error('Subscription payment failed:', reason, options);
-                            setNotification({
-                                type: 'error',
-                                message: 'Ошибка при оплате подписки',
-                            });
-                        },
-                        onComplete: function (paymentResult: any, options: any) {
-                            console.log('Subscription payment completed:', paymentResult, options);
-                        },
-                    });
+                    console.log('Attempting to open CloudPayments widget...');
+                    try {
+                        cp.pay('charge', paymentParams, {
+                            onSuccess: function (options: any) {
+                                console.log('Subscription payment successful:', options);
+                                setNotification({
+                                    type: 'success',
+                                    message: 'Подписка успешно оформлена!',
+                                });
+                                // Принудительно обновляем состояние подписки
+                                setTimeout(() => {
+                                    refreshSubscriptionStatus();
+                                }, 1000);
+                            },
+                            onFail: function (reason: any, options: any) {
+                                console.error('Subscription payment failed:', reason, options);
+                                setNotification({
+                                    type: 'error',
+                                    message: 'Ошибка при оплате подписки',
+                                });
+                            },
+                            onComplete: function (paymentResult: any, options: any) {
+                                console.log('Subscription payment completed:', paymentResult, options);
+                            },
+                        });
+                    } catch (error) {
+                        console.error('Error opening CloudPayments widget:', error);
+                        setNotification({
+                            type: 'error',
+                            message: 'Не удалось открыть платежный виджет',
+                        });
+                    }
                 } else {
                     throw new Error('CloudPayments widget not loaded');
                 }
@@ -210,7 +251,7 @@ const Subscriptions = ({
                                             key={plan.id}
                                             plan={plan}
                                             onSubscribe={handleSubscriptionPurchase}
-                                            isLoading={subsLoading}
+                                            isLoading={subsLoading || !cloudPaymentsLoaded}
                                             isActive={false}
                                         />
                                     ))}
