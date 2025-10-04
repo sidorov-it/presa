@@ -136,7 +136,8 @@ ${surroundingSlides[1]?.text ? `Текст следующего слайда: ${
             });
 
             return { slide };
-        }
+        },
+        requestId
     );
 }
 export const POST = withLogging(POSTHandler);

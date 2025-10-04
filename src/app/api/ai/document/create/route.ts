@@ -168,7 +168,8 @@ async function POSTHandler(request: NextRequest) {
                 logger.error('Error generating presentation from document:', error);
                 throw error;
             }
-        }
+        },
+        requestId
     );
 }
 

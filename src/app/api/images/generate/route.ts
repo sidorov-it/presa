@@ -3,8 +3,11 @@ import logger from '@/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { createLLMService } from '@/services/llm';
 import { MetadataExtractors, TokenCalculators, withTokenDeduction } from '@/utils/aiTokenMiddleware';
+import { v4 as uuidv4 } from 'uuid';
 
 async function POSTHandler(request: NextRequest) {
+    const requestId = uuidv4();
+
     return withTokenDeduction(
         request,
         {
@@ -91,7 +94,8 @@ async function POSTHandler(request: NextRequest) {
                 logger.error('Error generating images:', error);
                 return NextResponse.json({ error: 'Failed to generate images' }, { status: 500 });
             }
-        }
+        },
+        requestId
     );
 }
 export const POST = withLogging(POSTHandler);

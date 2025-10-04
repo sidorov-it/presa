@@ -72,13 +72,13 @@ const CREATION_METHODS = [
         icon: FaUpload,
         color: 'green',
     },
-    {
-        id: 'plan' as CreationMethod,
-        title: 'Из готового плана',
-        description: 'Вставьте готовый план презентации для быстрого создания',
-        icon: FaClipboardList,
-        color: 'purple',
-    },
+    // {
+    //     id: 'plan' as CreationMethod,
+    //     title: 'Из готового плана',
+    //     description: 'Вставьте готовый план презентации для быстрого создания',
+    //     icon: FaClipboardList,
+    //     color: 'purple',
+    // },
 ];
 
 // Sortable slide topic component

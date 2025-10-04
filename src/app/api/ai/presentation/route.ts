@@ -144,7 +144,8 @@ async function POSTHandler(request: NextRequest) {
                 logger.error('Error generating presentation:', error);
                 throw error;
             }
-        }
+        },
+        requestId
     );
 }
 

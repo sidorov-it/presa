@@ -48,7 +48,8 @@ async function POSTHandler(request: NextRequest) {
             );
 
             return { content };
-        }
+        },
+        requestId
     );
 }
 export const POST = withLogging(POSTHandler);

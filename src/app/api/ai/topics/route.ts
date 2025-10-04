@@ -43,10 +43,11 @@ async function POSTHandler(request: NextRequest) {
                     topics,
                 };
             } catch (error) {
-                logger.error('Error generating topics:', error.message);
+                logger.error('Error generating topics:', error instanceof Error ? error.message : String(error));
                 throw error;
             }
-        }
+        },
+        requestId
     );
 }
 

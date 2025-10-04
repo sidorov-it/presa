@@ -50,7 +50,8 @@ async function POSTHandler(request: NextRequest) {
                 logger.error('Error processing plan:', error.message);
                 throw error;
             }
-        }
+        },
+        requestId
     );
 }
 

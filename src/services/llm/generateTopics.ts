@@ -3,7 +3,7 @@
 /* eslint-disable indent */
 import { createLLMService } from '@/services/llm';
 
-const generateTopicsFunction = {
+const createGenerateTopicsFunction = (numSlides: number) => ({
     name: 'generate_presentation_topics',
     description:
         'Создает список тем для презентации на основе заданного описания. Выдает список тем и инструкции для каждого слайда',
@@ -17,6 +17,8 @@ const generateTopicsFunction = {
             topics: {
                 type: 'array',
                 description: 'Список тем для презентации',
+                minItems: numSlides,
+                maxItems: numSlides,
                 items: {
                     type: 'object',
                     properties: {
@@ -35,7 +37,7 @@ const generateTopicsFunction = {
         },
         required: ['topics'],
     },
-};
+});
 
 const getContentAmountDescription = (contentAmount?: string) => {
     switch (contentAmount) {
@@ -140,15 +142,16 @@ ${Number.isInteger(durationMinutes) ? `• Длительность доклад
              ? '- Для ПОДРОБНОГО формата: создавай инструкции для развернутых слайдов с детальными разъяснениями'
              : '- Для СРЕДНЕГО формата: создавай инструкции для сбалансированных слайдов с умеренной детализацией'
    }
+8. **КРИТИЧЕСКИ ВАЖНО**: Создай оптимальное количество слайдов на основе плана - не слишком мало, не слишком много. Обычно это 5-15 слайдов в зависимости от сложности темы.
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics!
 
 `;
 
-const topicsOptions = {
-    functions: [generateTopicsFunction],
+const getTopicsOptions = (numSlides: number) => ({
+    functions: [createGenerateTopicsFunction(numSlides)],
     function_call: { name: 'generate_presentation_topics' },
-};
+});
 
 async function generateTopics(
     userId: string,
@@ -186,7 +189,7 @@ async function generateTopics(
                 audience,
             }),
             {
-                ...topicsOptions,
+                ...getTopicsOptions(numSlides), // Exact number for direct generation
                 ...(requestId ? { requestId } : {}),
             }
         );
@@ -250,7 +253,7 @@ export async function generateTopicsFromPlan(
                 audience,
             }),
             {
-                ...topicsOptions,
+                ...getTopicsOptions(5, 15), // Flexible range for plan-based generation
                 ...(requestId ? { requestId } : {}),
             }
         );

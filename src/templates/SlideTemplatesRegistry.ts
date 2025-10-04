@@ -3199,7 +3199,7 @@ export const SlideTemplatesRegistry: Record<string, SlideTemplateCore> = {
         },
     },
 
-    'final-slide': {
+    'final-slide-custom': {
         id: 'final-slide-custom',
         name: 'Финальный слайд с благодарностью',
         contentAlignment: 'center',

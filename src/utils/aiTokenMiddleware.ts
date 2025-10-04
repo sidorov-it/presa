@@ -5,6 +5,7 @@ import { hasEnoughTokens, deductTokens } from '@/utils/tokens';
 import { getTokenCostForOperation, TOKEN_COSTS } from '@/utils/getTokenCostForOperation';
 import logger from '@/utils/logger';
 import { handleApiError } from './errorHandler';
+import { prisma } from '@/lib/prisma';
 
 interface AIOperationConfig {
     operation: keyof typeof TOKEN_COSTS;
@@ -21,7 +22,8 @@ interface AIOperationConfig {
 export async function withTokenDeduction<T>(
     request: NextRequest,
     config: AIOperationConfig,
-    operation: (session: any, requestData: any, formData?: FormData) => Promise<T>
+    operation: (session: any, requestData: any, formData?: FormData) => Promise<T>,
+    requestId?: string
 ): Promise<NextResponse> {
     let requestData: any;
     let formData: FormData | undefined;
@@ -85,12 +87,34 @@ export async function withTokenDeduction<T>(
         try {
             const metadata = config.metadata ? config.metadata(requestData) : {};
 
+            // Find LLM request record by requestId to get the database ID
+            let llmRequestId: string | null = null;
+            if (requestId) {
+                try {
+                    // Wait a bit for the LLM request to be logged
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const llmRequest = await prisma.lLMRequestHistory.findFirst({
+                        where: {
+                            requestId,
+                            userId: session.user.id,
+                        },
+                        select: { id: true },
+                        orderBy: { timestamp: 'desc' },
+                    });
+                    llmRequestId = llmRequest?.id || null;
+                } catch (error) {
+                    console.warn('Failed to find LLM request record:', error);
+                    // Continue without llmRequestId if lookup fails
+                }
+            }
+
             await deductTokens({
                 userId: session.user.id,
                 amount: requiredTokens,
                 description: config.description,
                 metadata,
-                llmRequestId: request.headers.get('x-llm-request-id') || '',
+                llmRequestId,
             });
         } catch (tokenError) {
             logger.error(`Error deducting tokens: ${String(tokenError)}`);

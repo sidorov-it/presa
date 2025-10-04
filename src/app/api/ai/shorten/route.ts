@@ -51,7 +51,8 @@ async function POSTHandler(request: NextRequest) {
             );
 
             return { content };
-        }
+        },
+        requestId
     );
 }
 

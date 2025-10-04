@@ -6,7 +6,7 @@ import { createLLMService } from '@/services/llm';
 import { LLMRequestContext } from '@/types/gigachat';
 
 // Define the function for template selection
-const selectTemplatesFunction = {
+const createSelectTemplatesFunction = (topicsCount: number) => ({
     name: 'select_slide_templates',
     description: 'Выберите наиболее подходящий шаблон слайда для каждой темы в презентации',
     parameters: {
@@ -15,6 +15,8 @@ const selectTemplatesFunction = {
             templateSelections: {
                 type: 'array',
                 description: 'Список выборов шаблона для каждой темы',
+                minItems: topicsCount,
+                maxItems: topicsCount,
                 items: {
                     type: 'object',
                     properties: {
@@ -37,7 +39,7 @@ const selectTemplatesFunction = {
         },
         required: ['templateSelections'],
     },
-};
+});
 
 const getContentAmountDescription = (contentAmount?: string) => {
     switch (contentAmount) {
@@ -80,6 +82,8 @@ const getTemplatesPrompt = ({
 ${goal ? `• Цель: ${goal}\n` : ''}${audience ? `• Аудитория: ${audience}\n` : ''}${tone ? `• Тон/стиль: ${tone}\n` : ''}• Объем контента: ${getContentAmountDescription(contentAmount)}
 ${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут\n` : ''}
 
+В презентации будет ${topics.length} слайда(ов). Нужно выбрать ровно ${topics.length} шаблонов слайдов.
+
 Доступные шаблоны:
 ${templates
     .map(
@@ -108,10 +112,10 @@ ${topics.map((t, i) => `${i + 1}. "${t.title}"${t.instructions ? ` — Инст�
 
 **ВНИМАНИЕ:** Для возврата результата ТЫ ОБЯЗАН вызвать функцию "select_slide_templates".`;
 
-const getTemplatesOptions = {
-    functions: [selectTemplatesFunction],
+const getTemplatesOptions = (topicsCount: number) => ({
+    functions: [createSelectTemplatesFunction(topicsCount)],
     function_call: { name: 'select_slide_templates' },
-};
+});
 
 export default async function generateSlidesTemplates({
     title,
@@ -162,7 +166,7 @@ export default async function generateSlidesTemplates({
                 tone,
             }),
             {
-                ...getTemplatesOptions,
+                ...getTemplatesOptions(topics.length),
                 ...(options.requestId ? { requestId: options.requestId } : {}),
             }
         );
