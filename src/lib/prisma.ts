@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 
-// Configure Prisma client
+// Configure Prisma client with connection pooling
 const prismaClientOptions = {
     datasources: {
         db: {
             url: process.env.DATABASE_URL,
         },
     },
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 };
 
 const globalForPrisma = globalThis as unknown as {
