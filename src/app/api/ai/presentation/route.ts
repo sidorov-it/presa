@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma';
 import { v4 as uuidv4 } from 'uuid';
 import { getUserFeatures, performSubscriptionHealthCheck } from '@/utils/subscriptions';
 import extractTextFromElement from '@/utils/extractTextFromElement';
+import { ObjectId } from 'mongodb';
 
 async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/presentation');
@@ -46,6 +47,10 @@ async function POSTHandler(request: NextRequest) {
                 logger.info(`Starting presentation generation for user ${userId}`);
                 logger.info(`User slide limit: ${maxSlides}, Requested slides: ${topics.length}`);
 
+                // Generate presentation ID early so we can use it in LLM requests
+                const presentationIdObject = new ObjectId();
+                const presentationId = presentationIdObject.toString();
+
                 // Generate template suggestions for all slides
                 const templateSuggestions = await generateSlidesTemplates({
                     title,
@@ -59,6 +64,7 @@ async function POSTHandler(request: NextRequest) {
                     options: {
                         userId,
                         requestId,
+                        presentationId,
                     },
                 });
 
@@ -98,6 +104,7 @@ async function POSTHandler(request: NextRequest) {
                         options: {
                             userId,
                             requestId,
+                            presentationId,
                         },
                     });
 
@@ -118,6 +125,7 @@ async function POSTHandler(request: NextRequest) {
 
                 const presentation = await prisma.presentation.create({
                     data: {
+                        id: presentationId,
                         title,
                         slides: slidesData,
                         userId: session.user.id,

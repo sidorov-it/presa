@@ -5,6 +5,7 @@
 //     className = 'body-text big-text';
 
 import { TextType } from '@/types';
+import { cleanListMarkers } from '@/utils/cleanListMarkers';
 
 // case FONT_SIZE_BIG_HEADING:
 //     className = 'heading-text big-heading';
@@ -37,29 +38,29 @@ export const getTextContent = (textType: TextType, text: string | string[], text
         case TextType.BULLET_LIST:
             if (Array.isArray(text)) {
                 return `<ul>
-    ${text.map(item => `<li><span class="body-text normal-text">${item}</span></li>`).join('')}
+    ${text.map(item => `<li><span class="body-text normal-text">${cleanListMarkers(item)}</span></li>`).join('')}
 </ul>`;
             }
             return `<ul>
-    <li><span class="body-text normal-text">${text}</span></li>
+    <li><span class="body-text normal-text">${cleanListMarkers(text)}</span></li>
 </ul>`;
         case TextType.NUMERED_LIST:
             if (Array.isArray(text)) {
                 return `<ol>
-    ${text.map(item => `<li><span class="body-text normal-text">${item}</span></li>`).join('')}
+    ${text.map(item => `<li><span class="body-text normal-text">${cleanListMarkers(item)}</span></li>`).join('')}
 </ol>`;
             }
             return `<ol>
-    <li><span class="body-text normal-text">${text}</span></li>
+    <li><span class="body-text normal-text">${cleanListMarkers(text)}</span></li>
 </ol>`;
         case TextType.TODO_LIST:
             if (Array.isArray(text)) {
                 return `<ul data-type="taskList">
-    ${text.map(item => `<li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${item}</span></li>`).join('')}
+    ${text.map(item => `<li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${cleanListMarkers(item)}</span></li>`).join('')}
 </ul>`;
             }
             return `<ul data-type="taskList">
-    <li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${text}</span></li>
+    <li data-type="taskItem" data-checked="false"><span class="body-text normal-text">${cleanListMarkers(text)}</span></li>
 </ul>`;
 
         default:

@@ -121,12 +121,17 @@ export class YaGptService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
+            __retryCount?: number;
             requestId?: string;
         } = {}
     ): Promise<LLMResponse> {
         const start = Date.now();
 
-        logger.debug('YaGPT generate', { prompt, options });
+        // Initialize retry counter if not provided
+        const retryCount = options.__retryCount || 0;
+        const maxRetries = 3;
+
+        logger.debug('YaGPT generate', { prompt, options, retryCount });
         // ------------------------------------------------------------------
         //  RecordingService replay mode: return cached response if available
         // ------------------------------------------------------------------
@@ -152,23 +157,55 @@ export class YaGptService implements LLMService {
         const body = this.buildRequestBody(prompt, chatOptions);
 
         logger.debug('YaGPT generate: request llm', { body });
-        const responseJson = await this.withRateLimit(async () => {
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Api-Key ${apiKey}`,
-                },
-                body: JSON.stringify(body),
-            });
 
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(`YaGPT API error: ${res.status} - ${text}`);
+        let responseJson;
+        try {
+            responseJson = await this.withRateLimit(async () => {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Api-Key ${apiKey}`,
+                    },
+                    body: JSON.stringify(body),
+                });
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    const error = new Error(`YaGPT API error: ${res.status} - ${text}`);
+                    (error as any).status = res.status;
+                    throw error;
+                }
+
+                return res.json();
+            });
+        } catch (error: any) {
+            logger.error('YaGPT generate: API error', { error, retryCount });
+
+            // Check if this error should not be retried
+            if (this.shouldNotRetry(error)) {
+                throw error;
             }
 
-            return res.json();
-        });
+            // Check if we've exceeded max retries
+            if (retryCount >= maxRetries) {
+                logger.error(`YaGPT: Max retries (${maxRetries}) exceeded for request ${options.requestId}`);
+                throw error;
+            }
+
+            // Wait before retry (exponential backoff)
+            const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
+            logger.info(
+                `YaGPT: Retrying request ${options.requestId} in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`
+            );
+            await new Promise(resolve => setTimeout(resolve, delay));
+
+            // Retry with incremented counter
+            return await this.generate(prompt, {
+                ...options,
+                __retryCount: retryCount + 1,
+            });
+        }
 
         logger.debug('YaGPT generate: response llm', { responseJson });
         const yaResult = responseJson.result || responseJson;
@@ -238,6 +275,7 @@ export class YaGptService implements LLMService {
             requestId: options.requestId,
             requestType: 'generate_content',
             prompt,
+            templateId: (options as any).templateId,
             inputTokens,
             outputTokens,
             totalTokens,
@@ -278,6 +316,7 @@ export class YaGptService implements LLMService {
                 ...chatOptions,
                 requireFunctionCall: true,
                 __attemptCount: __attemptCount + 1,
+                __retryCount: retryCount,
             });
         }
 
@@ -289,6 +328,10 @@ export class YaGptService implements LLMService {
         logger.debug('YaGPT generate: response data', { responseData });
 
         logData.responseContent = JSON.stringify(responseData);
+        logData.metadata = {
+            provider: 'yagpt',
+            retryCount,
+        };
         await LLMHistoryService.logRequest(logData);
 
         // Save recording if enabled
@@ -314,6 +357,91 @@ export class YaGptService implements LLMService {
      */
     private calculateCost(tokens: number): number {
         return (tokens / 1000) * COST_PER_1K_TOKENS;
+    }
+
+    /**
+     * Determines if an error should not be retried based on error type and status code
+     */
+    private shouldNotRetry(error: any): boolean {
+        // Check for HTTP status codes that should not be retried
+        if (error.status) {
+            const status = parseInt(error.status);
+            // 4xx client errors that won't be fixed by retrying
+            if (
+                status === 400 ||
+                status === 401 ||
+                status === 402 ||
+                status === 403 ||
+                status === 404 ||
+                status === 409
+            ) {
+                return true;
+            }
+        }
+
+        // Check error message for specific patterns
+        if (error.message) {
+            const message = error.message.toLowerCase();
+
+            // Authentication/authorization errors
+            if (
+                message.includes('unauthorized') ||
+                message.includes('forbidden') ||
+                message.includes('authentication') ||
+                message.includes('invalid credentials') ||
+                message.includes('access denied') ||
+                message.includes('api key') ||
+                message.includes('invalid api key')
+            ) {
+                return true;
+            }
+
+            // Payment/billing errors
+            if (
+                message.includes('payment required') ||
+                message.includes('insufficient funds') ||
+                message.includes('billing') ||
+                message.includes('quota exceeded') ||
+                message.includes('limit exceeded')
+            ) {
+                return true;
+            }
+
+            // Client configuration errors
+            if (
+                message.includes('invalid request') ||
+                message.includes('bad request') ||
+                message.includes('malformed') ||
+                message.includes('folder id') ||
+                message.includes('model not found')
+            ) {
+                return true;
+            }
+
+            // Function call validation errors (these are handled separately)
+            if (message.includes('required function') && message.includes('was not called')) {
+                return true;
+            }
+
+            if (message.includes('function') && message.includes('not found')) {
+                return true;
+            }
+
+            if (message.includes('missing required parameters')) {
+                return true;
+            }
+        }
+
+        // Check for specific error types
+        if (
+            error.name === 'ValidationError' ||
+            error.name === 'AuthenticationError' ||
+            error.name === 'AuthorizationError'
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -362,9 +490,13 @@ export class YaGptService implements LLMService {
 
     async generateImage(
         prompt: string,
-        options: { presentationId?: string; userId: string; requestId: string }
+        options: { presentationId?: string; userId: string; requestId: string; __retryCount?: number }
     ): Promise<{ imageUrl: string; imageId: string }> {
         const startTime = Date.now();
+
+        // Initialize retry counter if not provided
+        const retryCount = options.__retryCount || 0;
+        const maxRetries = 3;
 
         let cached = false;
 
@@ -396,18 +528,49 @@ export class YaGptService implements LLMService {
         };
 
         // Start async generation
-        const startResp = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/imageGenerationAsync', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${iamToken}`,
-            },
-            body: JSON.stringify(requestBody),
-        });
+        let startResp;
+        try {
+            startResp = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/imageGenerationAsync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${iamToken}`,
+                },
+                body: JSON.stringify(requestBody),
+            });
 
-        if (!startResp.ok) {
-            const text = await startResp.text();
-            throw new Error(`Yandex Art start failed: ${startResp.status} - ${text}`);
+            if (!startResp.ok) {
+                const text = await startResp.text();
+                const error = new Error(`Yandex Art start failed: ${startResp.status} - ${text}`);
+                (error as any).status = startResp.status;
+                throw error;
+            }
+        } catch (error: any) {
+            logger.error('YaGPT generateImage: API error', { error, retryCount });
+
+            // Check if this error should not be retried
+            if (this.shouldNotRetry(error)) {
+                throw error;
+            }
+
+            // Check if we've exceeded max retries
+            if (retryCount >= maxRetries) {
+                logger.error(`YaGPT Image: Max retries (${maxRetries}) exceeded for request ${options.requestId}`);
+                throw error;
+            }
+
+            // Wait before retry (exponential backoff)
+            const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
+            logger.info(
+                `YaGPT Image: Retrying request ${options.requestId} in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`
+            );
+            await new Promise(resolve => setTimeout(resolve, delay));
+
+            // Retry with incremented counter
+            return await this.generateImage(prompt, {
+                ...options,
+                __retryCount: retryCount + 1,
+            });
         }
 
         const startData = await startResp.json();
@@ -487,6 +650,7 @@ export class YaGptService implements LLMService {
                 errorMessage: undefined,
                 metadata: {
                     provider: 'yagpt',
+                    retryCount,
                 },
             };
 

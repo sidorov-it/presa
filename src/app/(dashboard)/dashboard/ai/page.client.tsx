@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 // import * as Select from '@chakra-ui/react/components/select';
 import { Portal } from '@chakra-ui/react';
-import { FaPlus, FaTrash, FaGripVertical, FaFileAlt, FaEdit, FaUpload, FaClipboardList, FaCrown } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaGripVertical, FaFileAlt, FaEdit, FaUpload, FaCrown } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
@@ -390,6 +390,7 @@ const AiPresentationPage = () => {
                     durationMinutes,
                     goal,
                     audience,
+                    description,
                 }),
             });
 
@@ -414,7 +415,7 @@ const AiPresentationPage = () => {
             }
 
             const presentationData = await response.json();
-            router.push(`/docs/${presentationData.presentation.id}`);
+            router.push(`/docs/${presentationData.presentationId}`);
             toast.success('Презентация успешно создана!');
         } catch {
             setError('Ошибка создания презентации. Попробуйте еще раз.');
@@ -495,7 +496,7 @@ const AiPresentationPage = () => {
             }
 
             const presentationData = await response.json();
-            router.push(`/docs/${presentationData.presentation.id}`);
+            router.push(`/docs/${presentationData.presentationId}`);
             toast.success('Презентация успешно создана!');
         } catch {
             setError('Ошибка обработки плана. Попробуйте еще раз.');
@@ -690,7 +691,7 @@ const AiPresentationPage = () => {
             const data = await response.json();
 
             // Navigate to the editor
-            router.push(`/docs/${data.presentation.id}`);
+            router.push(`/docs/${data.presentationId}`);
             toast.success('Презентация успешно создана!');
         } catch (error) {
             console.error('Error creating presentation:', error);
@@ -815,12 +816,12 @@ const AiPresentationPage = () => {
                                     <Text fontSize="sm" color="gray.600">
                                         {(uploadedFile.size / 1024 / 1024).toFixed(2)} МБ
                                     </Text>
-                                    <Button 
-                                        variant="outline" 
+                                    <Button
+                                        variant="outline"
                                         onClick={() => {
                                             setUploadedFile(null);
                                             setError('');
-                                        }} 
+                                        }}
                                         size="sm"
                                     >
                                         Удалить файл
@@ -920,6 +921,20 @@ const AiPresentationPage = () => {
 
                         {/* Form fields */}
                         <Stack gap="16px">
+                            <Box>
+                                <Text as="label" fontWeight="bold" display="block" marginBottom="8px">
+                                    Дополнительная инструкция
+                                </Text>
+                                <Textarea
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    placeholder="Дополнительные требования к презентации (необязательно)"
+                                    rows={3}
+                                    aria-label="Дополнительная инструкция"
+                                    tabIndex={0}
+                                />
+                            </Box>
+
                             <Flex gap="16px" alignItems="flex-end">
                                 <Box flex="1">
                                     <Select.Root
@@ -1034,45 +1049,47 @@ const AiPresentationPage = () => {
                                 </Select.Root>
                             </Box>
 
-                            <Box width="100%">
-                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
-                                    Длительность презентации (минуты)
-                                </Text>
-                                <Input
-                                    value={durationMinutes || ''}
-                                    onChange={e => setDurationMinutes(e.target.value ? Number(e.target.value) : null)}
-                                    placeholder="Сколько времени будет длиться презентация"
-                                    aria-label="Длительность презентации"
-                                    type="number"
-                                    tabIndex={0}
-                                />
-                            </Box>
-
-                            <Box width="100%">
-                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
-                                    Цель презентации
-                                </Text>
-                                <Textarea
-                                    value={goal}
-                                    onChange={e => setGoal(e.target.value)}
-                                    placeholder="Какой цели должна служить презентация"
-                                    aria-label="Цель презентации"
-                                    tabIndex={0}
-                                />
-                            </Box>
-
-                            <Box width="100%">
-                                <Text fontSize="sm" as="label" display="block" marginBottom="8px">
-                                    Аудитория презентации
-                                </Text>
-                                <Textarea
-                                    value={audience}
-                                    onChange={e => setAudience(e.target.value)}
-                                    placeholder="Для какой аудитории создается презентация"
-                                    aria-label="Аудитория презентации"
-                                    tabIndex={0}
-                                />
-                            </Box>
+                            <Flex gap="16px" flexDirection="column" alignItems="flex-start">
+                                <Box width="100%">
+                                    <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                        Длительность презентации (минуты)
+                                    </Text>
+                                    <Input
+                                        value={durationMinutes || ''}
+                                        onChange={e =>
+                                            setDurationMinutes(e.target.value ? Number(e.target.value) : null)
+                                        }
+                                        placeholder="Сколько времени будет длиться презентация"
+                                        aria-label="Длительность презентации"
+                                        type="number"
+                                        tabIndex={0}
+                                    />
+                                </Box>
+                                <Box width="100%">
+                                    <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                        Цель презентации
+                                    </Text>
+                                    <Textarea
+                                        value={goal}
+                                        onChange={e => setGoal(e.target.value)}
+                                        placeholder="Какой цели должна служить презентация"
+                                        aria-label="Цель презентации"
+                                        tabIndex={0}
+                                    />
+                                </Box>
+                                <Box width="100%">
+                                    <Text fontSize="sm" as="label" display="block" marginBottom="8px">
+                                        Аудитория презентации
+                                    </Text>
+                                    <Textarea
+                                        value={audience}
+                                        onChange={e => setAudience(e.target.value)}
+                                        placeholder="Для какой аудитории создается презентация"
+                                        aria-label="Аудитория презентации"
+                                        tabIndex={0}
+                                    />
+                                </Box>
+                            </Flex>
                         </Stack>
 
                         {error && (

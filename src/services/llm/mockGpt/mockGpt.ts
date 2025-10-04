@@ -215,9 +215,13 @@ export class MockGptService implements LLMService {
             presentationId?: string;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
+            __retryCount?: number;
             requestId?: string;
         }
     ): Promise<LLMResponse> {
+        // Initialize retry counter if not provided
+        const retryCount = options?.__retryCount || 0;
+
         const log = async (response: LLMResponse): Promise<LLMResponse> => {
             await LLMHistoryService.logRequest({
                 userId: this.userId,
@@ -226,6 +230,7 @@ export class MockGptService implements LLMService {
                 requestId: options?.requestId,
                 requestType: 'generate_content',
                 prompt,
+                templateId: (options as any).templateId,
                 inputTokens: 0,
                 outputTokens: 0,
                 totalTokens: 0,
@@ -233,7 +238,10 @@ export class MockGptService implements LLMService {
                 cached: false,
                 cost: 0,
                 success: true,
-                metadata: this.testScenario ? { scenario: this.testScenario.name } : {},
+                metadata: {
+                    ...(this.testScenario ? { scenario: this.testScenario.name } : {}),
+                    retryCount,
+                },
                 responseContent: JSON.stringify(response),
             });
             return response;
@@ -447,9 +455,34 @@ export class MockGptService implements LLMService {
         });
     }
 
+    /**
+     * Determines if an error should not be retried based on error type and status code
+     * For MockGPT, most errors should not be retried as they are usually configuration issues
+     */
+    private shouldNotRetry(error: any): boolean {
+        // MockGPT rarely has retryable errors, but we can still check for common patterns
+
+        // Check error message for specific patterns
+        if (error.message) {
+            const message = error.message.toLowerCase();
+
+            // Configuration errors
+            if (
+                message.includes('test scenario') ||
+                message.includes('configuration') ||
+                message.includes('not found')
+            ) {
+                return true;
+            }
+        }
+
+        // For MockGPT, we generally don't retry as it's for testing
+        return true;
+    }
+
     async generateImage(
         _prompt: string,
-        _options: { presentationId?: string; userId: string; requestId?: string }
+        _options: { presentationId?: string; userId: string; requestId?: string; __retryCount?: number }
     ): Promise<{ imageUrl: string; imageId: string }> {
         await LLMHistoryService.logRequest({
             userId: this.userId,
@@ -465,7 +498,10 @@ export class MockGptService implements LLMService {
             cached: false,
             cost: 0,
             success: true,
-            metadata: this.testScenario ? { scenario: this.testScenario.name } : {},
+            metadata: {
+                ...(this.testScenario ? { scenario: this.testScenario.name } : {}),
+                retryCount: _options.__retryCount || 0,
+            },
             responseContent: JSON.stringify({ imageUrl: MOCK_IMAGE_URL, imageId: MOCK_IMAGE_ID }),
         });
         return {

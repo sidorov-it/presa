@@ -34,6 +34,7 @@ import { generateImage } from '@/services/llm/gigaChat';
 import { getTextContent } from '@/elements/textEditor/defaultContent';
 import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
 import { getNewEditorElementFromMarkdown } from './getNewEditorElementFromMarkdown';
+import { cleanListMarkers } from './cleanListMarkers';
 
 // const generateImage = () => {};
 /**
@@ -112,11 +113,15 @@ export const createSlideFromTemplateWithContent = async ({
             for (let i = 0; i < cellElements.length; i++) {
                 // const elementConfig = cellElements[i];
                 const elementConfig = cellElements[i];
+                
+                // Находим оригинальный индекс элемента в layoutConfig.elements
+                const originalElementIndex = layoutConfig.elements.findIndex(el => el === elementConfig);
+                
                 const slotMappingEntry = Array.from(slotMapping.entries()).find(
                     ([_, mapping]) =>
                         mapping.layoutIndex === layoutIndex &&
                         mapping.column === cellIndex &&
-                        mapping.elementIndex === i
+                        mapping.elementIndex === originalElementIndex
                 );
 
                 if (!slotMappingEntry) {
@@ -125,7 +130,7 @@ export const createSlideFromTemplateWithContent = async ({
                 }
 
                 const [slotKey, mapping] = slotMappingEntry;
-                const elementContent = layoutsContents[slotKey] || {};
+                const elementContent = layoutsContents[slotKey] || '';
 
                 // Create element based on template
                 let newElement: Omit<BaseElement, 'cellId'>;
@@ -164,13 +169,15 @@ export const createSlideFromTemplateWithContent = async ({
                         elementConfig.props.textType
                     )
                 ) {
-                    // const content = getTextContent(elementConfig.props.textType, elementContent);
+                    // Очищаем маркеры списка из контента, сгенерированного LLM
+                    const cleanedContent = cleanListMarkers(elementContent || '');
+                    
                     newElement = getNewElement({
                         elementTypeId: elementConfig.elementTypeId,
                         elementVariant: elementConfig.elementVariant,
                         props: {
                             ...elementConfig.props,
-                            content: elementContent || '',
+                            content: cleanedContent,
                             textType: elementConfig.props.textType,
                         },
                     });

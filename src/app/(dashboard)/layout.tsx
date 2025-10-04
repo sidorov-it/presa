@@ -18,6 +18,7 @@ import {
     LuPalette,
     LuSettings,
     LuTrash,
+    LuTestTube,
 } from 'react-icons/lu';
 import { useEarlyTestBanner } from '@/contexts/EarlyTestBannerContext';
 import { useSubscriptionHealthCheck } from '@/hooks/useSubscriptionHealthCheck';
@@ -67,6 +68,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             label: 'Оплата',
             path: '/payment',
             icon: <LuCreditCard size={20} />,
+        },
+        {
+            label: 'Тест слайдов',
+            path: '/dashboard/test-slide',
+            icon: <LuTestTube size={20} />,
         },
         {
             label: 'Обратная связь',

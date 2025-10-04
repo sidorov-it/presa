@@ -59,7 +59,7 @@ export class GigaChatService implements LLMService {
         this.client = new GigaChat({
             dangerouslyAllowBrowser: true,
             credentials: GIGACHAT_AUTH_KEY,
-            model: 'GigaChat-2',
+            model: 'GigaChat-2-Max',
             scope: GIGACHAT_SCOPE || 'GIGACHAT_API_PERS',
             timeout: 600,
             httpsAgent,
@@ -80,6 +80,72 @@ export class GigaChatService implements LLMService {
         return (tokens / 1000) * COST_PER_1K_TOKENS;
     }
 
+    /**
+     * Determines if an error should not be retried based on error type and status code
+     */
+    private shouldNotRetry(error: any): boolean {
+        // Check for HTTP status codes that should not be retried
+        if (error.status) {
+            const status = parseInt(error.status);
+            // 4xx client errors that won't be fixed by retrying
+            if (status === 400 || status === 401 || status === 402 || status === 403 || status === 404 || status === 409) {
+                return true;
+            }
+        }
+
+        // Check error message for specific patterns
+        if (error.message) {
+            const message = error.message.toLowerCase();
+            
+            // Authentication/authorization errors
+            if (message.includes('unauthorized') || 
+                message.includes('forbidden') || 
+                message.includes('authentication') ||
+                message.includes('invalid credentials') ||
+                message.includes('access denied')) {
+                return true;
+            }
+
+            // Payment/billing errors
+            if (message.includes('payment required') || 
+                message.includes('insufficient funds') ||
+                message.includes('billing') ||
+                message.includes('quota exceeded')) {
+                return true;
+            }
+
+            // Client configuration errors
+            if (message.includes('client is not initialized') ||
+                message.includes('invalid request') ||
+                message.includes('bad request') ||
+                message.includes('malformed')) {
+                return true;
+            }
+
+            // Function call validation errors (these are handled separately)
+            if (message.includes('required function') && message.includes('was not called')) {
+                return true;
+            }
+
+            if (message.includes('function') && message.includes('not found')) {
+                return true;
+            }
+
+            if (message.includes('missing required parameters')) {
+                return true;
+            }
+        }
+
+        // Check for specific error types
+        if (error.name === 'ValidationError' || 
+            error.name === 'AuthenticationError' || 
+            error.name === 'AuthorizationError') {
+            return true;
+        }
+
+        return false;
+    }
+
     async generateFromCache(prompt: string): Promise<LLMResponse> {
         const recording = await this.recordingService?.findRecordingByPrompt(prompt);
         return recording?.response.data;
@@ -93,6 +159,7 @@ export class GigaChatService implements LLMService {
             function_call?: any;
             requireFunctionCall?: boolean;
             __attemptCount?: number;
+            __retryCount?: number;
             requestId: string;
         } = {
             requestId: ''
@@ -103,6 +170,10 @@ export class GigaChatService implements LLMService {
         const success = true;
         let error: string | undefined;
         let response;
+
+        // Initialize retry counter if not provided
+        const retryCount = options.__retryCount || 0;
+        const maxRetries = 3;
 
         try {
             // Try to get recorded response first in replay mode
@@ -172,6 +243,7 @@ export class GigaChatService implements LLMService {
                         ...chatOptions,
                         requireFunctionCall: true,
                         __attemptCount: __attemptCount + 1,
+                        __retryCount: retryCount,
                     });
                 }
 
@@ -204,6 +276,7 @@ export class GigaChatService implements LLMService {
                     requestId: options.requestId,
                     requestType: 'generate_content',
                     prompt,
+                    templateId: (options as any).templateId,
                     inputTokens,
                     outputTokens,
                     totalTokens,
@@ -215,6 +288,7 @@ export class GigaChatService implements LLMService {
                     metadata: {
                         options,
                         response,
+                        retryCount,
                     },
                 };
 
@@ -290,19 +364,47 @@ export class GigaChatService implements LLMService {
             }
 
             return response;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error generating content with GigaChat:', error);
-            throw error;
+            
+            // Check if this error should not be retried
+            if (this.shouldNotRetry(error)) {
+                throw error;
+            }
+
+            // Check if we've exceeded max retries
+            if (retryCount >= maxRetries) {
+                console.error(`GigaChat: Max retries (${maxRetries}) exceeded for request ${options.requestId}`);
+                throw error;
+            }
+
+            // Wait before retry (exponential backoff)
+            const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
+            console.log(`GigaChat: Retrying request ${options.requestId} in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+
+            // Retry with incremented counter
+            return await this.generate(prompt, {
+                ...options,
+                __retryCount: retryCount + 1,
+            });
         }
     }
 
-    async generateImage(prompt: string, options: LLMRequestContext): Promise<{ imageUrl: string; imageId: string }> {
+    async generateImage(
+        prompt: string, 
+        options: LLMRequestContext & { __retryCount?: number }
+    ): Promise<{ imageUrl: string; imageId: string }> {
         const startTime = performance.now();
 
         let cached = false;
         const success = true;
         let error: string | undefined;
         let result;
+
+        // Initialize retry counter if not provided
+        const retryCount = options.__retryCount || 0;
+        const maxRetries = 3;
 
         try {
             const DEFAULT_SYSTEM_PROMPT = 'Сгенерируй изображение для презентации';
@@ -362,6 +464,7 @@ export class GigaChatService implements LLMService {
                     errorMessage: error,
                     metadata: {
                         options,
+                        retryCount,
                     },
                 };
 
@@ -409,9 +512,30 @@ export class GigaChatService implements LLMService {
             }
 
             return result;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error generating image:', error);
-            throw error;
+            
+            // Check if this error should not be retried
+            if (this.shouldNotRetry(error)) {
+                throw error;
+            }
+
+            // Check if we've exceeded max retries
+            if (retryCount >= maxRetries) {
+                console.error(`GigaChat Image: Max retries (${maxRetries}) exceeded for request ${options.requestId}`);
+                throw error;
+            }
+
+            // Wait before retry (exponential backoff)
+            const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
+            console.log(`GigaChat Image: Retrying request ${options.requestId} in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+
+            // Retry with incremented counter
+            return await this.generateImage(prompt, {
+                ...options,
+                __retryCount: retryCount + 1,
+            });
         }
     }
 
@@ -434,7 +558,7 @@ export class GigaChatService implements LLMService {
 
             const content = message.content;
             if (!content) {
-                console.error(message);
+                console.error(response);
                 throw new Error('Empty content in GigaChat response');
             }
 

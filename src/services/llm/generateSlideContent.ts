@@ -439,6 +439,8 @@ export default async function generateSlideContent({
         functions: [functionSchema],
         function_call: { name: 'generate_slide_text' },
         ...(options.requestId ? { requestId: options.requestId } : {}),
+        ...(options.presentationId ? { presentationId: options.presentationId } : {}),
+        templateId: template.id,
     });
 
     logger.debug('LLM response (generateSlideContent):', JSON.stringify(response));

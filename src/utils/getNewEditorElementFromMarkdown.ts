@@ -20,6 +20,7 @@ const stripMarkdownSyntax = (text: string): string => {
         .replace(/^>\s+/gm, '') // Remove blockquote markers
         .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold markers
         .replace(/\*(.+?)\*/g, '$1') // Remove italic markers
+        .replace(/\n/g, '<br />') // Convert line breaks to HTML breaks for plain text
         .trim();
 };
 
@@ -29,8 +30,14 @@ export const getNewEditorElementFromMarkdown = (markdown: string, textType: stri
         return getNewEditorElement('', { textType, textAlign });
     }
 
+    // Обрабатываем экранированные переносы строк от LLM
+    const normalizedMarkdown = markdown
+        .replace(/\\n/g, '\n') // Заменяем \n на реальные переносы строк
+        .replace(/\\r\\n/g, '\n') // Заменяем \r\n на переносы строк
+        .replace(/\\t/g, '    '); // Заменяем \t на 4 пробела
+
     // Convert markdown to HTML
-    const htmlContent = markdownToHtml(markdown);
+    const htmlContent = markdownToHtml(normalizedMarkdown);
 
     // If markdown produced structured content (headings, lists, etc.), don't wrap it again
     if (hasStructuredContent(htmlContent)) {
@@ -38,6 +45,6 @@ export const getNewEditorElementFromMarkdown = (markdown: string, textType: stri
     }
 
     // For plain text or simple content, apply the slot's textType formatting
-    const plainContent = stripMarkdownSyntax(markdown);
+    const plainContent = stripMarkdownSyntax(normalizedMarkdown);
     return getNewEditorElement(plainContent, { textType, textAlign });
 };

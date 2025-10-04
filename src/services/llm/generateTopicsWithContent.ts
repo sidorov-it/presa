@@ -50,10 +50,20 @@ const getTopicsWithContentPrompt = ({
     content,
     numSlides,
     contentAmount,
+    description,
+    tone,
+    goal,
+    audience,
+    durationMinutes,
 }: {
     content: string;
     numSlides: number;
     contentAmount?: string;
+    description?: string;
+    tone?: string;
+    goal?: string;
+    audience?: string;
+    durationMinutes?: number;
 }) =>
     `Используя лучшие практики презентационного дизайна (см. список ниже), сгенерируй структуру презентации.
 Для каждого слайда необходимо:
@@ -68,6 +78,11 @@ const getTopicsWithContentPrompt = ({
 Входные данные:
 • Количество слайдов: ${numSlides}
 • Объем контента: ${getContentAmountDescription(contentAmount)}
+${tone ? `• Стилистика: ${tone}` : ''}
+${goal ? `• Цель презентации: ${goal}` : ''}
+${audience ? `• Аудитория: ${audience}` : ''}
+${durationMinutes ? `• Длительность: ${durationMinutes} минут` : ''}
+${description ? `• Дополнительные требования: ${description}` : ''}
 
 1) Сгенерируй ровно ${numSlides} слайдов — не больше и не меньше. Структура презентации должна быть завершённой и самодостаточной в рамках заданного количества слайдов.
 2) Каждый слайд должен содержать:
@@ -82,6 +97,7 @@ const getTopicsWithContentPrompt = ({
     • Результат — какие выгоды и изменения ожидаются после внедрения решения.
     • Призыв к действию (CTA) — что нужно сделать аудитории дальше (например, зарегистрироваться, попробовать, связаться и т.п.).
 
+${description ? `4) Учти дополнительные требования: ${description}` : ''}
 
 Для генерации структуры презентации ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_presentation_topics_with_content!
 
@@ -100,12 +116,23 @@ export async function generateTopicsWithContent(
         content,
         numSlides,
         contentAmount,
+        description,
+        tone,
+        goal,
+        audience,
+        durationMinutes,
     }: {
         content: string;
         numSlides: number;
         contentAmount?: string;
+        description?: string;
+        tone?: string;
+        goal?: string;
+        audience?: string;
+        durationMinutes?: number;
     },
-    requestId: string
+    requestId: string,
+    presentationId?: string
 ): Promise<{ title: string; topics: { title: string; content: string }[] }> {
     const llmService = createLLMService({ userId });
 
@@ -114,10 +141,16 @@ export async function generateTopicsWithContent(
             content,
             numSlides,
             contentAmount,
+            description,
+            tone,
+            goal,
+            audience,
+            durationMinutes,
         }),
         {
             ...topicsOptions,
             ...(requestId ? { requestId } : {}),
+            ...(presentationId ? { presentationId } : {}),
         }
     );
 

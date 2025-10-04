@@ -168,6 +168,7 @@ export default async function generateSlidesTemplates({
             {
                 ...getTemplatesOptions(topics.length),
                 ...(options.requestId ? { requestId: options.requestId } : {}),
+                ...(options.presentationId ? { presentationId: options.presentationId } : {}),
             }
         );
 

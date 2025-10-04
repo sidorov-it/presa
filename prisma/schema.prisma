@@ -255,6 +255,7 @@ model LLMRequestHistory {
   provider    String
   requestType String // e.g. 'generate_slides', 'generate_image'
   prompt      String // Original prompt
+  templateId  String? // Template ID for slide content generation
   timestamp   DateTime @default(now())
 
   // Response metrics
@@ -282,6 +283,7 @@ model LLMRequestHistory {
   @@index([requestId])
   @@index([userId])
   @@index([timestamp])
+  @@index([templateId])
 }
 
 // Token system models

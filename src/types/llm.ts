@@ -23,12 +23,16 @@ export interface LLMService {
             requireFunctionCall?: boolean;
             /** Internal counter to prevent infinite retries when the function is not invoked by the LLM. */
             __attemptCount?: number;
+            /** Internal counter for retry attempts when API errors occur. */
+            __retryCount?: number;
+            templateId?: string;
+            requestId?: string;
         }
     ): Promise<LLMResponse>;
     // Optional image generation capability. Not all providers implement this method.
     generateImage?(
         prompt: string,
-        options: { presentationId?: string; userId: string }
+        options: { presentationId?: string; userId: string; __retryCount?: number }
     ): Promise<{ imageUrl: string; imageId: string }>;
 
     getTokensCount(text: string): Promise<number>;

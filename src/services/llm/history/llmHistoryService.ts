@@ -8,6 +8,7 @@ export interface LLMRequestData {
     requestId?: string;
     requestType: string;
     prompt: string;
+    templateId?: string; // Template ID for slide content generation
     inputTokens: number;
     outputTokens: number;
     totalTokens: number;
@@ -36,6 +37,7 @@ export class LLMHistoryService {
                     requestId: data.requestId,
                     requestType: data.requestType,
                     prompt: data.prompt,
+                    templateId: data.templateId,
                     inputTokens: data.inputTokens,
                     outputTokens: data.outputTokens,
                     totalTokens: data.totalTokens,

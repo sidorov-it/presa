@@ -121,6 +121,7 @@ export default async function generateSlideTemplate({
         {
             ...getTemplateOptions,
             ...(options.requestId ? { requestId: options.requestId } : {}),
+            ...(options.presentationId ? { presentationId: options.presentationId } : {}),
         }
     );
 

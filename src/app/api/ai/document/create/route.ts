@@ -10,6 +10,7 @@ import { getUserFeatures } from '@/utils/subscriptions';
 import generateSlidesTemplates from '@/services/llm/generateSlidesTemplates';
 import generateSlide from '@/services/llm/generateSlide';
 import { generateId } from '@/utils/id';
+import { ObjectId } from 'mongodb';
 
 async function POSTHandler(request: NextRequest) {
     logger.info('POST /api/ai/document/create');
@@ -22,8 +23,17 @@ async function POSTHandler(request: NextRequest) {
             calculateTokens: TokenCalculators.generatePresentationFromDocument,
         },
         async (session, requestData) => {
-            const { extractedText, filename, numSlides, tone, contentAmount, durationMinutes, goal, audience } =
-                requestData;
+            const {
+                extractedText,
+                filename,
+                numSlides,
+                tone,
+                contentAmount,
+                durationMinutes,
+                goal,
+                audience,
+                description,
+            } = requestData;
 
             if (!extractedText || !filename) {
                 throw new Error('Invalid request data: extractedText and filename are required');
@@ -46,6 +56,10 @@ async function POSTHandler(request: NextRequest) {
                 logger.info(`Document: ${filename}, Content length: ${extractedText.length} chars`);
                 logger.info(`User slide limit: ${maxSlides}, Requested slides: ${numSlides}`);
 
+                // Generate presentation ID early so we can use it in LLM requests
+                const presentationIdObject = new ObjectId();
+                const presentationId = presentationIdObject.toString();
+
                 // First, generate topics from the document using full content
                 const { title, topics } = await generateTopicsWithContent(
                     userId,
@@ -53,8 +67,14 @@ async function POSTHandler(request: NextRequest) {
                         content: extractedText, // Use full content, not truncated
                         numSlides,
                         contentAmount,
+                        description,
+                        tone,
+                        goal,
+                        audience,
+                        durationMinutes,
                     },
-                    requestId
+                    requestId,
+                    presentationId
                 );
 
                 const templateSuggestions = await generateSlidesTemplates({
@@ -66,9 +86,13 @@ async function POSTHandler(request: NextRequest) {
                     })),
                     contentAmount,
                     durationMinutes,
+                    goal,
+                    audience,
+                    tone,
                     options: {
                         userId,
                         requestId,
+                        presentationId,
                     },
                 });
 
@@ -94,7 +118,8 @@ async function POSTHandler(request: NextRequest) {
                         index: i,
                         totalSlides: templateSuggestions.length,
                         templateId: template.id,
-                        instructions: `Создай контент для слайда "${topic.title}", используя следующий контент: ${topic.content}`,
+                        instructions: `Создай контент для слайда "${topic.title}", используя следующий контент: ${topic.content}${description ? ` Дополнительные требования: ${description}` : ''}`,
+                        contentAmount,
                         durationMinutes,
                         goal,
                         audience,
@@ -103,6 +128,7 @@ async function POSTHandler(request: NextRequest) {
                         options: {
                             userId,
                             requestId,
+                            presentationId,
                         },
                     });
 
@@ -143,8 +169,9 @@ async function POSTHandler(request: NextRequest) {
 
                 const presentation = await prisma.presentation.create({
                     data: {
+                        id: presentationId,
                         title: title || 'AI Generated Presentation',
-                        // description: prompt?.substring(0, 500) || '',
+                        description: description || '',
                         userId,
                         slides: slidesData,
                         durationMinutes,
