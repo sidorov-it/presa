@@ -51,20 +51,20 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             items: [
                 {
-                    title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -137,20 +137,20 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             items: [
                 {
-                    title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Заголовок</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -224,20 +224,20 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             items: [
                 {
-                    title: '<p><span class="heading-text heading-3">Шаг 1</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Шаг 2</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Шаг 3</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -258,20 +258,20 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             items: [
                 {
-                    title: '<p><span class="heading-text heading-3">Событие 1</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Событие 2</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
                 {
-                    title: '<p><span class="heading-text heading-3">Событие 3</span></p>',
-                    text: '<p><span class="body-text normal-text">Описание</span></p>',
+                    title: '<p><span class="heading-text heading-3"></span></p>',
+                    text: '<p><span class="body-text normal-text"></span></p>',
                     imageUrl: '',
                     iconUrl: '',
                 },
@@ -310,7 +310,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             textType: 'heading',
             level: HEADING_1_LEVEL,
-            content: '<span class="heading-text title-text">Заголовок</span>',
+            content: '<span class="heading-text title-text"></span>',
         },
         slots: [{ slot: 'content', llmHint: 'Текст заголовка', type: 'text' }],
         llmHints: {
@@ -412,7 +412,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             textType: 'table',
             content:
-                '\n<table>\n    <tbody>\n        <tr>\n            <td><p>Ячейка 1</p></td>\n            <td><p>Ячейка 2</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 3</p></td>\n            <td><p>Ячейка 4</p></td>\n        </tr>\n    </tbody>\n</table>',
+                '\n<table>\n    <tbody>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n    </tbody>\n</table>',
             rows: 2,
             columns: 2,
             isTable: true,
@@ -453,7 +453,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             textType: 'table',
             content:
-                '\n<table>\n    <tbody>\n        <tr>\n            <td><p>Ячейка 1</p></td>\n            <td><p>Ячейка 2</p></td>\n            <td><p>Ячейка 3</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 4</p></td>\n            <td><p>Ячейка 5</p></td>\n            <td><p>Ячейка 6</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 7</p></td>\n            <td><p>Ячейка 8</p></td>\n            <td><p>Ячейка 9</p></td>\n        </tr>\n    </tbody>\n</table>',
+                '\n<table>\n    <tbody>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n    </tbody>\n</table>',
             rows: 3,
             columns: 3,
             isTable: true,
@@ -520,7 +520,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         props: {
             textType: 'table',
             content:
-                '\n<table>\n    <tbody>\n        <tr>\n            <td><p>Ячейка 1</p></td>\n            <td><p>Ячейка 2</p></td>\n            <td><p>Ячейка 3</p></td>\n            <td><p>Ячейка 4</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 5</p></td>\n            <td><p>Ячейка 6</p></td>\n            <td><p>Ячейка 7</p></td>\n            <td><p>Ячейка 8</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 9</p></td>\n            <td><p>Ячейка 10</p></td>\n            <td><p>Ячейка 11</p></td>\n            <td><p>Ячейка 12</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 13</p></td>\n            <td><p>Ячейка 14</p></td>\n            <td><p>Ячейка 15</p></td>\n            <td><p>Ячейка 16</p></td>\n        </tr>\n    </tbody>\n</table>',
+                '\n<table>\n    <tbody>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n        <tr>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n            <td><p></p></td>\n        </tr>\n        <tr>\n            <td><p></p></td>\n            <td><p>Ячейка 10</p></td>\n            <td><p>Ячейка 11</p></td>\n            <td><p>Ячейка 12</p></td>\n        </tr>\n        <tr>\n            <td><p>Ячейка 13</p></td>\n            <td><p>Ячейка 14</p></td>\n            <td><p>Ячейка 15</p></td>\n            <td><p>Ячейка 16</p></td>\n        </tr>\n    </tbody>\n</table>',
             rows: 4,
             columns: 4,
             isTable: true,
@@ -669,7 +669,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'note-box',
         props: {
             iconType: 'note-box',
-            content: '<p><span class="body-text normal-text">Простой блок текста</span></p>',
+            content: '<p><span class="body-text normal-text"></span></p>',
             backgroundColor: '#bbb8fa',
             darkBackgroundColor: '#01004d',
         },
@@ -687,7 +687,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'info-box',
         props: {
             iconType: 'info-box',
-            content: '<p><span class="body-text normal-text">Полезная информация</span></p>',
+            content: '<p><span class="body-text normal-text"></span></p>',
             backgroundColor: '#b6d6fc',
             darkBackgroundColor: '#032349',
         },
@@ -705,7 +705,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'warning-box',
         props: {
             iconType: 'warning-box',
-            content: '<p><span class="body-text normal-text">Предупреждение</span></p>',
+            content: '<p><span class="body-text normal-text"></span></p>',
             backgroundColor: '#fcf2b5',
             darkBackgroundColor: '#032349',
         },
@@ -723,7 +723,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'caution-box',
         props: {
             iconType: 'caution-box',
-            content: '<p><span class="body-text normal-text">Внимание</span>!</p>',
+            content: '<p><span class="body-text normal-text"></span></p>',
             backgroundColor: '#ffb3b3',
             darkBackgroundColor: '#4a3f03',
         },
@@ -741,7 +741,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'success-box',
         props: {
             iconType: 'success-box',
-            content: '<p><span class="body-text normal-text">Успешно выполнено</span></p>',
+            content: '<p><span class="body-text normal-text"></span></p>',
             backgroundColor: '#b5fcb8',
             darkBackgroundColor: '#183a13',
         },
@@ -759,7 +759,7 @@ export const ElementRegistry: Record<string, ElementRegistryElement> = {
         elementVariant: 'question-box',
         props: {
             iconType: 'question-box',
-            content: '<p><span class="body-text normal-text">Частый вопрос</span></p>',
+            content: '<p><span class="body-text normal-text"></span></p>',
             backgroundColor: '#e8f4fd',
             darkBackgroundColor: '#262626',
         },
