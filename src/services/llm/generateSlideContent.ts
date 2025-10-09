@@ -7,6 +7,50 @@ import { LLMRequestContext, SlotKeyMapping } from '@/types/gigachat';
 import logger from '@/utils/logger';
 import { TextType } from '@/types';
 
+const fixLine = (line: string) =>
+    line
+    // убираем хвостовые обратные слэши и кавычки в конце строки
+        .replace(/[\\"]+\s*$/g, '')
+    // убираем хвостовые # (часто артефакт заголовков)
+        .replace(/\s*#{1,6}\s*$/g, '')
+    // нормализуем заголовки: "#Текст" -> "# Текст"
+        .replace(/^(#{1,6})(?!\s)(.+)$/u, (_, h, t) => `${h} ${t.trim()}`)
+    // нормализуем списки "1.Пункт" -> "1. Пункт"
+        .replace(/^(\d+)\.(\S)/, (_, n, ch) => `${n}. ${ch}`)
+    // нормализуем маркеры "-Текст" -> "- Текст"
+        .replace(/^-\s?(?=\S)/, '- ')
+    // убираем двойные кавычки в середине строки (заменяем на ёлочки)
+        .replace(/"/g, '«');
+
+const sanitizeMarkdown = (s: string) =>
+    s
+        .replace(/\r/g, '')
+        .split('\n')
+        .map(line => fixLine(line))
+        .join('\n')
+    // обрежем хвостовые пустые строки
+        .replace(/\s+$/g, '');
+
+const sanitizeFunctionArgs = (args: any): any => {
+    if (typeof args === 'string') {
+        return sanitizeMarkdown(args);
+    }
+
+    if (Array.isArray(args)) {
+        return args.map(item => sanitizeFunctionArgs(item));
+    }
+
+    if (args && typeof args === 'object') {
+        const sanitized: any = {};
+        for (const [key, value] of Object.entries(args)) {
+            sanitized[key] = sanitizeFunctionArgs(value);
+        }
+        return sanitized;
+    }
+
+    return args;
+};
+
 function generateUniqueSlotKeys(template: SlideTemplateCore): Map<string, SlotKeyMapping> {
     const mapping = new Map<string, SlotKeyMapping>();
     const usedSlots = new Set<string>();
@@ -189,6 +233,13 @@ function createGenerateSlideContentFunction(template: SlideTemplateCore) {
             const entryProperties = {};
             const required: string[] = [];
 
+            let description = `Строка/блок валидного Markdown: нет хвостовых #, \\, ", один пробел после #`;
+
+            if (value.llmHints?.purpose) {
+                description += `
+Описание поля: ${value.llmHints?.purpose}`
+            }
+
             value.items.forEach(item => {
                 required.push(item.key);
 
@@ -201,25 +252,38 @@ function createGenerateSlideContentFunction(template: SlideTemplateCore) {
 
             properties[key] = {
                 type: 'object',
-                description: value.llmHints?.purpose,
+                description,
                 // contextRules: value.llmHints?.contextRules,
                 properties: entryProperties,
                 required,
             };
         } else if (value.textType) {
             // только для списков
+            let description = `Markdown-строка списка: "- Текст" или "1. Текст", без хвостовых #".`;
+            if (value.llmHints?.purpose) {
+                description += `
+Описание поля: ${value.llmHints?.purpose}`
+            }
+
             properties[key] = {
                 type: 'array',
                 description: value.llmHints?.purpose,
                 items: {
                     type: 'string',
-                    description: value.llmHints?.purpose,
+                    description,
                 },
             };
         } else {
+            let description = `Строка/блок валидного Markdown: нет хвостовых #, \\, ", один пробел после # и после.`;
+
+            if (value.llmHints?.purpose) {
+                description += `
+Описание поля: ${value.llmHints?.purpose}`
+            }
+
             properties[key] = {
                 type: 'string',
-                description: value.llmHints?.purpose,
+                description,
                 // contextRules: value.llmHints?.contextRules,
             };
         }
@@ -261,10 +325,18 @@ function generateSlotDescription(template: SlideTemplateCore, slotsMapping: Map<
                             if (slot.items) {
                                 return slot.items
                                     .map(item => {
+                                        let rules;
+
+                                        if (slot.llmHints?.items?.[item?.originalKey]?.contextRules) {
+                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                            // @ts-expect-error
+                                            rules = `Правила:\n ${slot.llmHints.items[item!.originalKey]!.contextRules.map(rule => `  * ${rule}`).join('\n')}`
+                                        }
+
                                         return `    Слот "${item.key}":
         - Тип: ${item.type}
         - Назначение: ${item.description}
-        ${slot.llmHints?.items?.[item.originalKey]?.contextRules ? '- Правила:\n' + slot.llmHints?.items?.[item.originalKey]?.contextRules.map(rule => `  * ${rule}`).join('\n') : ''}
+        ${rules ?? ''}
         `;
                                     })
                                     .join('\n\n');
@@ -347,7 +419,10 @@ function createPromptGenerateSlideContent({
                 .join('\n')}`
             : '';
 
-    return `Создай структурированный контент для слайда ${slideIndex + 1} из ${totalSlides}.\n Инструкция пользователя по требуемому слайду: "${topic}".
+    return `Ты — функция-бот. Верни ТОЛЬКО вызов функции generate_slide_text с корректным JSON-аргументом. 
+Никаких комментариев, префиксов, Markdown вне аргументов функции.
+
+Создай структурированный контент для слайда ${slideIndex + 1} из ${totalSlides}.\n Инструкция пользователя по требуемому слайду: "${topic}".
 
 ${goal ? `Цель презентации: ${goal}\n` : ''}${audience ? `Аудитория: ${audience}\n` : ''}${tone ? `Тон/стиль: ${tone}\n` : ''}${
     Number.isInteger(durationMinutes) ? `Длительность доклада: ${durationMinutes} минут\n` : ''
@@ -358,19 +433,58 @@ ${previousSlidesSection}
 Структура слайда:
 ${slotsDescription}
 
+Правила Markdown внутри значений слотов (ОБЯЗАТЕЛЬНЫ):
+1) Заголовки: строки вида 
+   "# Текст", "## Текст", "### Текст" — ОДИН пробел после #, НЕТ # в конце.
+   ✅ "# Введение"
+   ❌ "#Введение"   ❌ "Введение##"   ❌ "# Введение##"
+2) Обычный текст: без экранирования обратным слэшем в конце строки. Не добавляй \\ перед кавычкой.
+3) Нумерованные списки: 
+   каждая строка — "1. Текст", "2. Текст" (с пробелом после точки).
+   ✅ "1. Первый пункт"
+   ❌ "1.Первый"    ❌ "1) Первый"
+4) Маркированные списки: 
+   каждая строка — "- Текст" (дефис + пробел).
+   ✅ "- Пункт"
+   ❌ "• Пункт"     ❌ "— Пункт"
+5) Цитаты: строка начинается с "> " (больше + пробел). 
+6) Пустые строки допустимы ТОЛЬКО между логическими блоками; веди их умеренно.
+7) Не используй кодовые блоки \`\`\` внутри значений слотов.
+8) Внутри Markdown НЕ используй двойные кавычки ". Если нужны кавычки — пиши «ёлочки».
+9) Последний символ каждой строки — буква/цифра или . , ! ? : ; ) ]  — НЕТ хвостовых #, \\ или " .
+10) Не добавляй невидимые символы, не вставляй HTML.
+11) Не добавляй символы форматирования в КОНЕЦ строки.
+12) Не используй двойные кавычки внутри значений.
+
 Требования:
 1. Сгенерируй контент для КАЖДОГО слота, соблюдая тип и назначение.
 2. Для слотов image опиши, какое изображение нужно сгенерировать.
 3. Соблюдай логическую последовательность и связи с предыдущими слайдами.
-4. Формат для текстовых полей — Markdown. Без HTML. Если в правилах указаны сиволы markdown, используй их.
-5. Независимо от количества строк (даже для одного слова или заголовка) ВСЕГДА возвращай текст в Markdown-формате.
-6. Для заголовков используй символы #, ##, ###.
-7. Для списков используй символы -, 1. 2. 3.
-8. Для цитат используй символы >
-9. **ВАЖНО**: Строго следуй указаниям по объему контента выше.
-${instructions ? `10. Дополнительные инструкции: ${instructions}` : ''}
+4. **ВАЖНО**: Строго следуй указаниям по объему контента выше.
+${instructions ? `5. Дополнительные инструкции: ${instructions}` : ''}
 
-ОБЯЗАТЕЛЬНО ВЫЗОВИ фунцию generate_slide_text!
+Проверь себя по чек-листу выше и верни ТОЛЬКО вызов generate_slide_text.
+Если поле — массив строк, каждая строка — валидная Markdown-строка согласно правилам (без кодовых блоков).
+
+Пример правильного вызова:
+{
+  "name": "generate_slide_text",
+  "arguments": {
+    "main_title": "# Применение ИИ в маркетинге",
+    "subtitle": "## Для малого и среднего бизнеса",
+    "small_subtitle": "### Введение",
+    "main_text": "# Почему сейчас\\n\\n- Снижение затрат\\n- Рост конверсии\\n\\n1. Сбор данных\\n2. Персонализация\\n\\n> Автоматизация — ключ к масштабу"
+  }
+}
+
+Пример неправильного вызова (это неправильно: есть хвостовые # и кавычка, так делать нельзя):
+{
+  "name": "generate_slide_text",
+  "arguments": {
+    "subtitle": "## Подзаголовок##\\"", 
+    "main_title": "Применение ИИ#"
+  }
+}
 `;
 }
 
@@ -413,7 +527,11 @@ export default async function generateSlideContent({
     previousSlides?: { title: string; content: string }[];
     options: LLMRequestContext;
 }) {
-    const llmService = createLLMService({ userId: options.userId });
+    const llmService = createLLMService({
+        userId: options.userId,
+        provider: options.provider,
+        testScenario: options.testScenario,
+    });
 
     const { functionSchema, slotMapping } = createGenerateSlideContentFunction(template);
 
@@ -431,7 +549,7 @@ export default async function generateSlideContent({
         tone,
         previousSlides,
     });
-    logger.debug('LLM prompt (generateSlideContent):', prompt);
+    logger.info('LLM prompt (generateSlideContent):', prompt);
 
     // получаем ответ от LLM
     // const response = await gigaChatService.generateFromCache(topic);
@@ -443,13 +561,25 @@ export default async function generateSlideContent({
         templateId: template.id,
     });
 
-    logger.debug('LLM response (generateSlideContent):', JSON.stringify(response));
+    logger.info('LLM response (generateSlideContent):', JSON.stringify(response));
+
+    // Санитизируем Markdown в ответе, если он есть
+    let sanitizedArgs = response.function_call?.arguments;
+    if (sanitizedArgs && typeof sanitizedArgs === 'string') {
+        try {
+            const parsedArgs = JSON.parse(sanitizedArgs);
+            const sanitizedParsedArgs = sanitizeFunctionArgs(parsedArgs);
+            sanitizedArgs = JSON.stringify(sanitizedParsedArgs);
+        } catch (e) {
+            logger.warn('Failed to parse function arguments for sanitization:', e);
+        }
+    }
 
     return {
-        functionArgs: response.function_call?.arguments,
+        functionArgs: sanitizedArgs,
         slotMapping,
     };
 }
 
 // Explicit exports for testing purposes
-export { createGenerateSlideContentFunction, createPromptGenerateSlideContent };
+export { createGenerateSlideContentFunction, createPromptGenerateSlideContent, sanitizeMarkdown };

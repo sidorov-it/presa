@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
                 userId: 'test-user',
                 requestId: generateId(),
             },
+            withImages: false,
         });
 
         return NextResponse.json({ slide });

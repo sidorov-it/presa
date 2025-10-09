@@ -13,6 +13,7 @@ import { LLMHistoryService, LLMRequestData } from '../history/llmHistoryService'
 import { replyConfig } from './replyConfig';
 import { LLMRequestContext } from '@/types/gigachat';
 import { SYSTEM_PROMPT } from '@/prompts';
+import logger from '@/utils/logger';
 
 interface Message {
     role: string;
@@ -34,7 +35,7 @@ export class GigaChatService implements LLMService {
     private recordingService?: RecordingService;
     private recordingOptions: RecordingOptions;
     private userId: string;
-    private static rateLimiter = new RateLimiter(10);
+    private static rateLimiter = new RateLimiter(1);
 
     static createGigaChatService(config: GigaChatConfig) {
         return new GigaChatService(config);
@@ -58,10 +59,11 @@ export class GigaChatService implements LLMService {
 
         this.client = new GigaChat({
             dangerouslyAllowBrowser: true,
-            credentials: GIGACHAT_AUTH_KEY,
-            model: 'GigaChat-2-Max',
-            scope: GIGACHAT_SCOPE || 'GIGACHAT_API_PERS',
+            credentials: process.env.GIGACHAT_AUTH_KEY,
+            model: 'GigaChat-2',
+            scope: process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS',
             timeout: 600,
+            verbose: true,
             httpsAgent,
         });
 
@@ -212,6 +214,7 @@ export class GigaChatService implements LLMService {
                     await this.client.updateToken();
                     return this.client.chat({
                         messages: messages,
+                        temperature: 0.2,
                         ...chatOptions,
                     });
                 });
@@ -541,6 +544,8 @@ export class GigaChatService implements LLMService {
 
     private parseResponse(response: any): LLMResponse {
         try {
+            logger.info('GigaChat response:', response);
+
             const message = response.choices[0]?.message;
             if (!message) {
                 throw new Error('Empty response from GigaChat');

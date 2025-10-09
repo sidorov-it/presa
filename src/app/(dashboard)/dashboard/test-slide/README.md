@@ -42,3 +42,7 @@ JSON должен содержать ключи, соответствующие 
 - `createSlideFromTemplateWithContent` для создания слайда
 - `SlideViewer` для отображения результата
 - `SlideTemplatesRegistry` для получения доступных шаблонов
+
+
+
+

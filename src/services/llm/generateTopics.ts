@@ -2,6 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable indent */
 import { createLLMService } from '@/services/llm';
+import { SupportedLLMProvider } from '@/types/llm';
 
 const createGenerateTopicsFunction = (numSlides: number) => ({
     name: 'generate_presentation_topics',
@@ -172,10 +173,18 @@ async function generateTopics(
         goal?: string;
         audience?: string;
     },
-    requestId: string
+    requestId: string,
+    overrides?: {
+        provider?: SupportedLLMProvider;
+        testScenario?: string;
+    }
 ) {
     try {
-        const llmService = createLLMService({ userId });
+        const llmService = createLLMService({
+            userId,
+            provider: overrides?.provider,
+            testScenario: overrides?.testScenario,
+        });
 
         // Generate topics using function calling
         const topicsResponse = await llmService.generate(
@@ -237,10 +246,18 @@ export async function generateTopicsFromPlan(
         goal?: string;
         audience?: string;
     },
-    requestId: string
+    requestId: string,
+    overrides?: {
+        provider?: SupportedLLMProvider;
+        testScenario?: string;
+    }
 ) {
     try {
-        const llmService = createLLMService({ userId });
+        const llmService = createLLMService({
+            userId,
+            provider: overrides?.provider,
+            testScenario: overrides?.testScenario,
+        });
 
         // Generate topics from plan using function calling
         const topicsResponse = await llmService.generate(

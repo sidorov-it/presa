@@ -1,6 +1,8 @@
 import { Agent } from 'https';
-import { TemplateElement, TextType } from '@/types/templates';
+import { TemplateElement } from '@/types/templates';
 import { ElementType } from '@/types/elements';
+import { SupportedLLMProvider } from '@/types/llm';
+import { TextType } from '.';
 
 export interface GigaChatConfig {
     credentials: string;
@@ -51,4 +53,6 @@ export interface LLMRequestContext {
     slideId?: string;
     userId: string;
     requestId: string;
+    provider?: SupportedLLMProvider;
+    testScenario?: string;
 }

@@ -47,23 +47,6 @@ export default async function generateSlide({
         options,
     });
 
-    // const { functionSchema, slotMapping } = createGenerateSlideContentFunction(template);
-
-    // // создаем промпт для генерации слайда
-    // const prompt = createPromptGenerateSlideContent(topic, index + 1, totalSlides, template, slotMapping, instructions);
-    // console.log(prompt);
-
-    // // получаем ответ от LLM
-    // // const response = await gigaChatService.generateFromCache(topic);
-    // const response = await gigaChatService.generate(prompt, {
-    //     functions: [functionSchema],
-    //     function_call: { name: 'generate_slide_text' },
-    // });
-
-    // const functionArgs = response.function_call?.arguments;
-
-    // создаем слайд из шаблона и аргументов
-    console.log('functionArgs', functionArgs);
     const slide = await createSlideFromTemplateWithContent({
         templateId: template.id,
         slotMapping,

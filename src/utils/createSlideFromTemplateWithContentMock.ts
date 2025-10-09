@@ -24,7 +24,7 @@ export const createSlideFromTemplateWithContent = async ({
 }: {
     templateId: string;
     slotMapping: Map<string, SlotKeyMapping>;
-    layoutsContents: Record<string, string | string[]>;
+    layoutsContents: Record<string, string | string[] | Record<string, unknown>>;
     title?: string;
     options: LLMRequestContext;
 }): Promise<Slide> => {

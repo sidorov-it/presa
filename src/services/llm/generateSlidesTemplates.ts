@@ -26,7 +26,12 @@ const createSelectTemplatesFunction = (topicsCount: number) => ({
                         },
                         templateId: {
                             type: 'string',
-                            description: 'ID выбранного шаблона',
+                            description:
+                                'ID выбранного шаблона (Возможные значения: ' +
+                                Object.values(SlideTemplatesRegistry)
+                                    .map(template => template.id)
+                                    .join(', ') +
+                                ')',
                         },
                         explanation: {
                             type: 'string',
@@ -53,7 +58,7 @@ const getContentAmountDescription = (contentAmount?: string) => {
     }
 };
 
-// Enhanced prompt: includes additional brief fields, sets agent role, lists best practices, and emphasises mandatory function call
+// Enhanced prompt with XML-like markup, guard rules, and structured requirements
 const getTemplatesPrompt = ({
     title,
     description,
@@ -74,34 +79,63 @@ const getTemplatesPrompt = ({
     goal?: string;
     audience?: string;
     tone?: string;
-}) => `Твоя задача — **для каждой темы презентации** выбрать наиболее подходящий шаблон слайда из предложенного списка.
+}) => `<task>
+Выбери наиболее подходящий шаблон слайда для каждой темы презентации из предложенного списка.
+</task>
 
-Входные данные брифа:
-• Название презентации: "${title}"
-• Описание: "${description}"
-${goal ? `• Цель: ${goal}\n` : ''}${audience ? `• Аудитория: ${audience}\n` : ''}${tone ? `• Тон/стиль: ${tone}\n` : ''}• Объем контента: ${getContentAmountDescription(contentAmount)}
-${Number.isInteger(durationMinutes) ? `• Длительность доклада: ${durationMinutes} минут\n` : ''}
+<brief>
+<title>${title}</title>
+<description>${description}</description>
+${goal ? `<goal>${goal}</goal>` : ''}
+${audience ? `<audience>${audience}</audience>` : ''}
+${tone ? `<tone>${tone}</tone>` : ''}
+<content_amount>${getContentAmountDescription(contentAmount)}</content_amount>
+${Number.isInteger(durationMinutes) ? `<duration>${durationMinutes} минут</duration>` : ''}
+<slides_count>${topics.length}</slides_count>
+</brief>
 
-В презентации будет ${topics.length} слайда(ов). Нужно выбрать ровно ${topics.length} шаблонов слайдов.
-
-Доступные шаблоны:
+<templates>
 ${templates
     .map(
         t =>
-            `- ${t.name} (${t.id})\n  Описание: ${t.description}\n  Цель: ${t.purpose.join(', ')}\n  Примеры использования: ${t.useCases.join(', ')}`
+            `<template id="${t.id}">
+  <name>${t.name}</name>
+  <description>${t.description}</description>
+  <purpose>${t.purpose.join(', ')}</purpose>
+  <use_cases>${t.useCases.join(', ')}</use_cases>
+</template>`
     )
     .join('\n')}
+</templates>
 
-Темы для анализа:
-${topics.map((t, i) => `${i + 1}. "${t.title}"${t.instructions ? ` — Инструкции: ${t.instructions}` : ''}`).join('\n')}
+<topics>
+${topics
+    .map(
+        (t, i) => `<topic index="${i}">
+  <title>${t.title}</title>
+  ${t.instructions ? `<instructions>${t.instructions}</instructions>` : ''}
+</topic>`
+    )
+    .join('\n')}
+</topics>
 
-Лучшие практики выбора шаблона:
-1. Поддерживай визуальную иерархию: ключевая мысль должна быть в центре внимания.
-2. Избегай перегрузки текстом.
-3. Учитывай аудиторию и цель презентации.
-4. Используй простые, контрастные композиции.
-5. Выбирай шаблон, который лучше всего раскрывает тему.
-6. **ВАЖНО**: Учитывай объем контента при выборе шаблона:
+<requirements>
+<quantity>Выбери ровно ${topics.length} шаблонов слайдов</quantity>
+<source>Используй ТОЛЬКО имена шаблонов из &lt;templates&gt;</source>
+<restrictions>
+  <rule>Не придумывай новые шаблоны</rule>
+  <rule>Не используй шаблоны, не указанные в списке</rule>
+  <rule>Каждый шаблон должен соответствовать теме слайда</rule>
+</restrictions>
+</requirements>
+
+<best_practices>
+1. Поддерживай визуальную иерархию: ключевая мысль должна быть в центре внимания
+2. Избегай перегрузки текстом
+3. Учитывай аудиторию и цель презентации
+4. Используй простые, контрастные композиции
+5. Выбирай шаблон, который лучше всего раскрывает тему
+6. Учитывай объем контента при выборе шаблона:
    ${
        contentAmount === 'concise'
            ? '- Для КРАТКОГО контента выбирай простые шаблоны с минимумом элементов'
@@ -109,8 +143,11 @@ ${topics.map((t, i) => `${i + 1}. "${t.title}"${t.instructions ? ` — Инст�
              ? '- Для ПОДРОБНОГО контента выбирай шаблоны с большим количеством текстовых блоков'
              : '- Для СРЕДНЕГО контента выбирай сбалансированные шаблоны'
    }
+</best_practices>
 
-**ВНИМАНИЕ:** Для возврата результата ТЫ ОБЯЗАН вызвать функцию "select_slide_templates".`;
+<action>
+Для возврата результата ОБЯЗАТЕЛЬНО вызови функцию "select_slide_templates"
+</action>`;
 
 const getTemplatesOptions = (topicsCount: number) => ({
     functions: [createSelectTemplatesFunction(topicsCount)],
@@ -138,7 +175,11 @@ export default async function generateSlidesTemplates({
     tone?: string;
     options: LLMRequestContext;
 }) {
-    const llmService = createLLMService({ userId: options.userId });
+    const llmService = createLLMService({
+        userId: options.userId,
+        provider: options.provider,
+        testScenario: options.testScenario,
+    });
 
     // Prepare templates information for LLM
     const templates = Object.values(SlideTemplatesRegistry)
@@ -151,86 +192,102 @@ export default async function generateSlidesTemplates({
             useCases: template.llm.useCases,
         }));
 
+    // Create a Set of valid template IDs for fast validation
+    const validTemplateIds = new Set(templates.map(t => t.id));
+    const maxRetries = 3;
+    let attempt = 0;
+
     try {
-        // Get template suggestions from LLM using function calling
-        const templateResponse = await llmService.generate(
-            getTemplatesPrompt({
-                title,
-                description: prompt,
-                topics,
-                templates,
-                contentAmount,
-                durationMinutes,
-                goal,
-                audience,
-                tone,
-            }),
-            {
+        while (attempt < maxRetries) {
+            attempt++;
+
+            // Build the prompt (first attempt or retry with error message)
+            const currentPrompt =
+                attempt === 1
+                    ? getTemplatesPrompt({
+                          title,
+                          description: prompt,
+                          topics,
+                          templates,
+                          contentAmount,
+                          durationMinutes,
+                          goal,
+                          audience,
+                          tone,
+                      })
+                    : getTemplatesPrompt({
+                          title,
+                          description: prompt,
+                          topics,
+                          templates,
+                          contentAmount,
+                          durationMinutes,
+                          goal,
+                          audience,
+                          tone,
+                      }) +
+                      `\n\n<previous_attempt_error>
+ВНИМАНИЕ: В предыдущей попытке были обнаружены ошибки!
+Ты указал несуществующие ID шаблонов.
+Используй ТОЛЬКО следующие ID шаблонов: ${Array.from(validTemplateIds).join(', ')}
+Перепроверь свой выбор и вызови функцию с СУЩЕСТВУЮЩИМИ ID шаблонов.
+</previous_attempt_error>`;
+
+            // Get template suggestions from LLM using function calling
+            const templateResponse = await llmService.generate(currentPrompt, {
                 ...getTemplatesOptions(topics.length),
                 ...(options.requestId ? { requestId: options.requestId } : {}),
                 ...(options.presentationId ? { presentationId: options.presentationId } : {}),
-            }
-        );
+            });
 
-        let templateSuggestions = [];
-        if (templateResponse.function_call?.arguments) {
-            const args = templateResponse.function_call.arguments;
-            templateSuggestions = args.templateSelections;
+            let templateSuggestions = [];
+            if (templateResponse.function_call?.arguments) {
+                const args = templateResponse.function_call.arguments;
+                templateSuggestions = args.templateSelections;
+            }
+
+            // Validate that we have the correct number of suggestions
+            if (templateSuggestions.length !== topics.length) {
+                console.warn(
+                    `LLM returned ${templateSuggestions.length} templates but expected ${topics.length}. Attempt ${attempt}/${maxRetries}`
+                );
+                if (attempt === maxRetries) {
+                    throw new Error(
+                        `LLM вернул неверное количество шаблонов: ${templateSuggestions.length} вместо ${topics.length} после ${maxRetries} попыток`
+                    );
+                }
+                continue;
+            }
+
+            // Validate all template IDs exist
+            const invalidTemplates = templateSuggestions.filter(
+                (suggestion: any) => !validTemplateIds.has(suggestion.templateId)
+            );
+
+            if (invalidTemplates.length === 0) {
+                // All templates are valid, return success
+                console.log(`✓ Successfully validated ${templateSuggestions.length} template selections`);
+                return templateSuggestions;
+            }
+
+            // Found invalid templates
+            const invalidIds = invalidTemplates.map((inv: any) => inv.templateId).join(', ');
+            console.warn(`⚠ Attempt ${attempt}/${maxRetries}: LLM returned invalid template IDs: ${invalidIds}`);
+
+            if (attempt === maxRetries) {
+                // Max retries reached, throw error with details
+                throw new Error(
+                    `LLM вернул несуществующие шаблоны после ${maxRetries} попыток. ` +
+                        `Невалидные ID: ${invalidIds}. ` +
+                        `Допустимые ID: ${Array.from(validTemplateIds).join(', ')}`
+                );
+            }
+
+            // Continue to next attempt
         }
 
-        return templateSuggestions;
-        // // Create slides with suggested templates
-        // const slidesData = templateSuggestions.map((suggestion: any, index: number) => {
-        //     const template = SlideTemplatesRegistry[suggestion.templateId];
-        //     if (!template) {
-        //         // Fallback to standard template if suggested template not found
-        //         return {
-        //             id: `slide-${generateId()}`,
-        //             title: topics[index].title,
-        //             layouts: [
-        //                 {
-        //                     id: `layout-${generateId()}`,
-        //                     type: 'single-column',
-        //                     elements: [
-        //                         {
-        //                             id: `element-${generateId()}`,
-        //                             type: 'editor',
-        //                             content: topics[index].title,
-        //                             cellId: `cell-${generateId()}`,
-        //                         },
-        //                     ],
-        //                     style: {},
-        //                     gridStructure: {
-        //                         rows: [
-        //                             {
-        //                                 id: generateId(),
-        //                                 cells: [
-        //                                     {
-        //                                         id: `cell-${generateId()}`,
-        //                                         row: 0,
-        //                                         column: 0,
-        //                                     },
-        //                                 ],
-        //                             },
-        //                         ],
-        //                         columns: 1,
-        //                         columnWidths: ['100%'],
-        //                     },
-        //                 },
-        //             ],
-        //             contentAlignment: 'center',
-        //         };
-        //     }
-
-        //     // Convert template to menu item format
-        //     const menuItem = TemplateTransformers.toMenuRegistry(template);
-        //     // Create slide from template
-        //     const slide = createSlideFromTemplate(menuItem.templateConfig!);
-        //     slide.title = topics[index].title;
-        //     return slide;
-        // });
-
-        // return slidesData;
+        // Should never reach here
+        throw new Error('Не удалось получить валидные шаблоны от LLM');
     } catch (error) {
         console.error('Error generating slides templates:', error);
         throw error;

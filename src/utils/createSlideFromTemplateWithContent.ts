@@ -51,12 +51,14 @@ export const createSlideFromTemplateWithContent = async ({
     layoutsContents,
     title,
     options,
+    withImages = true,
 }: {
     templateId: string;
     slotMapping: Map<string, SlotKeyMapping>;
-    layoutsContents: Record<string, string | string[]>;
+    layoutsContents: Record<string, string | string[] | Record<string, unknown>>;
     title?: string;
     options: LLMRequestContext;
+    withImages?: boolean;
 }): Promise<Slide> => {
     const template = SlideTemplatesRegistry[templateId];
     if (!template) {
@@ -113,15 +115,15 @@ export const createSlideFromTemplateWithContent = async ({
             for (let i = 0; i < cellElements.length; i++) {
                 // const elementConfig = cellElements[i];
                 const elementConfig = cellElements[i];
-                
+
                 // Находим оригинальный индекс элемента в layoutConfig.elements
-                const originalElementIndex = layoutConfig.elements.findIndex(el => el === elementConfig);
-                
+                // const originalElementIndex = layoutConfig.elements.findIndex(el => el.slot === elementConfig.slot);
+
                 const slotMappingEntry = Array.from(slotMapping.entries()).find(
                     ([_, mapping]) =>
                         mapping.layoutIndex === layoutIndex &&
                         mapping.column === cellIndex &&
-                        mapping.elementIndex === originalElementIndex
+                        mapping.elementIndex === i
                 );
 
                 if (!slotMappingEntry) {
@@ -139,7 +141,7 @@ export const createSlideFromTemplateWithContent = async ({
                     try {
                         let imageUrl = elementContent || '';
 
-                        if (imageUrl) {
+                        if (imageUrl && withImages) {
                             imageUrl = await generateImage(imageUrl as string, options);
                         }
                         newElement = getNewElement({
@@ -170,8 +172,8 @@ export const createSlideFromTemplateWithContent = async ({
                     )
                 ) {
                     // Очищаем маркеры списка из контента, сгенерированного LLM
-                    const cleanedContent = cleanListMarkers(elementContent || '');
-                    
+                    const cleanedContent = cleanListMarkers((elementContent as string[]) || '');
+
                     newElement = getNewElement({
                         elementTypeId: elementConfig.elementTypeId,
                         elementVariant: elementConfig.elementVariant,
@@ -224,7 +226,7 @@ export const createSlideFromTemplateWithContent = async ({
                                 .filter((el: any) => mappedFieldsKeys?.includes(el.originalKey))
                                 .map((el: any) => elementContent[el.key])
                                 .join('\n');
-                            const imageUrl = await generateImage(imageDescription, options);
+                            const imageUrl = withImages ? await generateImage(imageDescription, options) : '';
                             item[itemKey] = imageUrl;
                         }
 

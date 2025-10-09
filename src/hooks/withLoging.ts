@@ -19,29 +19,31 @@ export const withLogging = (handler: (req: NextRequest, props: { params: Promise
         let response: Response;
 
         try {
-            logger.info(
-                JSON.stringify({
-                    type: 'request',
-                    timestamp,
-                    address,
-                    userId,
-                    body: request.body,
-                    requestId,
-                    method,
-                })
-            );
+            // Закомментировано для отключения логирования запросов
+            // logger.info(
+            //     JSON.stringify({
+            //         type: 'request',
+            //         timestamp,
+            //         address,
+            //         userId,
+            //         body: request.body,
+            //         requestId,
+            //         method,
+            //     })
+            // );
             response = await handler(request, props);
-            logger.info(
-                JSON.stringify({
-                    type: 'response',
-                    timestamp,
-                    address,
-                    userId: userId ?? null,
-                    status: response.status,
-                    requestId,
-                    method,
-                })
-            );
+            // Закомментировано для отключения логирования ответов
+            // logger.info(
+            //     JSON.stringify({
+            //         type: 'response',
+            //         timestamp,
+            //         address,
+            //         userId: userId ?? null,
+            //         status: response.status,
+            //         requestId,
+            //         method,
+            //     })
+            // );
 
             return response;
         } catch (error) {
