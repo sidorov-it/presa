@@ -25,10 +25,28 @@ export const EnterHandlerExtension = (
 
                     // Проверяем, находится ли курсор внутри списка, поднимаясь по дереву узлов
                     let isInList = false;
+                    let listItemNode = null;
+                    let listItemDepth = 0;
+                    let listNode = null;
+                    let listDepth = 0;
                     let currentNode = $head.parent;
                     let depth = $head.depth;
 
                     while (depth > 0) {
+                        if (currentNode.type.name === 'listItem' && !listItemNode) {
+                            listItemNode = currentNode;
+                            listItemDepth = depth;
+                        }
+                        if (
+                            (currentNode.type.name === 'bulletList' ||
+                                currentNode.type.name === 'taskList' ||
+                                currentNode.type.name === 'orderedList') &&
+                            !listNode
+                        ) {
+                            listNode = currentNode;
+                            listDepth = depth;
+                            isInList = true;
+                        }
                         if (
                             currentNode.type.name === 'listItem' ||
                             currentNode.type.name === 'bulletList' ||
@@ -36,15 +54,106 @@ export const EnterHandlerExtension = (
                             currentNode.type.name === 'orderedList'
                         ) {
                             isInList = true;
-                            break;
                         }
                         depth--;
                         currentNode = $head.node(depth);
                     }
 
-                    // Если курсор в списке, позволяем стандартную обработку Enter
+                    // Если курсор в списке, проверяем, пустой ли текущий listItem
+                    if (isInList && listItemNode && listNode) {
+                        // Проверяем, пустой ли текущий listItem
+                        const isEmptyListItem = listItemNode.textContent.trim() === '';
+
+                        if (isEmptyListItem) {
+                            // Находим позицию текущего listItem в родительском списке
+                            const $listPos = state.doc.resolve($head.before(listDepth));
+                            let currentListItemIndex = -1;
+
+                            listNode.forEach((node, offset, index) => {
+                                const absolutePos = $listPos.pos + offset + 1;
+                                if (absolutePos === $head.before(listItemDepth)) {
+                                    currentListItemIndex = index;
+                                }
+                            });
+
+                            if (currentListItemIndex !== -1) {
+                                // Создаем контент до текущего listItem
+                                const contentBefore: JSONContent = {
+                                    type: 'doc',
+                                    content: [],
+                                };
+
+                                if (currentListItemIndex > 0) {
+                                    const listItemsBefore: any[] = [];
+                                    listNode.forEach((node, offset, index) => {
+                                        if (index < currentListItemIndex) {
+                                            listItemsBefore.push(node.toJSON());
+                                        }
+                                    });
+
+                                    if (listItemsBefore.length > 0) {
+                                        contentBefore.content = [
+                                            {
+                                                type: listNode.type.name,
+                                                content: listItemsBefore,
+                                            },
+                                        ];
+                                    }
+                                }
+
+                                // Создаем контент после текущего listItem
+                                const contentAfter: JSONContent = {
+                                    type: 'doc',
+                                    content: [],
+                                };
+
+                                if (currentListItemIndex < listNode.childCount - 1) {
+                                    const listItemsAfter: any[] = [];
+                                    listNode.forEach((node, offset, index) => {
+                                        if (index > currentListItemIndex) {
+                                            listItemsAfter.push(node.toJSON());
+                                        }
+                                    });
+
+                                    if (listItemsAfter.length > 0) {
+                                        contentAfter.content = [
+                                            {
+                                                type: listNode.type.name,
+                                                content: listItemsAfter,
+                                            },
+                                        ];
+                                    }
+                                }
+
+                                // Определяем, что передать в onEnterPressed
+                                const hasContentBefore = contentBefore.content && contentBefore.content.length > 0;
+                                const hasContentAfter = contentAfter.content && contentAfter.content.length > 0;
+
+                                if (hasContentBefore && hasContentAfter) {
+                                    // Есть контент до и после - создаем 3 элемента
+                                    onEnterPressed(contentBefore, contentAfter, undefined);
+                                } else if (hasContentBefore) {
+                                    // Есть только контент до - оставляем список и создаем пустой текст
+                                    onEnterPressed(contentBefore, undefined, undefined);
+                                } else if (hasContentAfter) {
+                                    // Есть только контент после - создаем пустой текст и список
+                                    onEnterPressed(undefined, contentAfter, undefined);
+                                } else {
+                                    // Нет контента - просто создаем пустой текст
+                                    onEnterPressed(undefined, undefined, undefined);
+                                }
+
+                                return true;
+                            }
+                        }
+
+                        // Если listItem не пустой, позволяем стандартную обработку Enter
+                        return false;
+                    }
+
+                    // Если не в списке, продолжаем обычную обработку
                     if (isInList) {
-                        return false; // Передаем управление стандартному обработчику списков Tiptap
+                        return false;
                     }
 
                     // Проверяем, есть ли выделенный текст

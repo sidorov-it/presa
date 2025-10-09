@@ -88,11 +88,6 @@ export const ElementContent = ({
             // Start transaction at the beginning of the operation
             // Получаем текущий макет
 
-            // Обрабатываем пустой contentAfterCursor
-            if (!contentAfterCursor || contentAfterCursor.trim() === '' || contentAfterCursor.trim() === '<p></p>') {
-                contentAfterCursor = '<p><span class="body-text normal-text"></span></p>';
-            }
-
             const presentation = usePresentationStore.getState().getPresentation(presentationId);
             if (!presentation) return;
 
@@ -104,16 +99,432 @@ export const ElementContent = ({
 
             const row = layout.gridStructure.rows.find(r => r.cells.find(c => c.id === cellId));
 
+            // Проверяем, является ли это разбиением списка (оба contentBefore и contentAfter содержат списки)
+            const isListSplit =
+                contentBeforeCursor &&
+                contentAfterCursor &&
+                (contentBeforeCursor.includes('<ol') ||
+                    contentBeforeCursor.includes('<ul') ||
+                    contentBeforeCursor.includes('<li')) &&
+                (contentAfterCursor.includes('<ol') ||
+                    contentAfterCursor.includes('<ul') ||
+                    contentAfterCursor.includes('<li'));
+
+            if (isListSplit && row!.cells.length === 1) {
+                // Разделение списка: создаем 3 layout (список до, пустой текст, список после)
+                useHistoryStore.getState().beginTransaction(presentationId, 'split list');
+
+                const defaultGridType = 'blank';
+                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
+
+                // 1. Обновляем текущий элемент с контентом до
+                usePresentationStore.getState().updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    data: {
+                        content: contentBeforeCursor,
+                    },
+                    createHistoryEntry: true,
+                    isTextElement: true,
+                });
+
+                // 2. Создаем layout с пустым текстовым элементом
+                const emptyTextLayoutId = generateId(8);
+                const emptyTextElement = {
+                    ...getNewEditorElement('<p><span class="body-text normal-text"></span></p>', {}),
+                    cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
+                };
+                const emptyTextLayout: Layout = {
+                    id: emptyTextLayoutId,
+                    gridStructure: defaultLayoutGridStructure,
+                    type: defaultGridType,
+                    style: {},
+                    elements: [emptyTextElement],
+                };
+
+                // 3. Создаем layout со списком после
+                const afterListLayoutId = generateId(8);
+                const afterListElement = {
+                    ...getNewEditorElement(contentAfterCursor, {}),
+                    cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
+                };
+                const afterListLayout: Layout = {
+                    id: afterListLayoutId,
+                    gridStructure: defaultLayoutGridStructure,
+                    type: defaultGridType,
+                    style: {},
+                    elements: [afterListElement],
+                };
+
+                // Получаем обновленный slide после изменения текущего элемента
+                const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                if (!updatedSlide) {
+                    useHistoryStore.getState().commitTransaction(presentationId);
+                    return;
+                }
+
+                const updatedLayouts = [...updatedSlide.layouts];
+                const newCurrentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
+
+                // Вставляем новые layouts после текущего
+                updatedLayouts.splice(newCurrentLayoutIndex + 1, 0, emptyTextLayout, afterListLayout);
+
+                // Обновляем slide с новыми layouts
+                usePresentationStore.getState().updateSlide(
+                    presentationId,
+                    slideId,
+                    {
+                        layouts: updatedLayouts,
+                    },
+                    true
+                );
+
+                useHistoryStore.getState().commitTransaction(presentationId);
+
+                setTimeout(() => {
+                    tiptapRefs.current?.editors[emptyTextElement.id]?.editor.commands.focus('start');
+                }, 10);
+
+                return;
+            }
+
+            // Проверяем случай, когда есть список до, но нет списка после (конец списка)
+            const isListEnd =
+                contentBeforeCursor &&
+                (!contentAfterCursor || contentAfterCursor.trim() === '' || contentAfterCursor.trim() === '<p></p>') &&
+                (contentBeforeCursor.includes('<ol') ||
+                    contentBeforeCursor.includes('<ul') ||
+                    contentBeforeCursor.includes('<li'));
+
+            if (isListEnd && row!.cells.length === 1) {
+                // Конец списка: обновляем текущий элемент и создаем пустой текст
+                useHistoryStore.getState().beginTransaction(presentationId, 'end list');
+
+                const defaultGridType = 'blank';
+                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
+
+                // 1. Обновляем текущий элемент с контентом списка
+                usePresentationStore.getState().updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    data: {
+                        content: contentBeforeCursor,
+                    },
+                    createHistoryEntry: true,
+                    isTextElement: true,
+                });
+
+                // 2. Создаем layout с пустым текстовым элементом
+                const emptyTextLayoutId = generateId(8);
+                const emptyTextElement = {
+                    ...getNewEditorElement('<p><span class="body-text normal-text"></span></p>', {}),
+                    cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
+                };
+                const emptyTextLayout: Layout = {
+                    id: emptyTextLayoutId,
+                    gridStructure: defaultLayoutGridStructure,
+                    type: defaultGridType,
+                    style: {},
+                    elements: [emptyTextElement],
+                };
+
+                // Получаем обновленный slide после изменения текущего элемента
+                const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                if (!updatedSlide) {
+                    useHistoryStore.getState().commitTransaction(presentationId);
+                    return;
+                }
+
+                const updatedLayouts = [...updatedSlide.layouts];
+                const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
+
+                // Вставляем новый layout после текущего
+                updatedLayouts.splice(currentLayoutIndex + 1, 0, emptyTextLayout);
+
+                // Обновляем slide с новыми layouts
+                usePresentationStore.getState().updateSlide(
+                    presentationId,
+                    slideId,
+                    {
+                        layouts: updatedLayouts,
+                    },
+                    true
+                );
+
+                useHistoryStore.getState().commitTransaction(presentationId);
+
+                setTimeout(() => {
+                    tiptapRefs.current?.editors[emptyTextElement.id]?.editor.commands.focus('start');
+                }, 10);
+
+                return;
+            }
+
+            // Проверяем случай, когда нет списка до, но есть список после (начало списка)
+            const isListStart =
+                (!contentBeforeCursor ||
+                    contentBeforeCursor.trim() === '' ||
+                    contentBeforeCursor.trim() === '<p></p>') &&
+                contentAfterCursor &&
+                (contentAfterCursor.includes('<ol') ||
+                    contentAfterCursor.includes('<ul') ||
+                    contentAfterCursor.includes('<li'));
+
+            if (isListStart && row!.cells.length === 1) {
+                // Начало списка: создаем пустой текст и список после
+                useHistoryStore.getState().beginTransaction(presentationId, 'start list');
+
+                const defaultGridType = 'blank';
+                const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
+
+                // 1. Обновляем текущий элемент как пустой текст
+                usePresentationStore.getState().updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    data: {
+                        content: '<p><span class="body-text normal-text"></span></p>',
+                    },
+                    createHistoryEntry: true,
+                    isTextElement: true,
+                });
+
+                // 2. Создаем layout со списком после
+                const afterListLayoutId = generateId(8);
+                const afterListElement = {
+                    ...getNewEditorElement(contentAfterCursor!, {}),
+                    cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
+                };
+                const afterListLayout: Layout = {
+                    id: afterListLayoutId,
+                    gridStructure: defaultLayoutGridStructure,
+                    type: defaultGridType,
+                    style: {},
+                    elements: [afterListElement],
+                };
+
+                // Получаем обновленный slide после изменения текущего элемента
+                const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                if (!updatedSlide) {
+                    useHistoryStore.getState().commitTransaction(presentationId);
+                    return;
+                }
+
+                const updatedLayouts = [...updatedSlide.layouts];
+                const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
+
+                // Вставляем новый layout после текущего
+                updatedLayouts.splice(currentLayoutIndex + 1, 0, afterListLayout);
+
+                // Обновляем slide с новыми layouts
+                usePresentationStore.getState().updateSlide(
+                    presentationId,
+                    slideId,
+                    {
+                        layouts: updatedLayouts,
+                    },
+                    true
+                );
+
+                useHistoryStore.getState().commitTransaction(presentationId);
+
+                setTimeout(() => {
+                    tiptapRefs.current?.editors[elementId]?.editor.commands.focus('start');
+                }, 10);
+
+                return;
+            }
+
+            // Обрабатываем случаи разделения списка в multi-cell row
+            if (row!.cells.length > 1) {
+                const cell = row?.cells.find(c => c.id === cellId);
+                if (!cell) return;
+
+                // Проверяем, является ли это разбиением списка
+                if (isListSplit) {
+                    useHistoryStore.getState().beginTransaction(presentationId, 'split list in cell');
+
+                    // 1. Обновляем текущий элемент с контентом до
+                    usePresentationStore.getState().updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: {
+                            content: contentBeforeCursor,
+                        },
+                        createHistoryEntry: true,
+                        isTextElement: true,
+                    });
+
+                    // 2. Создаем пустой текстовый элемент
+                    const emptyTextElement = {
+                        ...getNewEditorElement('<p><span class="body-text normal-text"></span></p>', {}),
+                        cellId: cell.id,
+                    };
+
+                    // 3. Создаем элемент со списком после
+                    const afterListElement = {
+                        ...getNewEditorElement(contentAfterCursor, {}),
+                        cellId: cell.id,
+                    };
+
+                    // Получаем обновленный layout после изменения текущего элемента
+                    const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                    const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                    const updatedLayout = updatedSlide?.layouts.find(l => l.id === layoutId);
+                    if (!updatedLayout) {
+                        useHistoryStore.getState().commitTransaction(presentationId);
+                        return;
+                    }
+
+                    const updatedElements = [...updatedLayout.elements];
+                    const updatedElementIndex = updatedElements.findIndex(e => e.id === elementId);
+
+                    // Вставляем новые элементы после текущего
+                    updatedElements.splice(updatedElementIndex + 1, 0, emptyTextElement, afterListElement);
+
+                    updatedLayout.elements = updatedElements;
+                    usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+                    useHistoryStore.getState().commitTransaction(presentationId);
+
+                    setTimeout(() => {
+                        tiptapRefs.current?.editors[emptyTextElement.id]?.editor.commands.focus('start');
+                    }, 10);
+
+                    return;
+                } else if (isListEnd) {
+                    useHistoryStore.getState().beginTransaction(presentationId, 'end list in cell');
+
+                    // 1. Обновляем текущий элемент с контентом списка
+                    usePresentationStore.getState().updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: {
+                            content: contentBeforeCursor!,
+                        },
+                        createHistoryEntry: true,
+                        isTextElement: true,
+                    });
+
+                    // 2. Создаем пустой текстовый элемент
+                    const emptyTextElement = {
+                        ...getNewEditorElement('<p><span class="body-text normal-text"></span></p>', {}),
+                        cellId: cell.id,
+                    };
+
+                    // Получаем обновленный layout после изменения текущего элемента
+                    const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                    const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                    const updatedLayout = updatedSlide?.layouts.find(l => l.id === layoutId);
+                    if (!updatedLayout) {
+                        useHistoryStore.getState().commitTransaction(presentationId);
+                        return;
+                    }
+
+                    const updatedElements = [...updatedLayout.elements];
+                    const updatedElementIndex = updatedElements.findIndex(e => e.id === elementId);
+
+                    updatedElements.splice(updatedElementIndex + 1, 0, emptyTextElement);
+
+                    updatedLayout.elements = updatedElements;
+                    usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+                    useHistoryStore.getState().commitTransaction(presentationId);
+
+                    setTimeout(() => {
+                        tiptapRefs.current?.editors[emptyTextElement.id]?.editor.commands.focus('start');
+                    }, 10);
+
+                    return;
+                } else if (isListStart) {
+                    useHistoryStore.getState().beginTransaction(presentationId, 'start list in cell');
+
+                    // 1. Обновляем текущий элемент как пустой текст
+                    usePresentationStore.getState().updateElement({
+                        presentationId,
+                        slideId,
+                        layoutId,
+                        elementId,
+                        data: {
+                            content: '<p><span class="body-text normal-text"></span></p>',
+                        },
+                        createHistoryEntry: true,
+                        isTextElement: true,
+                    });
+
+                    // 2. Создаем элемент со списком после
+                    const afterListElement = {
+                        ...getNewEditorElement(contentAfterCursor!, {}),
+                        cellId: cell.id,
+                    };
+
+                    // Получаем обновленный layout после изменения текущего элемента
+                    const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                    const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                    const updatedLayout = updatedSlide?.layouts.find(l => l.id === layoutId);
+                    if (!updatedLayout) {
+                        useHistoryStore.getState().commitTransaction(presentationId);
+                        return;
+                    }
+
+                    const updatedElements = [...updatedLayout.elements];
+                    const updatedElementIndex = updatedElements.findIndex(e => e.id === elementId);
+
+                    updatedElements.splice(updatedElementIndex + 1, 0, afterListElement);
+
+                    updatedLayout.elements = updatedElements;
+                    usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
+                    useHistoryStore.getState().commitTransaction(presentationId);
+
+                    setTimeout(() => {
+                        tiptapRefs.current?.editors[elementId]?.editor.commands.focus('start');
+                    }, 10);
+
+                    return;
+                }
+
+                // Если не разделение списка, продолжаем обычную логику
+            }
+
+            // Обрабатываем пустой contentAfterCursor
+            if (!contentAfterCursor || contentAfterCursor.trim() === '' || contentAfterCursor.trim() === '<p></p>') {
+                contentAfterCursor = '<p><span class="body-text normal-text"></span></p>';
+            }
+
             // в строке 1 элемент. создаем новую строку
             if (row!.cells.length === 1) {
                 // Instead of adding a new row to the grid structure, we'll add a new block layout
                 // Create a new layout with a grid that has 1 row and the same number of columns as the current layout
-                const newLayoutId = generateId(8);
+                useHistoryStore.getState().beginTransaction(presentationId, 'create new layout');
 
                 const defaultGridType = 'blank';
-
                 const defaultLayoutGridStructure: GridStructure = getPredefinedGridStructures(defaultGridType);
 
+                // 1. Обновляем текущий элемент с контентом до
+                usePresentationStore.getState().updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    data: {
+                        content: contentBeforeCursor || '<p><span class="body-text normal-text"></span></p>',
+                    },
+                    createHistoryEntry: true,
+                    isTextElement: true,
+                });
+
+                // 2. Создаем новый layout с элементом после
+                const newLayoutId = generateId(8);
                 const newElement = {
                     ...getNewEditorElement(contentAfterCursor, { preservedStyles }),
                     cellId: defaultLayoutGridStructure.rows[0].cells[0].id,
@@ -128,21 +539,18 @@ export const ElementContent = ({
                     elements: [newElement],
                 };
 
+                // Получаем обновленный slide после изменения текущего элемента
+                const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                if (!updatedSlide) {
+                    useHistoryStore.getState().commitTransaction(presentationId);
+                    return;
+                }
+
                 // Add the new layout to the slide
-                const updatedLayouts = [...slide.layouts];
+                const updatedLayouts = [...updatedSlide.layouts];
                 const currentLayoutIndex = updatedLayouts.findIndex(l => l.id === layoutId);
                 updatedLayouts.splice(currentLayoutIndex + 1, 0, newLayout);
-
-                updatedLayouts.forEach(layout => {
-                    layout.elements.forEach(el => {
-                        if (el.id === elementId && 'content' in el) {
-                            // Обновляем контент текущего элемента
-                            (el as EditorElement).content =
-                                contentBeforeCursor || '<p><span class="body-text normal-text"></span></p>';
-                        }
-                        return el;
-                    });
-                });
 
                 // Update the slide with the new layouts
                 usePresentationStore.getState().updateSlide(
@@ -154,12 +562,6 @@ export const ElementContent = ({
                     true
                 );
 
-                // useEditorStore.getState().setElementToFocus(
-                //     firstNewEditorId,
-                //     newLayoutId,
-                //     newLayout.gridStructure.rows[0].cells[0].id
-                // );
-
                 useHistoryStore.getState().commitTransaction(presentationId);
 
                 setTimeout(() => {
@@ -167,28 +569,49 @@ export const ElementContent = ({
                 }, 10);
             } else {
                 // в строке больше 1 элемента. просто добавляем новый элемент
+                useHistoryStore.getState().beginTransaction(presentationId, 'add element in cell');
+
                 const cell = row?.cells.find(c => c.id === cellId);
-                if (!cell) return;
+                if (!cell) {
+                    useHistoryStore.getState().commitTransaction(presentationId);
+                    return;
+                }
 
-                const newElementIndex = layout.elements.findIndex(e => e.id === elementId);
+                // 1. Обновляем текущий элемент с контентом до
+                usePresentationStore.getState().updateElement({
+                    presentationId,
+                    slideId,
+                    layoutId,
+                    elementId,
+                    data: {
+                        content: contentBeforeCursor || '<p><span class="body-text normal-text"></span></p>',
+                    },
+                    createHistoryEntry: true,
+                    isTextElement: true,
+                });
 
+                // 2. Создаем новый элемент
                 const newElement = {
                     ...getNewEditorElement(contentAfterCursor, { preservedStyles }),
                     cellId: cell.id,
                 };
 
-                const updatedElements = [...layout.elements];
+                // Получаем обновленный layout после изменения текущего элемента
+                const updatedPresentation = usePresentationStore.getState().getPresentation(presentationId);
+                const updatedSlide = updatedPresentation?.slides.find(s => s.id === slideId);
+                const updatedLayout = updatedSlide?.layouts.find(l => l.id === layoutId);
+                if (!updatedLayout) {
+                    useHistoryStore.getState().commitTransaction(presentationId);
+                    return;
+                }
+
+                const newElementIndex = updatedLayout.elements.findIndex(e => e.id === elementId);
+                const updatedElements = [...updatedLayout.elements];
                 updatedElements.splice(newElementIndex + 1, 0, newElement);
 
-                layout.elements = updatedElements;
+                updatedLayout.elements = updatedElements;
 
-                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, layout);
-
-                // useEditorStore.getState().setElementToFocus(
-                //     newElement.id,
-                //     layoutId,
-                //     cell.id
-                // );
+                usePresentationStore.getState().updateLayout(presentationId, slideId, layoutId, updatedLayout);
 
                 useHistoryStore.getState().commitTransaction(presentationId);
 
@@ -215,6 +638,7 @@ export const ElementContent = ({
                     createHistoryEntry: true,
                     isTextElement: true,
                 });
+                useHistoryStore.getState().commitTransaction(presentationId);
             } else {
                 usePresentationStore.getState().updateElement({
                     presentationId,
@@ -671,6 +1095,13 @@ export const ElementContent = ({
             const layout = slide.layouts.find(l => l.id === layoutId);
             if (!layout) return;
 
+            const elementsInCell = layout.elements.filter(e => e.cellId === cellId);
+
+            // Early return if this is the only element in a table cell
+            if (isInTable && elementsInCell.length === 1) {
+                return;
+            }
+
             // Check if this is the last element in the slide
             const isLastElementInSlide = slide.layouts.reduce((total, l) => total + l.elements.length, 0) === 1;
             // If it's empty and the last element, do nothing
@@ -683,8 +1114,159 @@ export const ElementContent = ({
                 usePresentationStore.getState().deleteElement(presentationId, slideId, layoutId, elementId);
                 return;
             }
+
+            // Helper function to check if an element has a text editor
+            const hasTextEditor = (element: any) => {
+                const config = getElementConfig(element.elementTypeId);
+                return config?.hasTextEditor || false;
+            };
+
+            // Handle Delete at the end of non-empty element - merge with next element
+            const layoutIndex = slide.layouts.findIndex(l => l.id === layoutId);
+            const isMultiCellRow = layout.gridStructure.rows[0].cells.length > 1;
+
+            if (isMultiCellRow) {
+                // In multi-cell row, merge with next element in the same cell
+                const currentElementIndexInCell = elementsInCell.findIndex(e => e.id === elementId);
+
+                if (currentElementIndexInCell < elementsInCell.length - 1) {
+                    const nextElement = elementsInCell[currentElementIndexInCell + 1];
+                    const nextElementHasTextEditor = hasTextEditor(nextElement);
+                    const currentElementHasTextEditor = hasTextEditor(layout.elements.find(e => e.id === elementId));
+
+                    if (currentElementHasTextEditor && nextElementHasTextEditor) {
+                        const currentEditor = tiptapRefs.current?.editors[elementId];
+                        const nextEditor = tiptapRefs.current?.editors[nextElement.id];
+
+                        if (currentEditor && nextEditor) {
+                            // Get the text content from next editor to merge
+                            const nextTextContent = nextEditor.editor.getText();
+
+                            useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
+
+                            // Insert the text content at the end of current editor
+                            currentEditor.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                .focus('end')
+                                .insertContent(nextTextContent)
+                                .run();
+
+                            // Delete next element
+                            usePresentationStore
+                                .getState()
+                                .deleteElement(presentationId, slideId, layoutId, nextElement.id, true);
+
+                            useHistoryStore.getState().commitTransaction(presentationId);
+
+                            setTimeout(() => {
+                                currentEditor.editor.commands.focus('end');
+                            }, 10);
+                        } else {
+                            console.warn(
+                                `Editor instance ${elementId} or ${nextElement.id} not found in tiptapRefs. Cannot merge content programmatically.`
+                            );
+                        }
+                    }
+                }
+            } else {
+                // Single-cell row - check if there are more elements in the same cell or need to check next layout
+                const currentElementIndexInCell = elementsInCell.findIndex(e => e.id === elementId);
+
+                if (currentElementIndexInCell < elementsInCell.length - 1) {
+                    // There are more elements in the same cell
+                    const nextElement = elementsInCell[currentElementIndexInCell + 1];
+                    const nextElementHasTextEditor = hasTextEditor(nextElement);
+                    const currentElementHasTextEditor = hasTextEditor(layout.elements.find(e => e.id === elementId));
+
+                    if (currentElementHasTextEditor && nextElementHasTextEditor) {
+                        const currentEditor = tiptapRefs.current?.editors[elementId];
+                        const nextEditor = tiptapRefs.current?.editors[nextElement.id];
+
+                        if (currentEditor && nextEditor) {
+                            const nextTextContent = nextEditor.editor.getText();
+
+                            useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
+
+                            currentEditor.editor
+                                .chain()
+                                .setMeta('transaction', true)
+                                // .focus('end')
+                                .insertContent(nextTextContent)
+                                .run();
+
+                            usePresentationStore
+                                .getState()
+                                .deleteElement(presentationId, slideId, layoutId, nextElement.id, true);
+
+                            useHistoryStore.getState().commitTransaction(presentationId);
+
+                            // setTimeout(() => {
+                            //     currentEditor.editor.commands.focus('end');
+                            // }, 10);
+                        } else {
+                            console.warn(
+                                `Editor instance ${elementId} or ${nextElement.id} not found in tiptapRefs. Cannot merge content programmatically.`
+                            );
+                        }
+                    }
+                } else if (layoutIndex < slide.layouts.length - 1) {
+                    // This is the last element in the current cell/layout, check next layout
+                    const nextLayout = slide.layouts[layoutIndex + 1];
+                    const nextLayoutHasOneCell = nextLayout.gridStructure.rows[0].cells.length === 1;
+
+                    if (nextLayoutHasOneCell && nextLayout.elements.length > 0) {
+                        const nextElement = nextLayout.elements[0];
+                        const nextElementHasTextEditor = hasTextEditor(nextElement);
+                        const currentElementHasTextEditor = hasTextEditor(
+                            layout.elements.find(e => e.id === elementId)
+                        );
+
+                        if (currentElementHasTextEditor && nextElementHasTextEditor) {
+                            const currentEditor = tiptapRefs.current?.editors[elementId];
+                            const nextEditor = tiptapRefs.current?.editors[nextElement.id];
+
+                            if (currentEditor && nextEditor) {
+                                const nextTextContent = nextEditor.editor.getText();
+
+                                useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
+
+                                currentEditor.editor
+                                    .chain()
+                                    .setMeta('transaction', true)
+                                    .focus('end')
+                                    .insertContent(nextTextContent)
+                                    .focus(currentEditor.editor.state.doc.content.size - 1)
+                                    .run();
+
+                                // Delete next layout if it only has one element
+                                if (nextLayout.elements.length === 1) {
+                                    usePresentationStore
+                                        .getState()
+                                        .deleteLayout(presentationId, slideId, nextLayout.id, true);
+                                } else {
+                                    // Delete only the first element from next layout
+                                    usePresentationStore
+                                        .getState()
+                                        .deleteElement(presentationId, slideId, nextLayout.id, nextElement.id, true);
+                                }
+
+                                useHistoryStore.getState().commitTransaction(presentationId);
+
+                                // setTimeout(() => {
+                                //     currentEditor.editor.commands.focus('end');
+                                // }, 10);
+                            } else {
+                                console.warn(
+                                    `Editor instance ${elementId} or ${nextElement.id} not found in tiptapRefs. Cannot merge content programmatically.`
+                                );
+                            }
+                        }
+                    }
+                }
+            }
         },
-        [presentationId, slideId, layoutId, elementId]
+        [presentationId, slideId, layoutId, cellId, elementId, tiptapRefs, isInTable]
     );
 
     const renderElementContent = useCallback(

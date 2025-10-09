@@ -81,7 +81,7 @@ interface TiptapProps {
     isHideEmpty?: boolean;
     isHideCommonMenu?: boolean;
     onFocus?: () => void;
-    onEnterPressed?: (content?: any) => void;
+    onEnterPressed?: (contentBefore?: any, contentAfter?: any, preservedStyles?: any) => void;
     onBackspacePressed?: (isEmpty: boolean, textContent: string) => void;
     onDeletePressed?: (isEmpty: boolean, textContent: string) => void;
     onBlur?: () => void;
@@ -118,7 +118,7 @@ const Tiptap = ({
     isHideEmpty = false,
     isHideCommonMenu = false,
     onFocus = () => {},
-    onEnterPressed = () => {},
+    onEnterPressed = (_contentBefore?: any, _contentAfter?: any, _preservedStyles?: any) => {},
     onBackspacePressed = () => {},
     onDeletePressed = () => {},
     onContentChange = () => {},
@@ -233,7 +233,7 @@ const Tiptap = ({
             isHideSlashMenu,
             smartLayoutItemId,
             editor: undefined,
-            initialStyle: extractedStyles,
+            initialStyle: extractedStyles || undefined,
         }),
         content: initialContent,
         editorProps: {
@@ -331,7 +331,7 @@ const Tiptap = ({
                     standardEnterBehavior,
                     isHideSlashMenu,
                     editor,
-                    initialStyle: extractedStyles,
+                    initialStyle: extractedStyles || undefined,
                 }),
             });
         }

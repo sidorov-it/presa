@@ -54,7 +54,7 @@ interface GetExtensionsProps {
     }> | null;
     standardEnterBehavior?: boolean;
     isHideSlashMenu?: boolean;
-    onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string) => void;
+    onEnterPressed: (contentBeforeCursor?: string, contentAfterCursor?: string, preservedStyles?: any) => void;
     onDeletePressed: (isEmpty: boolean, textContent: string) => void;
     onBackspacePressed: (isEmpty: boolean, textContent: string) => void;
     onAddElement?: (menuItem: MenuItem) => void;
@@ -315,7 +315,7 @@ const getExtensions = ({
                   )
                 : undefined;
 
-            onEnterPressed(htmlBeforeCursor, htmlAfterCursor);
+            onEnterPressed(htmlBeforeCursor, htmlAfterCursor, preservedStyles);
         },
         (isEmpty, textContent) => {
             onBackspacePressed(isEmpty, textContent);
