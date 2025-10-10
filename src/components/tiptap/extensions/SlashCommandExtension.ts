@@ -319,6 +319,17 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                     let commandsList: CommandsList;
                     let popup: TippyInstance | null = null;
 
+                    // Helper function to check dark mode consistently
+                    const isDarkModeActive = () => {
+                        return (
+                            document.documentElement.classList.contains('dark') ||
+                            document.body.classList.contains('dark') ||
+                            Array.from(document.body.children).some(element => {
+                                return element.classList.contains('dark');
+                            })
+                        );
+                    };
+
                     return {
                         onStart: props => {
                             if (props.range.from !== 1 && props.range.to !== 2) {
@@ -327,9 +338,7 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
 
                             commandsList = new CommandsList(props, this.options.onAddElement);
 
-                            const isDarkMode = Array.from(document.body.children).some(element => {
-                                return element.classList.contains('dark');
-                            });
+                            const isDarkMode = isDarkModeActive();
 
                             // Use document.body directly as the tippy target
                             const rect = props.clientRect?.() || new DOMRect(0, 0, 0, 0);
@@ -374,10 +383,8 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                             commandsList = new CommandsList(props, this.options.onAddElement);
 
                             if (popup) {
-                                // Check if dark mode is active
-                                const isDarkMode =
-                                    document.documentElement.classList.contains('dark') ||
-                                    document.body.classList.contains('dark');
+                                // Check if dark mode is active using consistent method
+                                const isDarkMode = isDarkModeActive();
 
                                 const rect = props.clientRect?.() || new DOMRect(0, 0, 0, 0);
                                 popup.setProps({
