@@ -19,7 +19,8 @@
     "test:watch": "jest --watch",
     "test:cloudpayments": "tsx src/test/cloudpayments/runTests.ts",
     "db:seed": "tsx prisma/seed.ts",
-    "migrate": "tsx prisma/migrate.ts"
+    "migrate": "tsx prisma/migrate.ts",
+    "generate:llm-fixtures": "tsx scripts/llm/generateTemplateFixtures.ts"
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.4.2",

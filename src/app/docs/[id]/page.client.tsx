@@ -394,7 +394,6 @@ export default function PresentationEditorPage() {
 
     const allThemes = useThemeStore(state => state.allThemes);
     const defaultThemes = useThemeStore(state => state.defaultThemes);
-    const loadThemes = useThemeStore(state => state.loadThemes);
     const currentTheme = useThemeStore(state => state.currentTheme);
     const themesLoaded = useThemeStore(state => state.themesLoaded);
 
@@ -553,11 +552,14 @@ export default function PresentationEditorPage() {
     // Load themes separately
     useEffect(() => {
         if (!themesLoaded) {
-            loadThemes().catch(error => {
-                console.error('Failed to load themes:', error);
-            });
+            useThemeStore
+                .getState()
+                .loadThemes()
+                .catch(error => {
+                    console.error('Failed to load themes:', error);
+                });
         }
-    }, [loadThemes, themesLoaded]);
+    }, [themesLoaded]);
 
     // Function to navigate to view mode
     const handleViewPresentation = useCallback(() => {

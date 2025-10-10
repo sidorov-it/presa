@@ -362,7 +362,6 @@ const getTiptapRefsIds = (elements: BaseElement[]) => {
         .flat();
 };
 
-// Create the store with properly configured middleware
 export const usePresentationStore = create<PresentationState>()(
     devtools(
         (set, get) => ({
@@ -418,9 +417,33 @@ export const usePresentationStore = create<PresentationState>()(
                     const updatedPresentation: IPresentation = await response.json();
 
                     set(state => {
-                        const updatedPresentations = state.presentations.map(item =>
-                            item.id === id ? updatedPresentation : item
-                        );
+                        const currentPresentation = state.presentations.find(p => p.id === id);
+                        
+                        // Instead of replacing the entire presentation, merge changes while preserving slide references
+                        const updatedPresentations = state.presentations.map(item => {
+                            if (item.id !== id) return item;
+                            
+                            // Preserve slides array references if slides haven't changed
+                            const mergedSlides = updatedPresentation.slides.map((serverSlide, idx) => {
+                                const currentSlide = currentPresentation?.slides[idx];
+                                
+                                // If slide exists in current state with same id and same content, keep current reference
+                                if (currentSlide && currentSlide.id === serverSlide.id) {
+                                    // Deep compare to check if slide actually changed
+                                    const hasChanged = JSON.stringify(currentSlide) !== JSON.stringify(serverSlide);
+                                    if (!hasChanged) {
+                                        return currentSlide; // Keep current reference
+                                    }
+                                }
+                                
+                                return serverSlide; // Use server version
+                            });
+                            
+                            return {
+                                ...updatedPresentation,
+                                slides: mergedSlides,
+                            };
+                        });
 
                         const isCurrentPresentation = state.currentPresentationMeta?.id === id;
 

@@ -50,7 +50,7 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const [isHovered, setIsHovered] = useState(false);
     const { hasActiveSubscription } = useSubscriptionCheck();
 
-    const openMenu = useUIStateStore.getState().openContextMenu;
+    // const openMenu = useUIStateStore.getState().openContextMenu;
 
     const slideRef = useRef<HTMLDivElement>(null);
 
@@ -187,14 +187,14 @@ const SlideEditor: React.FC<SlideEditorProps> = ({
     const handleOpenSlideMenu = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
             e.stopPropagation();
-            openMenu({
+            useUIStateStore.getState().openContextMenu({
                 slideId: slideId,
                 elementId: null,
                 elementType: 'slide',
             });
             handleSelectSlide(slideId);
         },
-        [slideId, openMenu, handleSelectSlide]
+        [slideId, handleSelectSlide]
     );
 
     const getSlideClassName = useCallback(() => {

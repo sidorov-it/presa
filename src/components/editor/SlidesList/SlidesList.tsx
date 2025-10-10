@@ -6,6 +6,7 @@ import { Slide } from '@/types';
 import { useSlideDndStore } from '@/store/slideDndStore';
 import { cloneSlideWithNewIds } from '@/utils/cloneSlideWithNewIds';
 import { LuGripVertical, LuCopy, LuPlus, LuEyeOff, LuTrash2, LuClipboardPaste } from 'react-icons/lu';
+import { shallow } from 'zustand/shallow';
 
 import styles from './SlidesList.module.css';
 import Portal from '@/components/Portal';
@@ -30,7 +31,6 @@ const SlideItem = memo(
         isLastSlide: boolean;
         onContextMenu: (e: React.MouseEvent, slide: Slide) => void;
     }) => {
-        // const { colorMode } = useColorMode();
         // Extract text content from the first element if available
         const startSlideDrag = useSlideDndStore(state => state.startDrag);
         const slideDragState = useSlideDndStore(state => state.dragState);
@@ -165,7 +165,12 @@ const SlidesList: React.FC<SlidesListProps> = memo(({ presentationId }) => {
 
     const { colorMode } = useColorMode();
 
-    const slides = usePresentationStore(state => state.getPresentation(presentationId)?.slides || []);
+    // Use shallow comparison to prevent unnecessary re-renders when slides array reference changes
+    // but individual slide references remain the same
+    const slides = usePresentationStore(
+        state => state.getPresentation(presentationId)?.slides || [],
+        shallow
+    );
 
     const setSlidePresentationId = useSlideDndStore(state => state.setPresentationId);
     const handleDocumentDrop = useSlideDndStore(state => state.handleDocumentDrop);
