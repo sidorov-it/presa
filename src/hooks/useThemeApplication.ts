@@ -4,6 +4,7 @@ import { Theme } from '@/types/theme';
 import { BackgroundSettings } from '@/types';
 import { ColorMode } from '@/components/ui/color-mode';
 import generateCSSVariablesFromTheme from '@/utils/themeCssGenerator';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface UseThemeApplicationOptions {
     theme: Theme | null;
@@ -291,6 +292,14 @@ export const useThemeApplication = (options: UseThemeApplicationOptions) => {
                 previousThemeRef.current = { ...activeTheme }; // Store deep copy
                 previousBackgroundSettingsRef.current = backgroundSettings ? { ...backgroundSettings } : null;
             } catch (error) {
+                logCaughtError(error, {
+                    action: 'Применение темы к презентации',
+                    component: 'useThemeApplication',
+                    additionalInfo: {
+                        themeId: activeTheme?.id,
+                        themeName: activeTheme?.name,
+                    },
+                });
                 console.error('Error applying theme', error);
             } finally {
                 isApplyingRef.current = false;

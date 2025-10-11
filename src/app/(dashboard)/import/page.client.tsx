@@ -8,6 +8,7 @@ import { Heading } from '@/components/ui/heading';
 import { FaUpload, FaFileAlt, FaCheck, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export default function ImportPage() {
     const router = useRouter();
@@ -82,6 +83,14 @@ export default function ImportPage() {
                 presentationId: result.presentation.id,
             });
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Импорт презентации из JSON',
+                component: 'ImportPage',
+                additionalInfo: {
+                    fileName: selectedFile?.name,
+                    fileSize: selectedFile?.size,
+                },
+            });
             setImportResult({
                 success: false,
                 message: error instanceof Error ? error.message : 'Ошибка импорта',

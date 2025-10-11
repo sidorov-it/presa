@@ -10,6 +10,7 @@ import {
 import { SubscriptionStatus } from '@prisma/client';
 import { UserSubscription, SubscriptionPlan } from '@/types/subscriptions';
 import styles from './SubscriptionManagement.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface SubscriptionManagementProps {
     className?: string;
@@ -98,7 +99,6 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
 
     // Принудительно обновляем состояние при монтировании компонента
     useEffect(() => {
-        console.log('SubscriptionManagement: Component mounted, refreshing subscription status');
         refreshSubscriptionStatus();
     }, [refreshSubscriptionStatus]);
 
@@ -126,6 +126,11 @@ export const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
                 console.error('Failed to cancel subscription:', errorData);
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Отмена подписки',
+                component: 'SubscriptionManagement',
+                additionalInfo: { subscriptionId: subscription.id },
+            });
             console.error('Error cancelling subscription:', error);
         } finally {
             setIsCancelling(false);

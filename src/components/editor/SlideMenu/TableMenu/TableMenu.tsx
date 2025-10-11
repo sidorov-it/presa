@@ -67,7 +67,6 @@ const TableMenu: React.FC<TableMenuProps> = ({ tiptapRefs, presentationId, posit
     const isItalicActive = isEditorPropertyConsistent(tableElements, tiptapRefs, 'italic');
     const isUnderlineActive = isEditorPropertyConsistent(tableElements, tiptapRefs, 'underline');
 
-    console.log('table menu render', tableElements);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             // Don't hide if clicking on the editor or the bubble menu itself

@@ -33,17 +33,6 @@ export default function ButtonMenu({
     const [color, setColor] = useState(nodeAttributes.color || '#3C3939');
     const { updateElement } = usePresentationStore();
 
-    // Log important information on mount
-    useEffect(() => {
-        console.log('ButtonMenu mounted with ID:', {
-            elementId,
-            nodeElementId: nodeAttributes.elementId,
-            slideId,
-            layoutId,
-            presentationId,
-        });
-    }, [elementId, nodeAttributes.elementId, slideId, layoutId, presentationId]);
-
     const handleChangeAlignment = (value: string) => {
         onAlignmentChange(value);
     };

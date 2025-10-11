@@ -10,6 +10,9 @@ import EarlyTestBanner from '@/components/EarlyTestBanner/EarlyTestBanner';
 import { Suspense } from 'react';
 import { EarlyTestBannerProvider } from '@/contexts/EarlyTestBannerContext';
 import { SubscriptionModalProvider } from '@/components/providers/SubscriptionModalProvider';
+import FeedbackWidget from '@/components/FeedbackWidget';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import GlobalErrorHandler from '@/components/GlobalErrorHandler';
 
 export const metadata: Metadata = {
     title: 'Presa – создание презентаций с ИИ',
@@ -42,14 +45,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 }}
             >
                 <NextAuthProvider>
+                    <GlobalErrorHandler />
                     <EarlyTestBannerProvider>
                         <Provider>
                             <SubscriptionModalProvider>
-                                <BrowserWarning />
-                                <EarlyTestBanner />
-                                {children}
-                                <SideMenuRenderer />
-                                {/* <Footer /> */}
+                                <ErrorBoundary>
+                                    <BrowserWarning />
+                                    <EarlyTestBanner />
+                                    {children}
+                                    <SideMenuRenderer />
+                                    <FeedbackWidget />
+                                    {/* <Footer /> */}
+                                </ErrorBoundary>
                             </SubscriptionModalProvider>
                         </Provider>
                     </EarlyTestBannerProvider>

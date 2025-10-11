@@ -5,7 +5,7 @@ describe('markdownToHtml', () => {
         const text =
             '## Электромагнитная природа света\n\nОсновы электромагнитной теории света были заложены Джеймсом Клерком Максвеллом. Из его теории следовало, что электромагнитные волны поперечны. Эксперименты Генриха Герца предоставили первое экспериментальное подтверждение этой теории. Было доказано, что электромагнитные волны при своём распространении обнаруживают те же свойства, что и световые волны. Это стало ключевым моментом в понимании природы света.';
         const html = markdownToHtml(text);
-        console.log(html);
+
     });
 
     it('converts complex markdown cases', () => {
@@ -21,10 +21,10 @@ describe('markdownToHtml', () => {
 
         texts.forEach((text, index) => {
             const html = markdownToHtml(text);
-            console.log(`\n=== Test case ${index + 1} ===`);
-            console.log('Input:', JSON.stringify(text));
-            console.log('Output:', html);
-            console.log('---');
+
+
+
+
         });
     });
 
@@ -70,9 +70,9 @@ describe('markdownToHtml', () => {
     it('handles empty lines correctly', () => {
         const md = 'Line 1\n\nLine 2\n\n\nLine 3';
         const html = markdownToHtml(md);
-        console.log('\n=== Empty lines test ===');
-        console.log('Input:', JSON.stringify(md));
-        console.log('Output:', html);
+
+
+
         // Должно быть: Line 1<br />Line 2<br />Line 3
         expect(html).not.toContain('<br /><br />'); // Не должно быть двойных переносов
     });
@@ -80,9 +80,9 @@ describe('markdownToHtml', () => {
     it('handles mixed content correctly', () => {
         const md = '# Title\n\nParagraph with **bold** text.\n\n- List item 1\n- List item 2\n\n> Quote here';
         const html = markdownToHtml(md);
-        console.log('\n=== Mixed content test ===');
-        console.log('Input:', JSON.stringify(md));
-        console.log('Output:', html);
+
+
+
     });
 
     it('wraps regular text in body-text normar-text span', () => {
@@ -98,8 +98,8 @@ describe('markdownToHtml', () => {
             '<span class="body-text normar-text">Еще один параграф с <strong>жирным</strong> текстом.</span>'
         );
 
-        console.log('\n=== Body text wrapping test ===');
-        console.log('Input:', JSON.stringify(md));
-        console.log('Output:', html);
+
+
+
     });
 });

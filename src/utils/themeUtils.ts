@@ -5,7 +5,7 @@
  * Use this when you want to completely remove theme styling from the page
  */
 export const clearAllThemeStyles = (): void => {
-    console.log('ThemeUtils: Clearing all theme styles from document');
+
 
     // List of all presentation-related CSS variables that might be set
     const presentationVars = [

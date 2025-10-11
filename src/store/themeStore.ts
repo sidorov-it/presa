@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Theme, ThemeDesignImageShape } from '@/types/theme';
 import createNewTheme from '@/utils/theme/createNewTheme';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface ThemeState {
     themes: Theme[];
@@ -62,6 +63,11 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             set({ themes, allThemes });
             return savedTheme;
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Создание новой темы',
+                component: 'themeStore.addTheme',
+                additionalInfo: { themeName: theme.name },
+            });
             console.error('Failed to add theme:', error);
             throw error;
         }
@@ -90,6 +96,14 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             }
             return updatedTheme;
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Обновление темы',
+                component: 'themeStore.updateTheme',
+                additionalInfo: {
+                    themeId: theme.id,
+                    themeName: theme.name,
+                },
+            });
             console.error('Failed to update theme:', error);
             throw error;
         }
@@ -114,6 +128,11 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
                 set({ currentTheme: null });
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Удаление темы',
+                component: 'themeStore.deleteTheme',
+                additionalInfo: { themeId },
+            });
             console.error('Failed to delete theme:', error);
             throw error;
         }
@@ -138,6 +157,10 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
                 themesLoaded: true,
             });
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Загрузка всех тем',
+                component: 'themeStore.loadThemes',
+            });
             console.error('Failed to load themes:', error);
             throw error;
         }
@@ -152,6 +175,11 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
             const theme = await response.json();
             return theme;
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Загрузка конкретной темы',
+                component: 'themeStore.loadTheme',
+                additionalInfo: { themeId },
+            });
             console.error('Failed to load themes:', error);
             throw error;
         }

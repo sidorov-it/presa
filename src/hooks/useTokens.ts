@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface UseTokensReturn {
     balance: number;
@@ -38,6 +39,11 @@ export const useTokens = (): UseTokensReturn => {
             setBalance(data.balance);
             setError(null);
         } catch (err) {
+            logCaughtError(err, {
+                action: 'Получение баланса токенов',
+                component: 'useTokens',
+                additionalInfo: { userId: session?.user?.id },
+            });
             setError(err instanceof Error ? err.message : 'Failed to fetch balance');
         }
     }, [session?.user?.id]);
@@ -105,7 +111,7 @@ export const useTokens = (): UseTokensReturn => {
                         },
                         {
                             onSuccess: function (options: any) {
-                                console.log('Payment successful:', options);
+
                                 // Платеж успешен, webhook обновит статус
                             },
                             onFail: function (reason: any, options: any) {
@@ -113,7 +119,7 @@ export const useTokens = (): UseTokensReturn => {
                                 setError('Платеж не удался');
                             },
                             onComplete: function (paymentResult: any, options: any) {
-                                console.log('Payment completed:', paymentResult, options);
+
                                 setLoading(false);
                             },
                         }
@@ -130,6 +136,14 @@ export const useTokens = (): UseTokensReturn => {
                     description: result.description,
                 };
             } catch (err) {
+                logCaughtError(err, {
+                    action: 'Создание платежа токенов',
+                    component: 'useTokens.createTokensPayment',
+                    additionalInfo: {
+                        packageId: paymentData.packageId,
+                        userId: session?.user?.id,
+                    },
+                });
                 const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
                 setError(errorMessage);
                 throw new Error(errorMessage);

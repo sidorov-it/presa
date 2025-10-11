@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -39,6 +40,11 @@ export default function ForgotPasswordPage() {
             setIsSubmitted(true);
             setIsLoading(false);
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Запрос восстановления пароля',
+                component: 'ForgotPasswordPage',
+                additionalInfo: { email },
+            });
             console.error('Forgot password error:', error);
             setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);

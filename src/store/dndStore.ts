@@ -686,7 +686,7 @@ export const useDndStore = create<{
             const updatedTargetElements = [...targetLayout.elements].filter(el => el.id !== element.id);
             updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
-            // console.log('updatedTargetElements', updatedTargetElements);
+            
             DragDropTransactionHelper.updateLayout(presentationId!, targetSlide.id, targetLayout.id, {
                 elements: updatedTargetElements,
             });
@@ -1049,7 +1049,7 @@ export const useDndStore = create<{
             const updatedTargetElements = [...targetLayout.elements].filter(el => el.id !== draggedElement.id);
             updatedTargetElements.splice(targetIndex, 0, updatedElement);
 
-            // console.log('updatedTargetElements', updatedTargetElements);
+            
             DragDropTransactionHelper.updateLayout(presentationId, targetSlide.id, targetLayout.id, {
                 elements: updatedTargetElements,
             });
@@ -1201,7 +1201,7 @@ export const useDndStore = create<{
         }
 
         if (isNewElement) {
-            // console.log('drop new element', prevState.newElement);
+            
 
             if (!prevState.newElement.id) {
                 console.warn('No element id found for new element');
@@ -2281,7 +2281,7 @@ export const useDndStore = create<{
                 elementTypeId: prevState.newElement.elementTypeId!,
                 elementVariant: prevState.newElement.elementVariant!,
             });
-            // console.log('drop new element', prevState.newElement);
+            
         } else {
             if (!prevState.source.layoutId) {
                 return;
@@ -2815,7 +2815,7 @@ export const useDndStore = create<{
                 slideNode &&
                 state.source.slideId === slideNode?.getAttribute('data-slide-id')
             ) {
-                console.log('return slidenode');
+
                 return;
             }
 
@@ -2860,7 +2860,7 @@ export const useDndStore = create<{
                     // Получаем информацию о макете и продолжаем с новыми переменными
                     const targetLayout = foundLayoutId ? get().getLayout(foundLayoutId) : undefined;
                     if (!targetLayout) {
-                        // console.log('[DragDropContext] dragover – no targetLayout found for id', foundLayoutId);
+                        
                         return;
                     }
 
@@ -2874,7 +2874,7 @@ export const useDndStore = create<{
                             state.source.dragElementType === 'table-column') &&
                         !isTargetTable
                     ) {
-                        console.log('return');
+
                         return;
                     }
 
@@ -3036,7 +3036,7 @@ export const useDndStore = create<{
                         }));
                     } else {
                         // Not over a valid target or in empty space
-                        // console.log('[DragDropContext] dragover – no valid target');
+                        
                         get().resetAllIndicators();
                     }
 
@@ -3110,7 +3110,7 @@ export const useDndStore = create<{
             (state.source.dragElementType === 'table-row' || state.source.dragElementType === 'table-column') &&
             !isTargetTable
         ) {
-            console.log('return');
+
             return;
         }
 
@@ -3306,7 +3306,7 @@ export const useDndStore = create<{
             }));
         } else {
             // Not over a valid target or in empty space
-            // console.log('[DragDropContext] dragover – no valid target');
+            
             get().resetAllIndicators();
         }
     },

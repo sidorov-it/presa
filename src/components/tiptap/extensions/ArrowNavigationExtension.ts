@@ -43,9 +43,6 @@ export const ArrowNavigationExtension = (
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
-                            console.log(
-                                `Navigating right to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`
-                            );
 
                             // Check if we're moving to a different slide
                             const isCrossingSlides = targetSlideId !== slideId;
@@ -56,7 +53,6 @@ export const ArrowNavigationExtension = (
                                     () => {
                                         const targetEditor = tiptapRefs.current?.editors[targetElementId];
                                         if (targetEditor) {
-                                            console.log(`Focusing editor: ${targetElementId}`);
                                             // Focus at the beginning of the content (position 1)
                                             targetEditor.editor.commands.focus('start');
                                             // targetEditor.focus();
@@ -68,7 +64,6 @@ export const ArrowNavigationExtension = (
                                                 `[data-element-id="${targetElementId}"]`
                                             );
                                             if (editorElement) {
-                                                console.log(`Found editor in DOM: ${targetElementId}`);
                                                 (editorElement as HTMLElement).click();
                                             }
                                         }
@@ -84,7 +79,6 @@ export const ArrowNavigationExtension = (
                                             `[data-element-id="${targetElementId}"]`
                                         );
                                         if (element) {
-                                            console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
                                             // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
@@ -115,7 +109,6 @@ export const ArrowNavigationExtension = (
                                 setTimeout(() => {
                                     const slideElement = document.querySelector(`[data-slide-id="${targetSlideId}"]`);
                                     if (slideElement && slideElement.parentElement) {
-                                        console.log(`Clicking slide in list: ${targetSlideId}`);
                                         (slideElement.parentElement as HTMLElement).click();
                                     }
                                 }, 0);
@@ -145,9 +138,6 @@ export const ArrowNavigationExtension = (
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
-                            console.log(
-                                `Navigating left to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`
-                            );
 
                             // Check if we're moving to a different slide
                             const isCrossingSlides = targetSlideId !== slideId;
@@ -158,7 +148,6 @@ export const ArrowNavigationExtension = (
                                     () => {
                                         const targetEditor = tiptapRefs.current?.editors[targetElementId];
                                         if (targetEditor) {
-                                            console.log(`Focusing editor: ${targetElementId}`);
                                             // Focus at the end of the content
                                             targetEditor.editor.commands.focus('end');
                                             // targetEditor.focus();
@@ -170,7 +159,6 @@ export const ArrowNavigationExtension = (
                                                 `[data-element-id="${targetElementId}"]`
                                             );
                                             if (editorElement) {
-                                                console.log(`Found editor in DOM: ${targetElementId}`);
                                                 (editorElement as HTMLElement).click();
                                             }
                                         }
@@ -186,7 +174,6 @@ export const ArrowNavigationExtension = (
                                             `[data-element-id="${targetElementId}"]`
                                         );
                                         if (element) {
-                                            console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
                                             // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
@@ -217,7 +204,6 @@ export const ArrowNavigationExtension = (
                                 setTimeout(() => {
                                     const slideElement = document.querySelector(`[data-slide-id="${targetSlideId}"]`);
                                     if (slideElement && slideElement.parentElement) {
-                                        console.log(`Clicking slide in list: ${targetSlideId}`);
                                         (slideElement.parentElement as HTMLElement).click();
                                     }
                                 }, 0);
@@ -231,7 +217,6 @@ export const ArrowNavigationExtension = (
                 },
 
                 ArrowDown: ({ editor }) => {
-                    console.log('ArrowDown', smartLayoutItemId);
                     const { selection } = editor.state;
                     const { $anchor } = selection;
 
@@ -254,9 +239,6 @@ export const ArrowNavigationExtension = (
 
                         if (targetInfo) {
                             const { targetElementId, targetType, targetSlideId } = targetInfo;
-                            console.log(
-                                `Navigating down to: ${targetElementId} (${targetType}) in slide ${targetSlideId}`
-                            );
 
                             // Check if we're moving to a different slide
                             const isCrossingSlides = targetSlideId !== slideId;
@@ -267,7 +249,6 @@ export const ArrowNavigationExtension = (
                                     () => {
                                         const targetEditor = tiptapRefs.current?.editors[targetElementId];
                                         if (targetEditor) {
-                                            console.log(`Focusing editor: ${targetElementId}`);
                                             // Try to maintain the same horizontal position when moving down
                                             // For simplicity, we'll focus at the start
                                             targetEditor.editor.commands.focus();
@@ -280,7 +261,6 @@ export const ArrowNavigationExtension = (
                                                 `[data-element-id="${targetElementId}"]`
                                             );
                                             if (editorElement) {
-                                                console.log(`Found editor in DOM: ${targetElementId}`);
                                                 (editorElement as HTMLElement).click();
                                             }
                                         }
@@ -296,7 +276,6 @@ export const ArrowNavigationExtension = (
                                             `[data-element-id="${targetElementId}"]`
                                         );
                                         if (element) {
-                                            console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
                                             // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
@@ -326,7 +305,6 @@ export const ArrowNavigationExtension = (
                                 setTimeout(() => {
                                     const slideElement = document.querySelector(`[data-slide-id="${targetSlideId}"]`);
                                     if (slideElement && slideElement.parentElement) {
-                                        console.log(`Clicking slide in list: ${targetSlideId}`);
                                         (slideElement.parentElement as HTMLElement).click();
                                     }
                                 }, 0);
@@ -371,7 +349,6 @@ export const ArrowNavigationExtension = (
                                     () => {
                                         const targetEditor = tiptapRefs.current?.editors[targetElementId];
                                         if (targetEditor) {
-                                            console.log(`Focusing editor: ${targetElementId}`);
                                             // When navigating up, move cursor to the end of the previous editor's content
                                             targetEditor.editor.commands.focus('end');
                                             // targetEditor.focus();
@@ -383,7 +360,6 @@ export const ArrowNavigationExtension = (
                                                 `[data-element-id="${targetElementId}"]`
                                             );
                                             if (editorElement) {
-                                                console.log(`Found editor in DOM: ${targetElementId}`);
                                                 (editorElement as HTMLElement).click();
                                             }
                                         }
@@ -399,7 +375,6 @@ export const ArrowNavigationExtension = (
                                             `[data-element-id="${targetElementId}"]`
                                         );
                                         if (element) {
-                                            console.log(`Focusing non-editor element: ${targetElementId}`);
                                             // Add a focus visual indicator class
                                             // element.classList.add('element-focus');
                                             // Set focus on the element for keyboard navigation
@@ -430,7 +405,6 @@ export const ArrowNavigationExtension = (
                                 setTimeout(() => {
                                     const slideElement = document.querySelector(`[data-slide-id="${targetSlideId}"]`);
                                     if (slideElement && slideElement.parentElement) {
-                                        console.log(`Clicking slide in list: ${targetSlideId}`);
                                         (slideElement.parentElement as HTMLElement).click();
                                     }
                                 }, 0);

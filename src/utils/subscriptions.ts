@@ -107,7 +107,7 @@ export function getDefaultFeatures(): SubscriptionFeatures {
 export async function getUserFeatures(userId: string): Promise<SubscriptionFeatures> {
     try {
         const subscriptionFeatures = await getSubscriptionFeatures(userId);
-        console.log('subscriptionFeatures', subscriptionFeatures);
+
         return subscriptionFeatures || getDefaultFeatures();
     } catch (error) {
         console.error('Error getting user features:', error);
@@ -177,7 +177,7 @@ async function expireSubscription(userSubscriptionId: string): Promise<void> {
                 status: SubscriptionStatus.expired,
             },
         });
-        console.log(`Subscription ${userSubscriptionId} marked as expired`);
+
     } catch (error) {
         console.error(`Error expiring subscription ${userSubscriptionId}:`, error);
     }
@@ -304,7 +304,7 @@ export async function activateSubscription(subscriptionId: string, cloudpayments
 
         // Validate that subscription can be activated
         if (subscription.status === SubscriptionStatus.active && subscription.endDate > new Date()) {
-            console.log(`Subscription ${subscriptionId} is already active`);
+
             return true;
         }
 
@@ -323,7 +323,7 @@ export async function activateSubscription(subscriptionId: string, cloudpayments
             },
         });
 
-        console.log(`Subscription ${subscriptionId} activated successfully`);
+
         return true;
     } catch (error) {
         console.error('Error activating subscription:', error);
@@ -360,7 +360,7 @@ export async function extendSubscription(subscriptionId: string, paymentId: stri
             },
         });
 
-        console.log(`Subscription ${subscriptionId} extended until ${newEndDate.toISOString()}`);
+
         return true;
     } catch (error) {
         console.error('Error extending subscription:', error);

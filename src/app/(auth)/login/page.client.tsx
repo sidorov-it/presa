@@ -5,6 +5,7 @@ import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -19,7 +20,6 @@ export default function LoginPage() {
     // Redirect authenticated users to dashboard
     useEffect(() => {
         if (status === 'authenticated' && session && session.user.emailVerified) {
-            console.log('[LOGIN_PAGE] User is already authenticated, redirecting to dashboard');
             const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
             router.replace(callbackUrl);
             return;
@@ -33,8 +33,6 @@ export default function LoginPage() {
         const emailVerified = searchParams.get('email-verified');
         const registered = searchParams.get('registered');
         const authError = searchParams.get('error');
-
-        console.log('[LOGIN_PAGE] URL params:', { emailVerified, registered, authError });
 
         if (emailVerified === 'true') {
             setSuccessMessage('Email успешно подтвержден!');
@@ -104,8 +102,6 @@ export default function LoginPage() {
             setIsLoading(true);
             setError('');
 
-            console.log('[LOGIN_PAGE] Attempting credentials login for:', email);
-
             const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
             const result = await signIn('credentials', {
                 redirect: false,
@@ -113,8 +109,6 @@ export default function LoginPage() {
                 password,
                 callbackUrl,
             });
-
-            console.log('[LOGIN_PAGE] Credentials login result:', result);
 
             if (result?.error) {
                 if (result.error.startsWith('OAUTH_ONLY:')) {
@@ -129,9 +123,14 @@ export default function LoginPage() {
             }
 
             // Success, redirect to dashboard or callback URL
-            console.log('[LOGIN_PAGE] Login successful, redirecting to:', callbackUrl);
+
             router.push(callbackUrl);
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Вход через email/password',
+                component: 'LoginPage',
+                additionalInfo: { email },
+            });
             console.error('[LOGIN_PAGE] Login error:', error);
             setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);
@@ -143,15 +142,11 @@ export default function LoginPage() {
             setIsLoading(true);
             setError('');
 
-            console.log(`[LOGIN_PAGE] Attempting OAuth login with ${provider}`);
-
             const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
             const result = await signIn(provider, {
                 redirect: false,
                 callbackUrl,
             });
-
-            console.log(`[LOGIN_PAGE] OAuth ${provider} result:`, result);
 
             if (result?.error) {
                 console.error(`[LOGIN_PAGE] OAuth ${provider} error:`, result.error);
@@ -166,13 +161,16 @@ export default function LoginPage() {
             }
 
             if (result?.url) {
-                console.log(`[LOGIN_PAGE] OAuth ${provider} redirecting to:`, result.url);
                 window.location.href = result.url;
             } else {
-                console.log(`[LOGIN_PAGE] OAuth ${provider} success, redirecting to:`, callbackUrl);
                 router.push(callbackUrl);
             }
         } catch (err) {
+            logCaughtError(err, {
+                action: `Вход через OAuth (${provider})`,
+                component: 'LoginPage',
+                additionalInfo: { provider },
+            });
             console.error(`[LOGIN_PAGE] OAuth ${provider} error:`, err);
             setError('Не удалось выполнить вход');
             setIsLoading(false);

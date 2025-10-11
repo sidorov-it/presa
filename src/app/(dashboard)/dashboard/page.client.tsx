@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/Button';
 import { Heading } from '@/components/ui/heading';
 import Link from 'next/link';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -56,6 +57,10 @@ export default function DashboardPage() {
                 setIsLoadingPresentations(true);
                 await loadPresentationsList();
             } catch (error) {
+                logCaughtError(error, {
+                    action: 'Загрузка списка презентаций',
+                    component: 'DashboardPage',
+                });
                 console.error('Не удалось загрузить презентации:', error);
             } finally {
                 setIsLoadingPresentations(false);
@@ -150,6 +155,11 @@ export default function DashboardPage() {
             // Refresh presentations list
             await loadPresentationsList();
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Дублирование презентации',
+                component: 'DashboardPage',
+                additionalInfo: { presentationId },
+            });
             console.error('Не удалось дублировать презентацию:', error);
         } finally {
             setIsLoading(false);
@@ -192,6 +202,11 @@ export default function DashboardPage() {
             setPresentationToRename(null);
             setNewTitle('');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Переименование презентации',
+                component: 'DashboardPage',
+                additionalInfo: { presentationId, newTitle },
+            });
             console.error('Ошибка при переименовании презентации:', error);
         }
     };
@@ -224,6 +239,11 @@ export default function DashboardPage() {
             setShowDeleteModal(false);
             setPresentationToDelete(null);
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Удаление презентации',
+                component: 'DashboardPage',
+                additionalInfo: { presentationId: presentationToDelete },
+            });
             console.error('Ошибка при удалении презентации:', error);
         } finally {
             setIsDeleting(false);

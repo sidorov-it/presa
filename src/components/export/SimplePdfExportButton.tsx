@@ -4,6 +4,7 @@ import Tooltip from '@/components/tooltip/Tooltip';
 import styles from './SimplePdfExportButton.module.css';
 import { toast } from 'sonner';
 import { exportPresentationToPdfAsync, downloadPdfFile, PdfExportProgress } from '@/utils/asyncPdfExport';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface SimplePdfExportButtonProps {
     presentationId: string;
@@ -47,6 +48,14 @@ const SimplePdfExportButton: React.FC<SimplePdfExportButtonProps> = ({ presentat
                 throw new Error(result.error || 'Export failed');
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Экспорт презентации в PDF',
+                component: 'SimplePdfExportButton',
+                additionalInfo: {
+                    presentationId,
+                    slideIndex,
+                },
+            });
             console.error('PDF export error:', error);
 
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';

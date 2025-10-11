@@ -48,5 +48,5 @@ async function handleSubscriptionCancellation(webhookData: CloudPaymentsWebhookD
         },
     });
 
-    console.log(`Subscription ${subscription.id} cancelled via CloudPayments webhook`);
+
 }

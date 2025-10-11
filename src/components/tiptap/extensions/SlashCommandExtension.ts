@@ -223,7 +223,6 @@ class CommandsList {
     };
 
     onKeyDown(event: KeyboardEvent) {
-        console.log('onKeyDown SlashCommandExtension');
         if (event.key === 'ArrowUp') {
             this.selectItem(this.selectedIndex - 1);
             event.preventDefault();
@@ -239,7 +238,6 @@ class CommandsList {
         if (event.key === 'Enter') {
             event.preventDefault();
             event.stopPropagation();
-            console.log('Enter SlashCommandExtension');
             this.onSelect();
             return true;
         }

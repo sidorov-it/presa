@@ -17,6 +17,7 @@ import styles from './page.module.css';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import createNewTheme from '@/utils/theme/createNewTheme';
+import { logCaughtError } from '@/utils/errorReporting';
 
 const ThemeEditorPageContent = (props: { params: { action: string } }) => {
     const params = props.params;
@@ -159,6 +160,14 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
             }
             router.push('/themes');
         } catch (error) {
+            logCaughtError(error, {
+                action: isNewTheme ? 'Создание новой темы' : 'Обновление темы',
+                component: 'ThemeEditorPageContent',
+                additionalInfo: {
+                    themeId: isNewTheme ? 'new' : params.action,
+                    themeName: themeName,
+                },
+            });
             console.error('Failed to save theme:', error);
             if (isLoading) {
                 return (

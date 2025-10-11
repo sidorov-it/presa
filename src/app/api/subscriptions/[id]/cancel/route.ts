@@ -58,9 +58,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 },
             });
 
-            // Log the cancellation
-            console.log(`Subscription ${subscriptionId} cancelled by user ${session.user.id}`);
-
             return NextResponse.json({
                 success: true,
                 message: 'Subscription cancelled successfully',

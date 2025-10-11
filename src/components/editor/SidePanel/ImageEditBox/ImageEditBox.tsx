@@ -13,6 +13,7 @@ import { Popover } from '@/components/ui/Popover/Popover';
 import { Textarea } from '@/components/ui/Textarea';
 import { useAIImageStore, GeneratedImage } from '@/store/aiImageStore';
 import { usePresentationStore } from '@/store/presentationStore';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface ImageEditBoxProps {
     imageUrl: string;
@@ -313,6 +314,16 @@ const ImageEditBox: React.FC<ImageEditBoxProps> = ({
                 onUpdateLink(firstImage.url, true);
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Генерация изображения с AI',
+                component: 'ImageEditBox',
+                additionalInfo: {
+                    prompt: aiPrompt?.substring(0, 100),
+                    style: selectedStyle,
+                    presentationId,
+                    slideId,
+                },
+            });
             const errorMessage = error instanceof Error ? error.message : 'Не удалось сгенерировать изображения';
             aiImageStore.setError(aiStoreId, errorMessage);
             setError(errorMessage);

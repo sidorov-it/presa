@@ -15,6 +15,7 @@ import { useUIStateStore } from '@/store/uiStateStore';
 import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 import { showSubscriptionModal } from '@/utils/subscriptionModalHelpers';
 import { FaCrown } from 'react-icons/fa';
+import { logCaughtError } from '@/utils/errorReporting';
 
 type SlideTemplateType = (typeof SLIDE_TEMPLATES)[number]['value'];
 type ContentAlignment = 'top' | 'center' | 'bottom';
@@ -273,6 +274,15 @@ const SlideTemplateSelector: React.FC<SlideTemplateSelectorProps> = ({ presentat
                 }
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Загрузка внешнего изображения',
+                component: 'SlideTemplateSelector',
+                additionalInfo: {
+                    imageUrl: url?.substring(0, 100),
+                    presentationId,
+                    slideId,
+                },
+            });
             setError(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
         } finally {
             setIsLoading(false);

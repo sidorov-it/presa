@@ -33,29 +33,6 @@ const createTheme = (data: ThemeData): Omit<Theme, 'id'> => {
     };
 };
 
-console.log(
-    'test converter ',
-    convertBasicThemeToFull(
-        {
-            primaryAccent: '#1B1B27',
-            headingColor: '#1B1B27',
-            bodyColor: '#3C3939',
-            cardColor: '#FFFFFF',
-            pageBackground: '#ECECF3',
-            roundness: '8px',
-            shadow: 'none',
-            cardBorder: 'thin',
-            cardBorderColor: '#E6E6E6',
-            cardTransparency: 0.8,
-            imageShape: 'default',
-            blockFillType: 'subtle',
-            blockFill: 'fill',
-            blockBorder: 'none',
-            blockShadow: 'none',
-        },
-        'Pearl'
-    )
-);
 export const THEME_TEMPLATES: Omit<Theme, 'id'>[] = [
     createTheme({
         name: 'Atacama Desert',

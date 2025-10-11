@@ -11,6 +11,7 @@ import { Tabs as ChakraTabs } from '@chakra-ui/react';
 import { useThemeStore } from '@/store/themeStore';
 import { getRequiredFontsFromTheme, loadFonts, unloadAllFonts } from '@/utils/fontLoader';
 import { Heading } from '@/components/ui/heading';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export default function ThemesPage() {
     const { themes, allThemes, defaultThemes, loadThemes, addTheme, deleteTheme } = useThemeStore();
@@ -18,6 +19,10 @@ export default function ThemesPage() {
 
     useEffect(() => {
         loadThemes().catch(error => {
+            logCaughtError(error, {
+                action: 'Загрузка тем при монтировании',
+                component: 'ThemesPage',
+            });
             console.error('Failed to load themes:', error);
             toast.error('Failed to load themes');
         });
@@ -56,6 +61,11 @@ export default function ThemesPage() {
                     await deleteTheme(themeId);
                     toast.success('Theme deleted successfully');
                 } catch (error) {
+                    logCaughtError(error, {
+                        action: 'Удаление темы',
+                        component: 'ThemesPage',
+                        additionalInfo: { themeId },
+                    });
                     console.error('Failed to delete theme:', error);
                     toast.error('Failed to delete theme');
                 }

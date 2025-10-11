@@ -244,24 +244,6 @@ export const useUIStateStore = create<UIState>()(
                 );
                 const isInTable = layout?.isTable;
 
-                console.log('openContextMenu', {
-                    isContextMenuOpen: true,
-                    selectedSlideId: menuData.slideId ?? null,
-                    selectedElementId: menuData.elementId ?? null,
-                    contextMenuElementType: menuData.elementType ?? null,
-                    selectedLayoutId: menuData.layoutId ?? null,
-                    selectedCellId: menuData.cellId ?? null,
-                    selectedSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
-                    isContextMenuOnTextEditor: menuData.isTextEditor ?? false,
-                    contextMenuTableRowIndex: menuData.tableRowIndex ?? null,
-                    contextMenuTableColumnIndex: menuData.tableColumnIndex ?? null,
-                    contextMenuTableId: menuData.tableId ?? null,
-                    // contextMenuSmartLayoutItemId: menuData.smartLayoutItemId ?? null,
-                    isContextMenuInTable: isInTable ?? false,
-                    contextMenuColumnIndex: menuData.columnIndex ?? null,
-                    currentPresentationId: currentPresentationId ?? null,
-                });
-
                 set({
                     isContextMenuOpen: true,
                     selectedSlideId: menuData.slideId ?? null,
@@ -296,7 +278,7 @@ export const useUIStateStore = create<UIState>()(
                 });
             },
             closeContextMenu: () => {
-                console.log('closeContextMenu');
+
                 set({
                     isContextMenuOpen: false,
                     // selectedSlideId: null,
@@ -326,10 +308,6 @@ export const useUIStateStore = create<UIState>()(
 
             // Actions for side menu control
             openSideMenu: (sideMenuId: string, sideMenuData: any) => {
-                console.log('openSideMenu', {
-                    sideMenuId,
-                    sideMenuData,
-                });
                 set({
                     sideMenuState: {
                         isOpen: true,

@@ -1,3 +1,5 @@
+import { logCaughtError } from '@/utils/errorReporting';
+
 export interface PdfExportProgress {
     status: 'pending' | 'in_progress' | 'completed' | 'failed';
     progress: number;
@@ -82,6 +84,15 @@ export const exportPresentationToPdfAsync = async (
                     }
                     // Continue polling for 'pending' and 'in_progress'
                 } catch (error) {
+                    logCaughtError(error, {
+                        action: 'Проверка статуса экспорта PDF',
+                        component: 'asyncPdfExport.polling',
+                        additionalInfo: {
+                            presentationId,
+                            taskId,
+                            slideIndex,
+                        },
+                    });
                     clearInterval(pollInterval);
                     reject(error);
                 }
@@ -97,6 +108,14 @@ export const exportPresentationToPdfAsync = async (
             ); // 5 minutes timeout
         });
     } catch (error) {
+        logCaughtError(error, {
+            action: 'Запуск асинхронного экспорта PDF',
+            component: 'asyncPdfExport.exportPresentationToPdfAsync',
+            additionalInfo: {
+                presentationId,
+                slideIndex,
+            },
+        });
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',

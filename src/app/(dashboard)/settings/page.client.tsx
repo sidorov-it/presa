@@ -6,6 +6,7 @@ import { Heading } from '@/components/ui/heading';
 import { Button } from '@/components/ui/Button';
 import { toast } from 'sonner';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 const SettingsPage = () => {
     const { data: session, update } = useSession();
@@ -19,10 +20,8 @@ const SettingsPage = () => {
 
     const checkAuthentication = async () => {
         try {
-            console.log('Checking authentication status...');
             const authResponse = await fetch('/api/auth/check');
             const authData = await authResponse.json();
-            console.log('Authentication check result:', authData);
 
             if (!authData.authenticated) {
                 console.error('User not authenticated properly');
@@ -32,6 +31,10 @@ const SettingsPage = () => {
 
             return true;
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Проверка аутентификации',
+                component: 'SettingsPage.checkAuthentication',
+            });
             console.error('Authentication check error:', error);
             toast.error('Ошибка аутентификации. Попробуйте ещё раз.');
             return false;
@@ -52,25 +55,19 @@ const SettingsPage = () => {
             if (!isAuthenticated) return;
 
             try {
-                console.log('Fetching user preferences...');
                 const response = await fetch('/api/user/preferences');
-                console.log('Preferences response status:', response.status);
 
                 if (response.status === 401) {
-                    console.log('User not authenticated, cannot fetch preferences');
                     setIsLoading(false);
                     return;
                 }
 
                 const data = await response.json();
-                console.log('Preferences data:', data);
 
                 if (response.ok) {
                     if (data.emailUpdates !== undefined) {
                         setEmailUpdates(data.emailUpdates);
-                        console.log('Setting email updates to:', data.emailUpdates);
                     } else {
-                        console.log('No email preferences found in response, using default');
                         setEmailUpdates(true);
                     }
                 } else {
@@ -78,6 +75,10 @@ const SettingsPage = () => {
                     toast.error('Не удалось загрузить настройки');
                 }
             } catch (error) {
+                logCaughtError(error, {
+                    action: 'Загрузка настроек пользователя',
+                    component: 'SettingsPage.fetchPreferences',
+                });
                 console.error('Error fetching preferences:', error);
                 toast.error('Не удалось загрузить настройки');
             } finally {
@@ -86,10 +87,8 @@ const SettingsPage = () => {
         };
 
         if (session?.user) {
-            console.log('Session is available, user ID:', session.user.id, 'name:', session.user.name);
             fetchUserPreferences();
         } else {
-            console.log('No session available');
             setIsLoading(false);
         }
     }, [session]);
@@ -97,8 +96,6 @@ const SettingsPage = () => {
     const handleSaveProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
-        console.log('Saving profile with name:', name);
-        console.log('User session ID:', session?.user?.id);
 
         // Check authentication before proceeding
         const isAuthenticated = await checkAuthentication();
@@ -108,7 +105,6 @@ const SettingsPage = () => {
         }
 
         try {
-            console.log('Making API request to /api/user/profile');
             const response = await fetch('/api/user/profile', {
                 method: 'PUT',
                 headers: {
@@ -116,24 +112,26 @@ const SettingsPage = () => {
                 },
                 body: JSON.stringify({ name }),
             });
-            console.log('Profile update response status:', response.status);
 
             const data = await response.json();
-            console.log('Profile update response data:', data);
 
             if (!response.ok) {
                 throw new Error(data.message || 'Не удалось обновить профиль');
             }
 
             // Update the session to reflect the name change
-            console.log('Updating session with new name');
+
             await update({
                 user: { name },
             });
-            console.log('Session updated successfully');
 
             toast.success('Профиль успешно обновлён');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Обновление профиля',
+                component: 'SettingsPage.handleProfileUpdate',
+                additionalInfo: { name },
+            });
             console.error('Profile update error complete details:', error);
             toast.error(error instanceof Error ? error.message : 'Не удалось обновить профиль');
         } finally {
@@ -188,6 +186,10 @@ const SettingsPage = () => {
             setNewPassword('');
             setConfirmPassword('');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Изменение пароля',
+                component: 'SettingsPage.handlePasswordChange',
+            });
             toast.error(error instanceof Error ? error.message : 'Не удалось изменить пароль');
             console.error(error);
         } finally {
@@ -206,8 +208,6 @@ const SettingsPage = () => {
             return;
         }
 
-        console.log('Saving email preferences, updates set to:', emailUpdates);
-
         try {
             const response = await fetch('/api/user/preferences', {
                 method: 'PUT',
@@ -220,7 +220,6 @@ const SettingsPage = () => {
             });
 
             const data = await response.json();
-            console.log('Email preferences response:', response.status, data);
 
             if (!response.ok) {
                 throw new Error(data.message || 'Не удалось обновить настройки');
@@ -228,6 +227,11 @@ const SettingsPage = () => {
 
             toast.success('Настройки почты обновлены');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Обновление настроек почты',
+                component: 'SettingsPage.handleEmailPreferencesUpdate',
+                additionalInfo: { emailUpdates },
+            });
             toast.error(error instanceof Error ? error.message : 'Не удалось обновить настройки');
             console.error('Email preferences error:', error);
         } finally {
@@ -369,7 +373,7 @@ const SettingsPage = () => {
                                         checked={emailUpdates}
                                         onChange={e => {
                                             const newValue = e.target.checked;
-                                            console.log('Checkbox toggled to:', newValue);
+
                                             setEmailUpdates(newValue);
                                         }}
                                         className={styles.checkbox}

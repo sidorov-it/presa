@@ -1,4 +1,5 @@
 import { ImportPresentationResponse } from '@/types';
+import { logCaughtError } from '@/utils/errorReporting';
 
 /**
  * Frontend utility functions for presentation export/import
@@ -31,6 +32,11 @@ export const exportPresentation = async (presentationId: string): Promise<void> 
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
     } catch (error) {
+        logCaughtError(error, {
+            action: 'Экспорт презентации в JSON',
+            component: 'presentationExportImport.exportPresentation',
+            additionalInfo: { presentationId },
+        });
         console.error('Export failed:', error);
         throw error;
     }
@@ -63,6 +69,14 @@ export const importPresentation = async (file: File): Promise<ImportPresentation
 
         return await response.json();
     } catch (error) {
+        logCaughtError(error, {
+            action: 'Импорт презентации из JSON',
+            component: 'presentationExportImport.importPresentation',
+            additionalInfo: {
+                fileSize: file?.size,
+                fileName: file?.name,
+            },
+        });
         console.error('Import failed:', error);
         throw error;
     }
@@ -106,6 +120,14 @@ export const readAndValidateJsonFile = (file: File): Promise<{ valid: boolean; d
 
                 resolve({ valid: true, data });
             } catch (error) {
+                logCaughtError(error, {
+                    action: 'Чтение и валидация JSON файла',
+                    component: 'presentationExportImport.readAndValidateJsonFile',
+                    additionalInfo: {
+                        fileName: file?.name,
+                        fileSize: file?.size,
+                    },
+                });
                 console.error('Error reading file:', error);
                 resolve({ valid: false, error: 'Invalid JSON file' });
             }

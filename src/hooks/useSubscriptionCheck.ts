@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SubscriptionFeatures } from '@/types/subscriptions';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface UseSubscriptionCheckReturn {
     hasActiveSubscription: boolean;
@@ -88,6 +89,10 @@ export const useSubscriptionCheck = (): UseSubscriptionCheckReturn => {
                 setFeatures(DEFAULT_FEATURES);
             }
         } catch (err) {
+            logCaughtError(err, {
+                action: 'Легковесная проверка статуса подписки',
+                component: 'useSubscriptionCheck',
+            });
             const errorMessage = err instanceof Error ? err.message : 'Failed to check subscription status';
             setError(errorMessage);
 

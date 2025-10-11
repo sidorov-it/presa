@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 const ResetPassword = () => {
     const router = useRouter();
@@ -39,6 +40,11 @@ const ResetPassword = () => {
                 setIsInvalidToken(true);
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Проверка токена восстановления пароля',
+                component: 'ResetPassword',
+                additionalInfo: { hasToken: !!token },
+            });
             console.error('Token verification error:', error);
             setIsInvalidToken(true);
         }
@@ -89,6 +95,11 @@ const ResetPassword = () => {
                 router.push('/login');
             }, 3000);
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Сброс пароля',
+                component: 'ResetPassword',
+                additionalInfo: { hasToken: !!token },
+            });
             console.error('Password reset error:', error);
             setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);

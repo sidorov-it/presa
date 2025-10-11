@@ -13,6 +13,7 @@ import { Heading } from '@/components/ui/heading';
 import FullPageLoader from '@/components/FullPageLoader/FullPageLoader';
 import getImagePath from '@/utils/getImagePath';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 const TEMPLATE_KEYS = Object.keys(PresentationTemplates) as PresentationTemplateKeys[];
 
@@ -41,6 +42,11 @@ const TemplatesPage = () => {
             await loadPresentation(presentation.id);
             router.push(`/docs/${presentation.id}`);
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Создание презентации из шаблона',
+                component: 'TemplatesPage',
+                additionalInfo: { templateId },
+            });
             console.error(error);
             setIsLoading(false);
         }

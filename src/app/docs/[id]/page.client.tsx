@@ -420,7 +420,6 @@ export default function PresentationEditorPage() {
     // Mobile detection effect
     useEffect(() => {
         const checkMobile = () => {
-            console.log('checkMobile', window.innerWidth < 1024);
             setIsMobile(window.innerWidth < 1024);
         };
 

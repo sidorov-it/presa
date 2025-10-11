@@ -14,6 +14,7 @@ import styles from './page.module.css';
 import { SubscriptionFeatures } from '@/components/subscriptions/SubscriptionFeatures';
 import { SubscriptionPlan } from '@prisma/client';
 import { TokenPackage } from '@/types/tokens';
+import { logCaughtError } from '@/utils/errorReporting';
 
 const Subscriptions = ({
     subscriptionPlans,
@@ -175,6 +176,11 @@ const Subscriptions = ({
                             },
                         });
                     } catch (error) {
+                        logCaughtError(error, {
+                            action: 'Открытие виджета CloudPayments для подписки',
+                            component: 'Subscriptions',
+                            additionalInfo: { planId },
+                        });
                         console.error('Error opening CloudPayments widget:', error);
                         setNotification({
                             type: 'error',
@@ -188,6 +194,11 @@ const Subscriptions = ({
                 throw new Error(result.error || 'Failed to create subscription');
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Создание подписки',
+                component: 'Subscriptions',
+                additionalInfo: { planId },
+            });
             console.error('Subscription error:', error);
             setNotification({
                 type: 'error',

@@ -1,0 +1,75 @@
+.errorContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 20px;
+}
+
+.errorContent {
+    max-width: 600px;
+    text-align: center;
+    padding: 32px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.errorTitle {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ef4444;
+    margin: 0 0 12px 0;
+}
+
+.errorMessage {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.errorDetails {
+    text-align: left;
+    margin: 20px 0;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.errorDetails summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.errorStack {
+    margin: 12px 0 0 0;
+    padding: 12px;
+    background: #1f2937;
+    color: #f3f4f6;
+    border-radius: 4px;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.resetButton {
+    padding: 10px 24px;
+    background: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.resetButton:hover {
+    background: #2c5aa0;
+}
+

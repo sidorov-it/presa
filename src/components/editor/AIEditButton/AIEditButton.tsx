@@ -5,6 +5,7 @@ import { usePresentationStore } from '@/store/presentationStore';
 import { toast } from 'sonner';
 import { BsMagic } from 'react-icons/bs';
 import { markdownToHtml } from '@/utils/markdownToHtml';
+import { logCaughtError } from '@/utils/errorReporting';
 // import extractTextFromElement from '@/utils/extractTextFromElement';
 
 interface AIEditButtonProps {
@@ -85,7 +86,6 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
 
             const data = await response.json();
 
-            console.log('AI edit result:', data);
             const updatedContent = Object.entries(data.content).map(entry => {
                 const [key, value] = entry;
                 const indexDash = key.indexOf('-');
@@ -113,6 +113,15 @@ const AIEditButton: React.FC<AIEditButtonProps> = ({
             toast.success(successMessage);
             setIsOpen(false);
         } catch (error) {
+            logCaughtError(error, {
+                action: `AI действие: ${url}`,
+                component: 'AIEditButton',
+                additionalInfo: {
+                    presentationId,
+                    slideId,
+                    apiUrl: url,
+                },
+            });
             console.error('AI action error:', error);
             toast.error(errorMessage);
         } finally {

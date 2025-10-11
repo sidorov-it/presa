@@ -266,7 +266,7 @@ export default async function generateSlidesTemplates({
 
             if (invalidTemplates.length === 0) {
                 // All templates are valid, return success
-                console.log(`✓ Successfully validated ${templateSuggestions.length} template selections`);
+
                 return templateSuggestions;
             }
 

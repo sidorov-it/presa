@@ -163,7 +163,6 @@ const LayoutContent: React.FC<LayoutContentProps> = ({
         [layout.elements.length, layout.gridStructure.rows]
     );
 
-    // console.log('columnDragPosition', columnDragPosition)
     const handleLayoutDragStart = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
             e.stopPropagation();

@@ -140,7 +140,6 @@ export const Code = Mark.create<CodeOptions>({
                         // Ensure the editor state is updated
                         editor.view.dispatch(editor.state.tr.setMeta('transaction', true));
 
-                        console.log('finished toggle code');
                         return result;
                     },
             unsetCode:

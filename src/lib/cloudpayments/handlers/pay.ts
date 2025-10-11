@@ -48,7 +48,7 @@ async function handleTokenPurchase(webhookData: CloudPaymentsWebhookData, paymen
     if (webhookData.Status === 'Completed') {
         // Check if purchase is already completed to prevent duplicate processing
         if (purchase.status === PurchaseStatus.completed) {
-            console.log(`Purchase ${purchase.id} already completed, skipping duplicate processing`);
+
             return;
         }
 
@@ -191,7 +191,7 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
             }
         );
 
-        console.log('result', result);
+
     } else {
         // обработка продления подписки
         // находим подписку по cloudpaymentsId и userId
@@ -269,7 +269,7 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
             }
         );
 
-        console.log('result', result);
+
     }
 
     // Validate required fields to prevent Prisma errors
@@ -337,7 +337,7 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
     //     });
 
     //     if (existingPayment) {
-    //         console.log(`Payment ${webhookData.TransactionId} already processed, skipping duplicate`);
+    
     //         return;
     //     }
 
@@ -400,7 +400,7 @@ async function handleSubscriptionPayment(webhookData: CloudPaymentsWebhookData, 
 
     //                 if (isScheduledChange) {
     //                     // This is a scheduled plan change - activate the new plan
-    //                     console.log(`Activating scheduled plan change for subscription ${subscription.id}`);
+    
     //                     subscriptionUpdated = await activateSubscription(subscription.id, webhookData.SubscriptionId);
 
     //                     // Cancel the old subscription if it exists

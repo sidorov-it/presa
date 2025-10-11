@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -78,6 +79,11 @@ export default function RegisterPage() {
             // Success, redirect to login
             router.push('/login?registered=true');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Регистрация пользователя',
+                component: 'RegisterPage',
+                additionalInfo: { email, name },
+            });
             console.error('Registration error:', error);
             setError('Что-то пошло не так. Попробуйте еще раз.');
             setIsLoading(false);

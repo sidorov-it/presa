@@ -143,17 +143,6 @@ export async function POST(request: NextRequest) {
         // Generate receipt for CloudPayments
         const receipt = generateSubscriptionReceipt(subscriptionPlan, session.user.email);
 
-        console.log('Subscription creation details:', {
-            userSubscriptionId: userSubscription.id,
-            planId: subscriptionPlan.id,
-            planName: subscriptionPlan.name,
-            planPrice: subscriptionPlan.price,
-            planInterval: subscriptionPlan.interval,
-            recurrentConfig,
-            userId: session.user.id,
-            userEmail: session.user.email,
-        });
-
         const response: CreateSubscriptionResponse = {
             success: true,
             publicId: process.env.CLOUDPAYMENTS_PUBLIC_ID!,
@@ -178,8 +167,6 @@ export async function POST(request: NextRequest) {
                 },
             },
         };
-
-        console.log('API response:', JSON.stringify(response, null, 2));
 
         return NextResponse.json(response);
     } catch (error) {

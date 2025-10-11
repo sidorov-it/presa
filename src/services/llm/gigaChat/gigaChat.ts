@@ -383,7 +383,7 @@ export class GigaChatService implements LLMService {
 
             // Wait before retry (exponential backoff)
             const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
-            console.log(`GigaChat: Retrying request ${options.requestId} in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+
             await new Promise(resolve => setTimeout(resolve, delay));
 
             // Retry with incremented counter
@@ -531,7 +531,7 @@ export class GigaChatService implements LLMService {
 
             // Wait before retry (exponential backoff)
             const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 seconds
-            console.log(`GigaChat Image: Retrying request ${options.requestId} in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+
             await new Promise(resolve => setTimeout(resolve, delay));
 
             // Retry with incremented counter

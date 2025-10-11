@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation';
 import { generateId } from '@/utils/id';
 import { useSubscriptionCheck } from '@/hooks/useSubscriptionCheck';
 import GenerationLoader from '@/components/ui/GenerationLoader';
+import { logCaughtError } from '@/utils/errorReporting';
 import {
     DndContext,
     closestCenter,
@@ -360,7 +361,15 @@ const AiPresentationPage = () => {
             });
 
             setStep('document-form');
-        } catch {
+        } catch (error) {
+            logCaughtError(error, {
+                action: 'Загрузка документа для AI генерации',
+                component: 'AIPage.handleDocumentUpload',
+                additionalInfo: {
+                    fileName: uploadedFile?.name,
+                    fileSize: uploadedFile?.size,
+                },
+            });
             setError('Ошибка загрузки документа. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
@@ -417,7 +426,16 @@ const AiPresentationPage = () => {
             const presentationData = await response.json();
             router.push(`/docs/${presentationData.presentationId}`);
             toast.success('Презентация успешно создана!');
-        } catch {
+        } catch (error) {
+            logCaughtError(error, {
+                action: 'Создание презентации из документа',
+                component: 'AIPage.handleDocumentPresentationCreate',
+                additionalInfo: {
+                    fileName: documentInfo?.filename,
+                    numSlides,
+                    tone,
+                },
+            });
             setError('Ошибка создания презентации. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
@@ -498,7 +516,16 @@ const AiPresentationPage = () => {
             const presentationData = await response.json();
             router.push(`/docs/${presentationData.presentationId}`);
             toast.success('Презентация успешно создана!');
-        } catch {
+        } catch (error) {
+            logCaughtError(error, {
+                action: 'Создание презентации из плана',
+                component: 'AIPage.handlePlanSubmit',
+                additionalInfo: {
+                    planLength: planText?.length,
+                    tone,
+                    numSlides,
+                },
+            });
             setError('Ошибка обработки плана. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
@@ -542,7 +569,16 @@ const AiPresentationPage = () => {
                 }))
             );
             setStep('topics');
-        } catch {
+        } catch (error) {
+            logCaughtError(error, {
+                action: 'Генерация тем слайдов',
+                component: 'AIPage.handleGenerateTopics',
+                additionalInfo: {
+                    descriptionLength: description?.length,
+                    numSlides,
+                    tone,
+                },
+            });
             setError('Ошибка генерации тем слайдов. Попробуйте еще раз.');
         } finally {
             setIsLoading(false);
@@ -694,6 +730,16 @@ const AiPresentationPage = () => {
             router.push(`/docs/${data.presentationId}`);
             toast.success('Презентация успешно создана!');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Генерация полной презентации',
+                component: 'AIPage.handleGeneratePresentation',
+                additionalInfo: {
+                    title: presentationTitle,
+                    topicsCount: topics.length,
+                    tone,
+                    numSlides,
+                },
+            });
             console.error('Error creating presentation:', error);
             toast.error('Ошибка при создании презентации. Попробуйте еще раз.');
         } finally {

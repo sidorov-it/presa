@@ -2,6 +2,7 @@ import domtoimage from 'dom-to-image';
 import { jsPDF } from 'jspdf';
 import { IPresentation } from '@/types';
 import logger from '@/utils/logger';
+import { logCaughtError } from '@/utils/errorReporting';
 
 // Function to clear image cache
 const clearImageCache = (element: HTMLElement) => {
@@ -334,6 +335,15 @@ export const exportPresentationToPdf = async (
             pdf.save(filename);
         }
     } catch (error) {
+        logCaughtError(error, {
+            action: 'Экспорт презентации в PDF',
+            component: 'pdfExport.exportPresentationToPdf',
+            additionalInfo: {
+                presentationId: presentation.id,
+                slideCount: slideElements?.length || 0,
+                filename,
+            },
+        });
         logger.error(`Error exporting PDF: ${String(error)}`);
         throw error;
     }

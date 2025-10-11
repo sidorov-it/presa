@@ -116,6 +116,8 @@ model User {
   pdfGenerationTasks PdfGenerationTask[]
   oauthAccounts      OAuthAccount[]
   subscriptions      UserSubscription[]
+  feedbacks          Feedback[]
+  errorLogs          ErrorLog[]
 }
 
 enum CreatedVia {
@@ -526,4 +528,76 @@ model SubscriptionPayment {
   completedAt DateTime?
 
   metadata Json?
+}
+
+enum FeedbackRating {
+  positive // 👍 like
+  negative // 👎 dislike
+}
+
+model Feedback {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?        @db.ObjectId
+  user      User?          @relation(fields: [userId], references: [id])
+  
+  // Feedback content
+  rating    FeedbackRating
+  comment   String?
+  
+  // Context information
+  page      String         // URL of the page where feedback was submitted
+  userAgent String?        // Browser/device info
+  metadata  Json?          // Additional context (screen size, browser language, etc.)
+  
+  createdAt DateTime       @default(now())
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@index([page])
+}
+
+enum ErrorType {
+  javascript // JavaScript runtime errors
+  react // React component errors
+  promise // Unhandled promise rejections
+  network // Network/API errors
+  other // Other types of errors
+}
+
+enum ErrorSeverity {
+  low
+  medium
+  high
+  critical
+}
+
+model ErrorLog {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?       @db.ObjectId
+  user      User?         @relation(fields: [userId], references: [id])
+  
+  // Error details
+  type      ErrorType
+  severity  ErrorSeverity @default(medium)
+  message   String        // Error message
+  stack     String?       // Stack trace
+  
+  // Context information
+  page      String        // URL where error occurred
+  userAgent String?       // Browser/device info
+  
+  // Additional metadata
+  metadata  Json?         // Browser info, screen size, component info, etc.
+  
+  // Error grouping (for deduplication)
+  fingerprint String?     // Hash of error type + message + first line of stack
+  
+  createdAt DateTime      @default(now())
+  
+  @@index([userId])
+  @@index([type])
+  @@index([severity])
+  @@index([fingerprint])
+  @@index([createdAt])
+  @@index([page])
 }

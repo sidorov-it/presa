@@ -161,7 +161,7 @@ export default async function rewriteSlideContent(userId: string, slide: Slide, 
         const { functionSchema, slotMapping } = createRewriteSlideContentFunction(slide);
 
         const prompt = createPromptRewriteSlideContent(slotMapping!, instructions);
-        console.log(prompt);
+
 
         // получаем ответ от LLM
         // const response = await gigaChatService.generateFromCache(topic);
@@ -228,7 +228,7 @@ export default async function rewriteSlideContent(userId: string, slide: Slide, 
         // } else {
         //     throw new Error('No function call arguments');
         // }
-        // console.log(response);
+        
 
         // const updatedResponse = { ...response.function_call?.arguments };
 

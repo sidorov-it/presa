@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserSubscription, CreateSubscriptionRequest, CreateSubscriptionResponse } from '@/types/subscriptions';
 import { invalidateSubscriptionCache } from './useSubscriptionCheck';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface UseSubscriptionsReturn {
     activeSubscription: UserSubscription | null;
@@ -30,6 +31,10 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
                 setError(errorData.error || 'Failed to load subscription status');
             }
         } catch (err) {
+            logCaughtError(err, {
+                action: 'Загрузка статуса подписки',
+                component: 'useSubscriptions',
+            });
             const errorMessage = err instanceof Error ? err.message : 'Failed to load subscription status';
             setError(errorMessage);
         }
@@ -55,6 +60,11 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
             const result = await response.json();
             return result;
         } catch (err) {
+            logCaughtError(err, {
+                action: 'Создание подписки',
+                component: 'useSubscriptions.createSubscription',
+                additionalInfo: { planId },
+            });
             const errorMessage = err instanceof Error ? err.message : 'Failed to create subscription';
             setError(errorMessage);
             return { success: false, error: errorMessage, publicId: '' };
@@ -81,6 +91,11 @@ export const useSubscriptions = (): UseSubscriptionsReturn => {
                 await loadSubscriptionStatus();
                 return { success: true };
             } catch (err) {
+                logCaughtError(err, {
+                    action: 'Отмена подписки',
+                    component: 'useSubscriptions.cancelSubscription',
+                    additionalInfo: { subscriptionId },
+                });
                 const errorMessage = err instanceof Error ? err.message : 'Failed to cancel subscription';
                 setError(errorMessage);
                 return { success: false, error: errorMessage };

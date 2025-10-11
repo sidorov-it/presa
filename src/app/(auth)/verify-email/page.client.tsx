@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface VerifyEmailClientProps {
     isAuthenticated: boolean;
@@ -28,6 +29,11 @@ export default function VerifyEmailClient({ isAuthenticated }: VerifyEmailClient
                 router.push('/login?email-verified=true');
             }
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Завершение верификации email',
+                component: 'VerifyEmailClient',
+                additionalInfo: { isAuthenticated },
+            });
             console.error('Error updating verification status:', error);
             // Fallback: redirect to login
             router.push('/login?email-verified=true');

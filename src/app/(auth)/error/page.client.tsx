@@ -31,9 +31,6 @@ export default function ErrorPageClient() {
     const error = searchParams.get('error');
     const errorDescription = searchParams.get('error_description');
 
-    console.log('[AUTH_ERROR_PAGE] Error:', error);
-    console.log('[AUTH_ERROR_PAGE] Error description:', errorDescription);
-
     const getErrorMessage = () => {
         if (error && errorMessages[error]) {
             return errorMessages[error];

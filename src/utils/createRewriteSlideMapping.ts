@@ -4,6 +4,7 @@ import { Slide, SmartLayoutElement } from '@/types';
 import { ElementType } from '@/types/elements';
 import { stripHtml } from './stripeHtml';
 import logger from '@/utils/logger';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export default function createRewriteSlideMapping(slide: Slide) {
     try {
@@ -100,6 +101,14 @@ export default function createRewriteSlideMapping(slide: Slide) {
 
         return mapping;
     } catch (error) {
+        logCaughtError(error, {
+            action: 'Создание маппинга для AI переписывания слайда',
+            component: 'createRewriteSlideMapping',
+            additionalInfo: {
+                slideId: slide.id,
+                layoutsCount: slide.layouts?.length,
+            },
+        });
         logger.error(String(error));
     }
 }

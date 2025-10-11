@@ -211,6 +211,6 @@ describe('Rewrite slide', () => {
         } as Slide;
 
         const updateSlide = await rewriteSlideContent(slide);
-        console.log(updateSlide);
+
     }, 120000);
 });

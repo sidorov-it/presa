@@ -62,13 +62,6 @@ export async function parseWebhookPayload(request: NextRequest): Promise<{
         RecurrenceType: formData.get('RecurrenceType') ? String(formData.get('RecurrenceType')) : undefined,
     };
 
-    console.log(
-        `[CLOUDPAYMENTS] recurrent webhookData
-${Object.entries(webhookData)
-        .map(([key, value]) => `${key}:${value?.replaceAll('\n', '')}`)
-        .join('\n')}`
-    );
-
     let paymentData: Record<string, any> = {};
     if (webhookData.Data) {
         try {
@@ -109,13 +102,6 @@ export async function parseRecurrentWebhookPayload(request: NextRequest): Promis
             ? String(formData.get('NextTransactionDate'))
             : undefined,
     };
-
-    console.log(
-        `[CLOUDPAYMENTS] recurrent webhookData
-${Object.entries(webhookData)
-        .map(([key, value]) => `${key}:${value}`)
-        .join('\n')}`
-    );
 
     const paymentData: Record<string, any> = {};
 

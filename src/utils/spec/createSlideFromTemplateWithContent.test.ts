@@ -193,6 +193,6 @@ describe('createSlideFromTemplateWithContent', () => {
         const title = 'Слайд о перспективах криптовалют';
 
         const slide = await createSlideFromTemplateWithContent(templateId, slotMapping, layoutsContents, title);
-        console.log(slide);
+
     });
 });

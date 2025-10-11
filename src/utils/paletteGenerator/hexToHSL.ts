@@ -38,7 +38,7 @@ export const hexToHSL = (hex: string): HSL => {
         HSL.l = Math.round(l * 100);
         return HSL;
     } catch (error) {
-        console.log(error, hex);
+
         return { h: 0, s: 0, l: 0 };
     }
 };

@@ -32,7 +32,7 @@ async function handleSubscriptionPaymentFailure(webhookData: CloudPaymentsWebhoo
     logger.info(
         `Subscription payment failed for subscription. UserId: ${webhookData.AccountId}, SubscriptionId: ${webhookData.SubscriptionId}`
     );
-    // console.log(`Subscription payment failed for subscription ${subscription.id}`);
+    
 }
 
 async function handleTokenPurchaseFailure(webhookData: CloudPaymentsWebhookData, paymentData: Record<string, any>) {
@@ -69,5 +69,5 @@ async function handleTokenPurchaseFailure(webhookData: CloudPaymentsWebhookData,
         },
     });
 
-    console.log(`Token purchase failed for purchase ${purchase.id}`);
+
 }

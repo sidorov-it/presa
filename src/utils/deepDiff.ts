@@ -6,7 +6,7 @@ export default function deepDiff(obj1: any, obj2: any) {
     }
 
     if (!obj1 || !obj2) {
-        console.log('один из объектов nullable');
+
         return;
     }
     for (const key in obj1) {

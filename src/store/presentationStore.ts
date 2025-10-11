@@ -30,6 +30,7 @@ import { fillSlots } from '@/elements/commonRegisrty';
 import { ChangeTiptapRefsEvent } from '@/customEvents/ChangeTiptapRefsEvent';
 import { ElementType } from '@/types/elements';
 import { diff, type Diff } from 'deep-diff';
+import { logCaughtError } from '@/utils/errorReporting';
 
 export interface PresentationMeta {
     id: string;
@@ -432,6 +433,14 @@ export const usePresentationStore = create<PresentationState>()(
                         set({ savingStatus: 'idle' });
                     }, 2000);
                 } catch (error) {
+                    logCaughtError(error, {
+                        action: 'Автосохранение презентации',
+                        component: 'presentationStore.saveChanges',
+                        additionalInfo: {
+                            presentationId: id,
+                            changesCount: changes?.length,
+                        },
+                    });
                     console.error('Error saving presentation:', error);
                     set({ savingStatus: 'error' });
                 }
@@ -483,6 +492,11 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return presentation.id;
                 } catch (error) {
+                    logCaughtError(error, {
+                        action: 'Создание новой презентации',
+                        component: 'presentationStore.createPresentation',
+                        additionalInfo: { title },
+                    });
                     console.error('Error creating presentation:', error);
                     set({ error: 'Failed to create presentation' });
                     throw error;
@@ -516,6 +530,10 @@ export const usePresentationStore = create<PresentationState>()(
                         };
                     });
                 } catch (error) {
+                    logCaughtError(error, {
+                        action: 'Загрузка списка всех презентаций',
+                        component: 'presentationStore.loadPresentationsList',
+                    });
                     console.error('Error loading presentations:', error);
                     set({
                         error: 'Failed to load presentations',
@@ -562,6 +580,11 @@ export const usePresentationStore = create<PresentationState>()(
 
                     return presentation;
                 } catch (error) {
+                    logCaughtError(error, {
+                        action: 'Загрузка конкретной презентации',
+                        component: 'presentationStore.loadPresentation',
+                        additionalInfo: { presentationId: id },
+                    });
                     console.error('Error loading presentation:', error);
                     set({ error: 'Failed to load presentation' });
                     throw error;
@@ -787,7 +810,7 @@ export const usePresentationStore = create<PresentationState>()(
                             after: updatedState,
                         });
                     } else if (isExcludeFromHistory?.isExcludeFromHistory) {
-                        console.log('exclude from history', isExcludeFromHistory.description);
+
                     } else {
                         get().recordAction({
                             type: 'slide',
@@ -1546,7 +1569,7 @@ export const usePresentationStore = create<PresentationState>()(
                         after: updatedState,
                     });
 
-                    console.log('updatedState', updatedState);
+
                     return updatedState;
                 });
 
@@ -3810,7 +3833,7 @@ export const usePresentationStore = create<PresentationState>()(
             ) => {
                 const beforeState = { ...get() };
 
-                console.log('updateSlideContent', presentationId, slideId, content);
+
                 const updateElementsData: any = {};
 
                 const slide = get().getSlide(presentationId, slideId);
@@ -3840,7 +3863,7 @@ export const usePresentationStore = create<PresentationState>()(
                     };
                 });
 
-                console.log('updatedLayouts', updatedLayouts);
+
 
                 set(state => {
                     const updatedState = {
@@ -3878,7 +3901,7 @@ export const usePresentationStore = create<PresentationState>()(
 
                 // Add auto-save after completing the operation
                 get().saveChanges(presentationId);
-                console.log('slide after', slide);
+
 
                 // set(state => {
                 //     const updatedState = {

@@ -18,7 +18,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 }
 
 async function handleRecurrentNotification(webhookData: CloudPaymentsRecurrentWebhookData) {
-    console.log('Processing recurrent notification:', webhookData);
+
 
     // Validate required fields to prevent Prisma errors
     if (!webhookData.Id || !webhookData.AccountId) {
@@ -97,5 +97,5 @@ async function handleRecurrentNotification(webhookData: CloudPaymentsRecurrentWe
     // Выполняем проверку здоровья подписки
     await performSubscriptionHealthCheck(webhookData.AccountId);
 
-    console.log(`Subscription ${subscription.id} status updated to ${newStatus}`);
+
 }

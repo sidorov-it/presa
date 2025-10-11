@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { pluralize } from '@/utils/helpers';
 import { Heading } from '@/components/ui/heading';
 import styles from './page.module.css';
+import { logCaughtError } from '@/utils/errorReporting';
 
 interface DeletedPresentation {
     id: string;
@@ -29,6 +30,10 @@ export default function TrashPage() {
                 const data = await response.json();
                 setDeletedPresentations(data);
             } catch (error) {
+                logCaughtError(error, {
+                    action: 'Загрузка удаленных презентаций',
+                    component: 'TrashPage',
+                });
                 console.error('Ошибка при загрузке удаленных презентаций:', error);
                 toast.error('Не удалось загрузить удаленные презентации');
             } finally {
@@ -56,6 +61,11 @@ export default function TrashPage() {
             setDeletedPresentations(prev => prev.filter(p => p.id !== id));
             toast.success('Презентация успешно восстановлена');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Восстановление презентации из корзины',
+                component: 'TrashPage',
+                additionalInfo: { presentationId: id },
+            });
             console.error('Ошибка при восстановлении презентации:', error);
             toast.error('Не удалось восстановить презентацию');
         }
@@ -78,6 +88,11 @@ export default function TrashPage() {
             setDeletedPresentations(prev => prev.filter(p => p.id !== id));
             toast.success('Презентация окончательно удалена');
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Окончательное удаление презентации',
+                component: 'TrashPage',
+                additionalInfo: { presentationId: id },
+            });
             console.error('Ошибка при удалении презентации:', error);
             toast.error('Не удалось удалить презентацию');
         }

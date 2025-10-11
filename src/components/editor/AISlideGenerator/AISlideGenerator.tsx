@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { SlideTemplatesRegistry } from '@/templates/SlideTemplatesRegistry';
 import { Slide } from '@/types';
 import { TONE_OPTIONS } from '@/app/(dashboard)/dashboard/ai/page.client';
+import { logCaughtError } from '@/utils/errorReporting';
 // import extractTextsFromPresentation from '@/utils/extractTextsFromPresentation';
 
 interface AISlideGeneratorProps {
@@ -126,6 +127,16 @@ const AISlideGenerator: React.FC<AISlideGeneratorProps> = ({ presentationId, sli
             toast.success('Слайд создан');
             onClose();
         } catch (error) {
+            logCaughtError(error, {
+                action: 'Генерация нового слайда с AI',
+                component: 'AISlideGenerator',
+                additionalInfo: {
+                    presentationId,
+                    slideId,
+                    prompt: prompt.substring(0, 100), // First 100 chars
+                    templateId: selectedTemplate,
+                },
+            });
             console.error('Error generating slide:', error);
             toast.error(error instanceof Error ? error.message : 'Не удалось создать слайд');
         } finally {

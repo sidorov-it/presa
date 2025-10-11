@@ -161,7 +161,7 @@ export class MockGptService implements LLMService {
                 const scenarioData = JSON.parse(fs.readFileSync(scenarioPath, 'utf8'));
                 this.testScenario = scenarioData;
                 this.testResponses = scenarioData.responses || [];
-                console.log(`[MockGPT] Loaded test scenario: ${scenarioData.name}`);
+
             } else {
                 console.warn(`[MockGPT] Test scenario file not found: ${scenarioPath}`);
             }
@@ -250,7 +250,7 @@ export class MockGptService implements LLMService {
         // Check for predefined test responses first
         const testResponse = this.findTestResponse(prompt, options);
         if (testResponse) {
-            console.log(`[MockGPT] Using test response: ${testResponse.id} - ${testResponse.description}`);
+
             return await log(testResponse.response);
         }
 
