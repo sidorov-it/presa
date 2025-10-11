@@ -233,15 +233,15 @@ export const ArrowNavigationExtension = (
                 ArrowDown: ({ editor }) => {
                     console.log('ArrowDown', smartLayoutItemId);
                     const { selection } = editor.state;
-                    const position = selection.$anchor.pos;
-                    const docLength = editor.state.doc.content.size;
+                    const { $anchor } = selection;
 
-                    // Check if cursor is on the last line (approximation)
-                    // We're assuming if the user presses down and there's no line below, they want to navigate down
-                    const text = editor.getText();
-                    const lastLineStart = text.lastIndexOf('\n') + 1;
+                    // Check if cursor is at the end of the current text block
+                    // $anchor.parentOffset gives position within the parent node
+                    // Compare it with the size of the parent node's content
+                    const parent = $anchor.parent;
+                    const isAtBlockEnd = $anchor.parentOffset === parent.content.size;
 
-                    if (position >= lastLineStart || position >= docLength - 1) {
+                    if (isAtBlockEnd) {
                         // Find the editor element below this one
                         const targetInfo = findNextEditor(
                             presentationId,
@@ -341,14 +341,14 @@ export const ArrowNavigationExtension = (
 
                 ArrowUp: ({ editor }) => {
                     const { selection } = editor.state;
-                    const position = selection.$anchor.pos;
+                    const { $anchor } = selection;
 
-                    // Check if cursor is on the last line (approximation)
-                    // We're assuming if the user presses down and there's no line below, they want to navigate down
-                    const text = editor.getText();
-                    const firstLineEnd = text.indexOf('\n');
+                    // Check if cursor is at the start of the current text block
+                    // $anchor.parentOffset gives position within the parent node (0 means start)
+                    // We also need to check if we're in the first child of a block container
+                    const isAtBlockStart = $anchor.parentOffset === 0;
 
-                    if (position <= firstLineEnd || position === 1) {
+                    if (isAtBlockStart) {
                         // Find the editor element above this one
                         const targetInfo = findNextEditor(
                             presentationId,
@@ -493,6 +493,7 @@ function findNextEditor(
         switch (element.elementTypeId) {
             case 'editor':
             case 'text':
+            case 'quote':
             case 'heading':
             case 'paragraph':
                 return 'editor';

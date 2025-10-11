@@ -1038,6 +1038,30 @@ button[data-type="button"]:hover {
     border-left: 4px solid var(--presentation-block-background-custom-1, var(--presentation-accent-blocks-color));
 }
 
+.tiptap blockquote p {
+    line-height: var(--presentation-body-line-height);
+    color: var(--presentation-text-color);
+    caret-color: var(--presentation-text-color);
+    font-family: var(--presentation-body-font);
+}
+
+/* Явно применяем стили для всех span'ов с текстовыми классами внутри blockquote */
+.tiptap blockquote .body-text.normal-text {
+    line-height: var(--presentation-body-line-height);
+    color: var(--presentation-text-color);
+    caret-color: var(--presentation-text-color);
+    font-family: var(--presentation-body-font);
+    font-size: 1.125em;
+}
+
+.tiptap blockquote .body-text.small-text {
+    font-size: 0.8em;
+}
+
+.tiptap blockquote .body-text.big-text {
+    font-size: 1.25em;
+}
+
 .tiptap :where(blockquote p:first-of-type):not(:where([class~="not-prose"], [class~="not-prose"] *))::before {
     content: none;
 }
