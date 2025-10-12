@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Portal } from '@chakra-ui/react';
 import { FiMessageCircle, FiThumbsUp, FiThumbsDown, FiX } from 'react-icons/fi';
 import { toaster } from '@/components/ui/toaster';
@@ -45,11 +46,20 @@ function getBrowserInfo() {
 }
 
 export default function FeedbackWidget() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [rating, setRating] = useState<FeedbackRating | null>(null);
     const [comment, setComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+
+    // Hide widget on presentation viewer and PDF export pages
+    const shouldHide = pathname?.startsWith('/view/');
+
+    // Don't render anything if should hide
+    if (shouldHide) {
+        return null;
+    }
 
     const handleSubmit = async () => {
         if (!rating) {
