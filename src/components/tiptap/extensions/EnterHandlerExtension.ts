@@ -156,6 +156,46 @@ export const EnterHandlerExtension = (
                         return false;
                     }
 
+                    // Проверяем, находится ли курсор внутри blockquote
+                    let isInBlockquote = false;
+                    let blockquoteNode = null;
+                    let blockquoteDepth = 0;
+                    currentNode = $head.parent;
+                    depth = $head.depth;
+
+                    while (depth > 0) {
+                        if (currentNode.type.name === 'blockquote') {
+                            blockquoteNode = currentNode;
+                            blockquoteDepth = depth;
+                            isInBlockquote = true;
+                            break;
+                        }
+                        depth--;
+                        currentNode = $head.node(depth);
+                    }
+
+                    // Если курсор в blockquote и находится в конце строки
+                    if (isInBlockquote && blockquoteNode) {
+                        // Проверяем, находится ли курсор в конце blockquote
+                        const blockquoteEndPos = $head.end(blockquoteDepth);
+                        const isAtEnd = $head.pos >= blockquoteEndPos - 1;
+
+                        if (isAtEnd) {
+                            // Получаем весь контент blockquote
+                            const blockquoteContent = blockquoteNode.toJSON();
+
+                            // Создаем контент до курсора (сама цитата)
+                            const contentBefore: JSONContent = {
+                                type: 'doc',
+                                content: [blockquoteContent],
+                            };
+
+                            // Вызываем onEnterPressed, чтобы создать новый обычный текстовый элемент
+                            onEnterPressed(contentBefore, undefined, undefined);
+                            return true;
+                        }
+                    }
+
                     // Проверяем, есть ли выделенный текст
                     const hasSelection = !selection.empty;
                     const selectionStart = hasSelection ? Math.min($head.pos, $anchor.pos) : $head.pos;

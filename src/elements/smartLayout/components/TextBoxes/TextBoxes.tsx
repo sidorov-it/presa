@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -7,7 +8,7 @@ import { SmartLayoutElement, SmartLayoutItem, TipTapRefs } from '@/types';
 import { generateId } from '@/utils/id';
 import { HiPlus } from 'react-icons/hi2';
 import Tiptap from '@/components/tiptap/Tiptap/Tiptap';
-import { getContrastingTextColor } from '@/utils/themeUtils';
+import { getContrastingTextColor, getSubtleColor } from '@/utils/themeUtils';
 import ItemWrapper from '../ItemWrapper/ItemWrapper';
 import TextBoxesMenu from './TextBoxesMenu';
 
@@ -45,21 +46,43 @@ export default function TextBoxes({
 
     const customTextColors: string[] = useThemeStore(
         useShallow(state => {
+            const backgroundBlockFillType = state.currentTheme?.design?.blocks?.backgroundBlockFillType;
+            const blockFillColorsType = state.currentTheme?.design?.blocks?.blockFillColorsType;
+            const blockBackgroundCustomColors = state.currentTheme?.design?.blocks?.blockBackgroundCustomColors;
+            const primaryAccentColor = state.currentTheme?.colors.primaryAccent;
+
+            // If no background fill, don't compute colors
+            if (backgroundBlockFillType === 'none') {
+                return [];
+            }
+
+            // Handle custom colors
             if (
-                state.currentTheme?.design?.blocks?.blockFillColorsType === 'custom' &&
-                state.currentTheme?.design?.blocks?.blockBackgroundCustomColors?.length > 0 &&
-                state.currentTheme?.design?.blocks?.backgroundBlockFillType !== 'none'
+                blockFillColorsType === 'custom' &&
+                blockBackgroundCustomColors &&
+                blockBackgroundCustomColors.length > 0
             ) {
                 const colors: string[] = [];
-                state.currentTheme?.design?.blocks?.blockBackgroundCustomColors.map(color => {
+                blockBackgroundCustomColors.forEach(color => {
                     const textColor = getContrastingTextColor(color);
                     colors.push(textColor);
                 });
                 return colors;
-            } else if (state.currentTheme?.design?.blocks?.blockFillColorsType === 'primary') {
-                const textColor = getContrastingTextColor(state.currentTheme?.colors.primaryAccent);
+            }
+
+            // Handle subtle colors
+            if (blockFillColorsType === 'subtle' && primaryAccentColor) {
+                const subtleColor = getSubtleColor(primaryAccentColor);
+                const textColor = getContrastingTextColor(subtleColor);
                 return [textColor];
             }
+
+            // Handle primary color
+            if (blockFillColorsType === 'primary' && primaryAccentColor) {
+                const textColor = getContrastingTextColor(primaryAccentColor);
+                return [textColor];
+            }
+
             return [];
         })
     );
@@ -268,7 +291,16 @@ export default function TextBoxes({
                     style['--presentation-block-text-color-subtle'] = contrastColor;
                 }
 
-                const color = customTextColors[index % customTextColors.length];
+                const color =
+                    customTextColors.length > 0 ? customTextColors[index % customTextColors.length] : undefined;
+
+                const colorsStyle = color
+                    ? {
+                          '--presentation-block-text-color': color,
+                          '--presentation-heading-color': color,
+                          '--presentation-text-color': color,
+                      }
+                    : {};
                 return (
                     <div
                         key={itemId}
@@ -277,13 +309,8 @@ export default function TextBoxes({
                         style={
                             {
                                 width: `calc(${elementWidth} - 1em)`,
-                                borderColor: 'red',
-                                '--presentation-heading-color': color,
-                                '--presentation-text-color': color,
-                            } as React.CSSProperties & {
-                                '--presentation-heading-color': string;
-                                '--presentation-text-color': string;
-                            }
+                                ...colorsStyle,
+                            } as React.CSSProperties & Record<string, string>
                         }
                         onDragOver={e => handleDragOver(e, itemId)}
                         onDragLeave={handleDragLeave}

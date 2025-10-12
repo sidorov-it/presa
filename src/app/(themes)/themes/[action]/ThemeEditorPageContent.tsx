@@ -54,7 +54,7 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
                         id: generateId(),
                         isDefault: false,
                         isActive: true,
-                        name: '',
+                        name: tmpl.name + ' (Копия)',
                         createdAt: new Date(),
                         updatedAt: new Date(),
                     });
@@ -151,6 +151,12 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
                 return;
             }
 
+            // Проверка обязательного поля названия
+            if (!theme.name || theme.name.trim() === '') {
+                toast.error('Укажите название темы');
+                return;
+            }
+
             if (params.action === 'new') {
                 await addTheme(theme);
                 toast.success('Тема создана успешно');
@@ -221,6 +227,7 @@ const ThemeEditorPageContent = (props: { params: { action: string } }) => {
                             onChange={e => setTheme({ ...theme!, name: e.target.value })}
                             placeholder="Название темы"
                             className={styles.input}
+                            required
                         />
                     </div>
 
