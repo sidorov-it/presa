@@ -1,0 +1,218 @@
+[
+  {
+    "themeName": "Звёздная пыль",
+    "originalUrl": "https://images.unsplash.com/photo-1569470451072-68314f596aec?ixid=MnwxOTgwNzN8MHwxfHNlYXJjaHwxMXx8Z3JhZGllbnQlMjBibGFja3xlbnwxfHx8fDE2ODE4NTM1MTQ&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/zvyozdnaya-pyl.jpg",
+    "fileName": "zvyozdnaya-pyl.jpg"
+  },
+  {
+    "themeName": "Туманности",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/850811559c97448ea65b44195bbd69b2/original/blue-purpos.png",
+    "newPath": "/static/theme-backgrounds/tumannosti.png",
+    "fileName": "tumannosti.png"
+  },
+  {
+    "themeName": "Элизия",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/gdwwhyewwldwc8z/c409d8d83980455ea5105c60248a4601/original/Abstract-Gradient-Art.png",
+    "newPath": "/static/theme-backgrounds/eliziya.png",
+    "fileName": "eliziya.png"
+  },
+  {
+    "themeName": "Призма",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/prism-background.2232a16e.png?w=3707&q=70",
+    "newPath": "/static/theme-backgrounds/prizma.png",
+    "fileName": "prizma.png"
+  },
+  {
+    "themeName": "Ночное небо",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/753fe4f09ed74e5cb8978c5dff4859f7/original/navy-bg-copy.png",
+    "newPath": "/static/theme-backgrounds/nochnoe-nebo.png",
+    "fileName": "nochnoe-nebo.png"
+  },
+  {
+    "themeName": "Гамма Тёмная",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/aee87fc032764df3933f120b651bdfc3/original/Purple-bfg.png",
+    "newPath": "/static/theme-backgrounds/gamma-tyomnaya.png",
+    "fileName": "gamma-tyomnaya.png"
+  },
+  {
+    "themeName": "Атмосфера",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/atmosphere-background.a041341a.png?w=2666&q=70",
+    "newPath": "/static/theme-backgrounds/atmosfera.png",
+    "fileName": "atmosfera.png"
+  },
+  {
+    "themeName": "Блюз",
+    "originalUrl": "https://images.unsplash.com/photo-1589306994259-a806e14b775a?ixid=M3wxOTgwNzN8MHwxfHNlYXJjaHw2Mnx8YmxhY2slMjBncmFkaWVudHxlbnwxfHx8fDE3MDA2Nzc3OTJ8MA&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/blyuz.jpg",
+    "fileName": "blyuz.jpg"
+  },
+  {
+    "themeName": "Персиковая",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/d4fac9260e974099ad0c298a28642c46/original/Tropics---background.png",
+    "newPath": "/static/theme-backgrounds/persikovaya.png",
+    "fileName": "persikovaya.png"
+  },
+  {
+    "themeName": "Овсяная",
+    "originalUrl": "https://images.unsplash.com/photo-1528731708534-816fe59f90cb?ixid=MnwxOTgwNzN8MHwxfHNlYXJjaHw0fHx3aGl0ZSUyMGdyYWRpZW50fGVufDF8fHx8MTY3NjkxMjMzNA&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/ovsyanaya.jpg",
+    "fileName": "ovsyanaya.jpg"
+  },
+  {
+    "themeName": "Бордовая",
+    "originalUrl": "https://images.unsplash.com/photo-1648700231913-ad061d9b3ec9?ixid=MnwxOTgwNzN8MHwxfHNlYXJjaHwxMDN8fHJlZCUyMGdyYWRpZW50fGVufDF8fHx8MTY4MDgxNjE2NQ&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/bordovaya.jpg",
+    "fileName": "bordovaya.jpg"
+  },
+  {
+    "themeName": "Патинированная",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/d0f51a018ec24c81b90f74069c16bfb7/original/Frame-59718.png",
+    "newPath": "/static/theme-backgrounds/patinirovannaya.png",
+    "fileName": "patinirovannaya.png"
+  },
+  {
+    "themeName": "Фламинго",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn-staging.gamma.app/QWjS6fBfpt/7c4bcd24cd8940788fd9fb155d789d7f/original/mesh-noise-gradient.png",
+    "newPath": "/static/theme-backgrounds/flamingo.png",
+    "fileName": "flamingo.png"
+  },
+  {
+    "themeName": "Канаверал",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/canaveral-background.5dbf8d8ea7288ff1d7f1055cead80d9f.png",
+    "newPath": "/static/theme-backgrounds/kanaveral.png",
+    "fileName": "kanaveral.png"
+  },
+  {
+    "themeName": "Мягкое облако",
+    "originalUrl": "https://cdn.gamma.app/theme_images/soft-background.adac2b12b3164d91b64117595332aa4f.svg",
+    "newPath": "/static/theme-backgrounds/myagkoe-oblako.svg",
+    "fileName": "myagkoe-oblako.svg"
+  },
+  {
+    "themeName": "Зефир",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/10ed29f32ee94e4b92352e1f62cd92d1/original/bg-blue.png",
+    "newPath": "/static/theme-backgrounds/zefir.png",
+    "fileName": "zefir.png"
+  },
+  {
+    "themeName": "Дым",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/928d7dc29162464485314bf32e225943/original/bg-light-gray.png",
+    "newPath": "/static/theme-backgrounds/dym.png",
+    "fileName": "dym.png"
+  },
+  {
+    "themeName": "Сажа",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/23e33c1791b042ada908a31f840e8951/original/bg-gray.png",
+    "newPath": "/static/theme-backgrounds/sazha.png",
+    "fileName": "sazha.png"
+  },
+  {
+    "themeName": "Грёзы",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/daydream-background.7fcbd301bfcea3f5878fcd6e8d22502a.png",
+    "newPath": "/static/theme-backgrounds/gryozy.png",
+    "fileName": "gryozy.png"
+  },
+  {
+    "themeName": "Орбита",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/orbit-background.f55cf66e62f5fb7b8c1e878071281aa3.png",
+    "newPath": "/static/theme-backgrounds/orbita.png",
+    "fileName": "orbita.png"
+  },
+  {
+    "themeName": "Дюна",
+    "originalUrl": "https://images.unsplash.com/photo-1555947289-0d851755094e?ixid=MnwxOTgwNzN8MHwxfHNlYXJjaHw3MXx8c29mdHxlbnwxfHx8fDE2NjE3OTQyNTQ&ixlib=rb-1.2.1&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/dyuna.jpg",
+    "fileName": "dyuna.jpg"
+  },
+  {
+    "themeName": "Инопланетная",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/f98b42d8e16844b0a93c848818d04ee3/original/no-star-3.png",
+    "newPath": "/static/theme-backgrounds/inoplanetnaya.png",
+    "fileName": "inoplanetnaya.png"
+  },
+  {
+    "themeName": "Аврора",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/aurora-background.77ca5e0ff46d050807e8d907d1b774f8.png",
+    "newPath": "/static/theme-backgrounds/avrora.png",
+    "fileName": "avrora.png"
+  },
+  {
+    "themeName": "Бархатные волны",
+    "originalUrl": "https://images.unsplash.com/photo-1654198340681-a2e0fc449f1b?ixid=MnwxOTgwNzN8MHwxfHNlYXJjaHwxNDZ8fGRhcmslMjBncmFkaWVudHxlbnwxfHx8fDE2NzUyMTQ4NDM&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/barhatnye-volny.jpg",
+    "fileName": "barhatnye-volny.jpg"
+  },
+  {
+    "themeName": "Спокойствие",
+    "originalUrl": "https://images.unsplash.com/photo-1464618663641-bbdd760ae84a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
+    "newPath": "/static/theme-backgrounds/spokoystvie.jpg",
+    "fileName": "spokoystvie.jpg"
+  },
+  {
+    "themeName": "Северное сияние",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/standard/348ee66ae9594e87a504c5013f2fa936/original/borealis.jpg",
+    "newPath": "/static/theme-backgrounds/severnoe-siyanie.jpg",
+    "fileName": "severnoe-siyanie.jpg"
+  },
+  {
+    "themeName": "Снежок",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/snowball-bg-xskdx82l.jpg",
+    "newPath": "/static/theme-backgrounds/snezhok.jpg",
+    "fileName": "snezhok.jpg"
+  },
+  {
+    "themeName": "Атакама",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/satellite-background.e070b8bc.jpg?w=2400&q=70",
+    "newPath": "/static/theme-backgrounds/atakama.jpg",
+    "fileName": "atakama.jpg"
+  },
+  {
+    "themeName": "Золото",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/f2d27220c12f419c8e9c0ebfb73e3b36/original/NY-bg-10-up.png",
+    "newPath": "/static/theme-backgrounds/zoloto.png",
+    "fileName": "zoloto.png"
+  },
+  {
+    "themeName": "Сияние",
+    "originalUrl": "https://images.unsplash.com/photo-1566041510639-8d95a2490bfb?ixid=M3wxOTgwNzN8MHwxfHNlYXJjaHwxN3x8d2hpdGUlMjBsaWdodHxlbnwxfHx8fDE3MDA2ODU4OTB8MA&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/siyanie.jpg",
+    "fileName": "siyanie.jpg"
+  },
+  {
+    "themeName": "Золотой лист",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/zc87vhr30n8uf3n/8e42af552dd64357a8f7b416c1162eb9/original/malloops_A_pattern_of_white_and_gold_liquid_swirls_on_an_all-wh_cd39af0e-78fa-4e88-ad40-d7cc51f267c4.png",
+    "newPath": "/static/theme-backgrounds/zolotoy-list.png",
+    "fileName": "zolotoy-list.png"
+  },
+  {
+    "themeName": "Ирис",
+    "originalUrl": "https://imgproxy.gamma.app/resize/quality:80/resizing_type:fit/width:2400/https://cdn.gamma.app/theme_images/standard/4ed03aaa0f72423d9daf5d2c7feaa61b/original/photo-1635776063328-153b13e3c245.jpeg",
+    "newPath": "/static/theme-backgrounds/iris.jpeg",
+    "fileName": "iris.jpeg"
+  },
+  {
+    "themeName": "Малибу",
+    "originalUrl": "https://images.unsplash.com/photo-1614283180581-d5988fd52837?ixid=M3wxOTgwNzN8MHwxfHNlYXJjaHwzfHxwaW5rJTIwZ3JhZGllbnR8ZW58MXx8fHwxNjg1OTg2OTE0fDA&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/malibu.jpg",
+    "fileName": "malibu.jpg"
+  },
+  {
+    "themeName": "Порыв",
+    "originalUrl": "https://images.unsplash.com/photo-1645811791249-93a1e10d0169?ixid=M3wxOTgwNzN8MHwxfHNlYXJjaHw0Nnx8cmVkJTIwZ3JhZGllbnR8ZW58MXx8fHwxNzQ0ODA2OTA5fDA&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/poryv.jpg",
+    "fileName": "poryv.jpg"
+  },
+  {
+    "themeName": "Тень",
+    "originalUrl": "https://images.unsplash.com/photo-1671159593326-80a2c134fc6a?ixid=M3wxOTgwNzN8MHwxfHNlYXJjaHw3Nnx8Z3JheSUyMGdyYWRpZW50fGVufDF8fHx8MTY4NDk1NjY2OXww&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/ten.jpg",
+    "fileName": "ten.jpg"
+  },
+  {
+    "themeName": "Росток",
+    "originalUrl": "https://images.unsplash.com/photo-1589035110932-0c3e4e8869cf?ixid=M3wxOTgwNzN8MHwxfHNlYXJjaHw1fHxsaWdodCUyMGdyZWVufGVufDF8fHx8MTc0NTI5MDcyN3ww&ixlib=rb-4.0.3&w=2400&q=25&auto=format",
+    "newPath": "/static/theme-backgrounds/rostok.jpg",
+    "fileName": "rostok.jpg"
+  }
+]

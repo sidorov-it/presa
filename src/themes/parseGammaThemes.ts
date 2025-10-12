@@ -223,7 +223,6 @@ async function main() {
             JSON.stringify(transformedThemes, null, 2)
         );
 
-
     } catch (error) {
         console.error('Error transforming themes:', error);
     }
