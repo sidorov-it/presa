@@ -6,6 +6,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { parsePresentation } from '@/utils/json';
 import { createExportData, createSafeFilename } from '@/utils/exportImport';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 const handleRequest = async (request: NextRequest, props: { params: Promise<{ id: string }> }) => {
     try {
@@ -18,13 +19,18 @@ const handleRequest = async (request: NextRequest, props: { params: Promise<{ id
 
         const presentationId = params.id;
 
+        // Validate ObjectId format
+        if (!isValidObjectId(presentationId)) {
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
+        }
+
         // Fetch presentation from database
         const presentation = await prisma.presentation.findUnique({
             where: { id: presentationId },
             include: { user: true },
         });
 
-        if (!presentation) {
+        if (!presentation || presentation.isDeleted) {
             return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
         }
 

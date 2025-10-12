@@ -6,6 +6,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { generatePdfAsync } from '@/utils/pdfGeneration';
 import { shouldHideBranding } from '@/utils/subscriptions';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 const handleRequest = async (request: NextRequest, props: { params: { id: string } }) => {
     try {
@@ -18,6 +19,11 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
 
         const presentationId = params.id;
 
+        // Validate ObjectId format
+        if (!isValidObjectId(presentationId)) {
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
+        }
+
         // Get slideIndex from query parameters
         const { searchParams } = new URL(request.url);
         const slideIndexParam = searchParams.get('slideIndex');
@@ -29,7 +35,7 @@ const handleRequest = async (request: NextRequest, props: { params: { id: string
             include: { user: true },
         });
 
-        if (!presentation) {
+        if (!presentation || presentation.isDeleted) {
             return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
         }
 

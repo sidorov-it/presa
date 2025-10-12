@@ -21,7 +21,6 @@ import ThemeStylesApplier from '@/components/viewer/theme/ThemeStylesApplier';
 import ThemeDebugButton from '@/components/debug/ThemeDebugButton';
 import HistoryDebugPopup from '@/components/ui/HistoryDebugPopup';
 import DragDropDebugInfo from '@/components/DragDropDebugInfo';
-import NotFoundPage from '@/components/NotFoundPage/NotFoundPage';
 import { useColorMode } from '@/components/ui/color-mode';
 import { useUIStateStore } from '@/store/uiStateStore';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
@@ -592,8 +591,28 @@ export default function PresentationEditorPage() {
         []
     );
 
-    if (isLoading || !currentTheme || !themesLoaded) return loadingUI;
-    if (notFound) return <NotFoundPage />;
+    if ((isLoading || !currentTheme || !themesLoaded) && !notFound) return loadingUI;
+
+    if (notFound) {
+        return (
+            <div className={styles.notFoundContainer}>
+                <div className={styles.notFoundContent}>
+                    <h1 className={styles.notFoundTitle}>Презентация не найдена</h1>
+                    <p className={styles.notFoundDescription}>
+                        Запрашиваемая презентация не существует или была удалена
+                    </p>
+                    <div className={styles.notFoundActions}>
+                        <Link href="/dashboard" className={styles.notFoundButton}>
+                            Вернуться к презентациям
+                        </Link>
+                        <Link href="/dashboard/ai" className={styles.notFoundButtonSecondary}>
+                            Создать новую презентацию
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <OnboardingUI>

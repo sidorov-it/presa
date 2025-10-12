@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { Slide } from '@/types';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 async function PUTHandler(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -13,6 +14,11 @@ async function PUTHandler(req: NextRequest, props: { params: Promise<{ id: strin
 
         if (!session?.user) {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Validate ObjectId format
+        if (!isValidObjectId(params.id)) {
+            return NextResponse.json({ message: 'Presentation not found' }, { status: 404 });
         }
 
         const { slides } = await req.json();
@@ -48,6 +54,7 @@ async function PUTHandler(req: NextRequest, props: { params: Promise<{ id: strin
             where: {
                 id: params.id,
                 userId: session.user.id,
+                isDeleted: false,
             },
             data: {
                 slides: slides,

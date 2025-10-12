@@ -6,6 +6,7 @@ import { Theme } from '@/types/theme';
 import { IPresentation } from '@/types';
 import ServerThemeStylesApplier from '@/components/viewer/theme/ServerThemeStylesApplier';
 import { checkUserSubscription } from '@/utils/subscriptionHelpers';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 // Force dynamic rendering to prevent static generation with local DB IDs
 export const dynamic = 'force-dynamic';
@@ -17,10 +18,27 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
+
+    // Validate ObjectId format before querying database
+    if (!isValidObjectId(id)) {
+        return {
+            title: 'Презентация не найдена',
+            description: 'Запрашиваемая презентация не существует или была удалена',
+        };
+    }
+
     const presentation = await prisma.presentation.findUnique({
         where: { id },
-        select: { title: true },
+        select: { title: true, isDeleted: true },
     });
+
+    // Don't expose metadata for deleted presentations
+    if (!presentation || presentation.isDeleted) {
+        return {
+            title: 'Презентация не найдена',
+            description: 'Запрашиваемая презентация не существует или была удалена',
+        };
+    }
 
     return {
         title: presentation?.title || 'Просмотр презентации',
@@ -78,11 +96,17 @@ function PresentationLoader() {
 
 export default async function PresentationViewWrapper({ params }: Props) {
     const { id } = await params;
+
+    // Validate ObjectId format before querying database
+    if (!isValidObjectId(id)) {
+        return <NotFoundPage />;
+    }
+
     const presentationData = await prisma.presentation.findUnique({
         where: { id },
     });
 
-    if (!presentationData) {
+    if (!presentationData || presentationData.isDeleted) {
         return <NotFoundPage />;
     }
 

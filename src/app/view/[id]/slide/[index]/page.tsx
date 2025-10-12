@@ -12,6 +12,7 @@ import { shouldHideBranding } from '@/utils/subscriptions';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { ThemeStylesApplier, ViewerProvider } from '@/components/viewer';
 import { Slide } from '@/types';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 // Force dynamic rendering to prevent static generation with local DB IDs
 export const dynamic = 'force-dynamic';
@@ -24,6 +25,11 @@ export default async function SlidePage(props: {
     const searchParams = await props.searchParams;
     const { id, index } = params;
     const { pdf, hideBranding, hasActiveSubscription } = searchParams;
+
+    // Validate ObjectId format before querying database
+    if (!isValidObjectId(id)) {
+        notFound();
+    }
 
     const slideIndex = parseInt(index, 10);
     const isPdfExport = pdf === 'true';
@@ -40,7 +46,7 @@ export default async function SlidePage(props: {
         },
     });
 
-    if (!presentation) {
+    if (!presentation || presentation.isDeleted) {
         notFound();
     }
 

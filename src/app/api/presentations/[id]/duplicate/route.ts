@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { generateId } from '@/utils/id';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 async function POSTHandler(req: NextRequest, props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -17,6 +18,11 @@ async function POSTHandler(req: NextRequest, props: { params: Promise<{ id: stri
 
         const userId = session.user.id;
         const presentationId = params.id;
+
+        // Validate ObjectId format
+        if (!isValidObjectId(presentationId)) {
+            return NextResponse.json({ message: 'Presentation not found' }, { status: 404 });
+        }
 
         // Find the original presentation
         const originalPresentation = await prisma.presentation.findFirst({

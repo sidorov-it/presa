@@ -11,6 +11,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { applyChange, type Diff } from 'deep-diff';
 import type { Prisma } from '@prisma/client';
 import type { IPresentation, PresentationUpdateDiffRequest } from '@/types';
+import { isValidObjectId } from '@/utils/validateObjectId';
 
 // Get a specific presentation
 async function GETHandler(request: Request, props: { params: Promise<{ id: string }> }) {
@@ -22,11 +23,16 @@ async function GETHandler(request: Request, props: { params: Promise<{ id: strin
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
 
+        // Validate ObjectId format
+        if (!isValidObjectId(params.id)) {
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
+        }
+
         const presentationData = await prisma.presentation.findUnique({
             where: { id: params.id, userId: session.user.id },
         });
 
-        if (!presentationData) {
+        if (!presentationData || presentationData.isDeleted) {
             return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
         }
 
@@ -51,6 +57,12 @@ async function PUTHandler(request: NextRequest, props: { params: Promise<{ id: s
         }
 
         const id = params.id;
+
+        // Validate ObjectId format
+        if (!isValidObjectId(id)) {
+            return NextResponse.json({ error: 'Presentation not found' }, { status: 404 });
+        }
+
         const body = (await request.json()) as PresentationUpdateDiffRequest;
 
         if (!Array.isArray(body?.diff)) {

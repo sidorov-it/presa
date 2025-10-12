@@ -556,7 +556,9 @@ export const usePresentationStore = create<PresentationState>()(
 
                     const response = await fetch(`/api/presentations/${id}`);
                     if (!response.ok) {
-                        throw new Error('Failed to load presentation');
+                        // Return null for 404 or other errors instead of throwing
+                        console.warn(`Failed to load presentation ${id}: ${response.status}`);
+                        return null;
                     }
 
                     const presentation = await response.json();
@@ -587,7 +589,7 @@ export const usePresentationStore = create<PresentationState>()(
                     });
                     console.error('Error loading presentation:', error);
                     set({ error: 'Failed to load presentation' });
-                    throw error;
+                    return null; // Return null instead of throwing
                 } finally {
                     set({ isLoading: false });
                 }
