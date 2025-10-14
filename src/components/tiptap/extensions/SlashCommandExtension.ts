@@ -330,7 +330,23 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
 
                     return {
                         onStart: props => {
-                            if (props.range.from !== 1 && props.range.to !== 2) {
+                            const { state } = props.editor;
+                            const { $from } = state.selection;
+                            const textContent = state.doc.textContent.trim();
+
+                            // Если в документе больше 1 строки, не показываем меню
+                            if (textContent.length > 1) {
+                                return;
+                            }
+
+                            // Проверяем, что ДО символа / нет другого текста (кроме пробелов)
+                            const startPos = $from.start();
+                            const slashPos = props.range.from;
+                            const textBeforeSlash = state.doc.textBetween(startPos, slashPos, '\n');
+                            const cleanedTextBefore = textBeforeSlash.trim();
+
+                            // Если есть текст ДО /, не показываем меню
+                            if (cleanedTextBefore.length > 0) {
                                 return;
                             }
 
@@ -378,13 +394,29 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                         },
 
                         onUpdate: props => {
+                            const { state } = props.editor;
+                            const { $from } = state.selection;
+
+                            // Если popup не существует, проверяем условия для его создания
+                            if (!popup) {
+                                // Проверяем, что ДО символа / нет другого текста (кроме пробелов)
+                                const startPos = $from.start();
+                                const slashPos = props.range.from;
+                                const textBeforeSlash = state.doc.textBetween(startPos, slashPos, '\n');
+                                const cleanedTextBefore = textBeforeSlash.trim();
+
+                                // Если есть текст ДО /, не создаем popup
+                                if (cleanedTextBefore.length > 0) {
+                                    return;
+                                }
+                            }
+
                             commandsList = new CommandsList(props, this.options.onAddElement);
+                            const isDarkMode = isDarkModeActive();
+                            const rect = props.clientRect?.() || new DOMRect(0, 0, 0, 0);
 
                             if (popup) {
-                                // Check if dark mode is active using consistent method
-                                const isDarkMode = isDarkModeActive();
-
-                                const rect = props.clientRect?.() || new DOMRect(0, 0, 0, 0);
+                                // Обновляем существующий popup
                                 popup.setProps({
                                     getReferenceClientRect: () => rect,
                                     content: commandsList.getElement(),
@@ -398,6 +430,41 @@ export const SlashCommandExtension = Extension.create<SlashCommandProps>({
                                         popup.popper.classList.remove('dark');
                                     }
                                 }
+                            } else {
+                                // Создаем новый popup (например, после undo)
+                                popup = tippy(document.body, {
+                                    getReferenceClientRect: () => rect,
+                                    appendTo: document.body,
+                                    content: commandsList.getElement(),
+                                    showOnCreate: true,
+                                    interactive: true,
+                                    trigger: 'manual',
+                                    placement: 'bottom-start',
+                                    theme: 'light',
+                                    maxWidth: 300,
+                                    animation: 'shift-away',
+                                    popperOptions: {
+                                        strategy: 'fixed',
+                                        modifiers: [
+                                            {
+                                                name: 'preventOverflow',
+                                                options: {
+                                                    padding: 8,
+                                                },
+                                            },
+                                        ],
+                                    },
+                                    onCreate(instance) {
+                                        if (isDarkMode && instance.popper) {
+                                            instance.popper.classList.add('dark');
+                                        }
+                                    },
+                                    onMount(instance) {
+                                        if (isDarkMode && instance.popper) {
+                                            instance.popper.classList.add('dark');
+                                        }
+                                    },
+                                });
                             }
                         },
                         onKeyDown: props => {
