@@ -9,6 +9,7 @@ import { TextStyle as TextStyleExtension } from './TextStyle';
 import { EmptySpanExtension } from './EmptySpanExtension';
 import { CustomPlaceholderExtension, type StoredStyle } from './CustomPlaceholderExtension';
 import { BlockquoteExtension } from './BlockquoteExtension';
+import { SmartListExtension } from './SmartListExtension';
 
 export {
     SlashCommandExtension,
@@ -22,6 +23,7 @@ export {
     EmptySpanExtension,
     CustomPlaceholderExtension,
     BlockquoteExtension,
+    SmartListExtension,
     type EditorWithMethods,
     type StoredStyle,
 };

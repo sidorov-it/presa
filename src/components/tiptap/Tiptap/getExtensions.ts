@@ -27,6 +27,7 @@ import {
     SlashCommandExtension,
     EmptySpanExtension,
     CustomPlaceholderExtension,
+    SmartListExtension,
 } from '../extensions';
 import { BlockquoteExtension } from '../extensions/BlockquoteExtension';
 import {
@@ -277,6 +278,9 @@ const getExtensions = ({
 
     // Предотвращение дропа извне
     PreventDropExtension,
+
+    // Smart list extension for better list creation
+    SmartListExtension,
 
     EnterHandlerExtension(
         (contentBeforeCursor, contentAfterCursor, preservedStyles) => {

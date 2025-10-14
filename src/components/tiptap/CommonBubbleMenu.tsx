@@ -213,7 +213,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                 <LinkEditor editor={editor} className={styles.button} />
 
                 <button
-                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                    onClick={() => editor.chain().focus().smartToggleOrderedList().run()}
                     className={`${styles.button} ${editor.isActive('orderedList') ? styles.active : ''}`}
                     aria-label="Нумерованный список"
                 >
@@ -221,7 +221,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                 </button>
 
                 <button
-                    onClick={() => editor.chain().focus().toggleBulletList().run()}
+                    onClick={() => editor.chain().focus().smartToggleBulletList().run()}
                     className={`${styles.button} ${editor.isActive('bulletList') ? styles.active : ''}`}
                     aria-label="Маркированный список"
                 >
@@ -229,7 +229,7 @@ export default function CommonBubbleMenu({ editor }: { editor: Editor }) {
                 </button>
 
                 <button
-                    onClick={() => editor.chain().focus().toggleTaskList().run()}
+                    onClick={() => editor.chain().focus().smartToggleTaskList().run()}
                     className={`${styles.button} ${editor.isActive('taskList') ? styles.active : ''}`}
                     aria-label="Список задач"
                 >

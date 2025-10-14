@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
 import { Slice, Fragment } from 'prosemirror-model';
+import { NORMAL_TEXT_LEVEL } from '@/constants/consts';
 
 /**
  * Extracts plain text from HTML, preserving basic structure like line breaks
@@ -41,6 +42,8 @@ export const CleanPasteExtension = Extension.create<{
 }>({
     name: 'cleanPaste',
     addProseMirrorPlugins() {
+        const editor = this.editor;
+        
         return [
             new Plugin({
                 props: {
@@ -67,7 +70,51 @@ export const CleanPasteExtension = Extension.create<{
 
                         // Get current active marks at cursor position to apply to pasted text
                         const { $from } = selection;
-                        const activeMarks = $from.marks();
+                        let activeMarks = $from.marks();
+
+                        // If there are no active marks, get stored styles from CustomPlaceholderExtension
+                        if (activeMarks.length === 0) {
+                            const storedStyle = editor?.storage?.customPlaceholder?.storedStyle || {
+                                level: NORMAL_TEXT_LEVEL,
+                                color: null,
+                                bold: false,
+                                italic: false,
+                                underline: false,
+                                strike: false,
+                            };
+
+                            const marks: any[] = [];
+
+                            // Create textStyle mark with fontSize and class
+                            const textStyleAttrs: any = {
+                                fontSize: `${storedStyle.level}px`,
+                                class: 'body-text normal-text',
+                            };
+
+                            if (storedStyle.color) {
+                                textStyleAttrs.color = storedStyle.color;
+                            }
+
+                            if (schema.marks.textStyle) {
+                                marks.push(schema.marks.textStyle.create(textStyleAttrs));
+                            }
+
+                            // Add other marks
+                            if (storedStyle.bold && schema.marks.bold) {
+                                marks.push(schema.marks.bold.create());
+                            }
+                            if (storedStyle.italic && schema.marks.italic) {
+                                marks.push(schema.marks.italic.create());
+                            }
+                            if (storedStyle.underline && schema.marks.underline) {
+                                marks.push(schema.marks.underline.create());
+                            }
+                            if (storedStyle.strike && schema.marks.strike) {
+                                marks.push(schema.marks.strike.create());
+                            }
+
+                            activeMarks = marks;
+                        }
 
                         // Split text by line breaks to create separate paragraphs
                         const lines = text.split('\n').filter(line => line.length > 0);
@@ -76,7 +123,7 @@ export const CleanPasteExtension = Extension.create<{
                             return true;
                         }
 
-                        // Build content nodes with current editor's active marks
+                        // Build content nodes with active marks
                         const nodes: any[] = [];
 
                         lines.forEach(line => {

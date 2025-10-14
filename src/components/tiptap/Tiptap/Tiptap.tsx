@@ -384,7 +384,10 @@ const Tiptap = ({
                 const sizeClasses = getEditorClassFromLevel(level);
                 editorElement.className = `${baseClasses} ${sizeClasses}`;
             } else {
-                editorElement.className = baseClasses;
+                // When not empty, check if all content has the same style
+                const currentLevel = getHeadingLevel(editor);
+                const sizeClasses = getEditorClassFromLevel(currentLevel);
+                editorElement.className = `${baseClasses} ${sizeClasses}`;
             }
         };
 

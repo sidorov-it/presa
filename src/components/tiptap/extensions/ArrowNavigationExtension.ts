@@ -219,14 +219,15 @@ export const ArrowNavigationExtension = (
                 ArrowDown: ({ editor }) => {
                     const { selection } = editor.state;
                     const { $anchor } = selection;
+                    const docLength = editor.state.doc.content.size;
 
-                    // Check if cursor is at the end of the current text block
-                    // $anchor.parentOffset gives position within the parent node
-                    // Compare it with the size of the parent node's content
+                    // Check if cursor is at the end of the document
+                    // We need to verify both that we're at block end AND at the end of the document
                     const parent = $anchor.parent;
                     const isAtBlockEnd = $anchor.parentOffset === parent.content.size;
+                    const isAtDocumentEnd = $anchor.pos >= docLength - 1;
 
-                    if (isAtBlockEnd) {
+                    if (isAtBlockEnd && isAtDocumentEnd) {
                         // Find the editor element below this one
                         const targetInfo = findNextEditor(
                             presentationId,
@@ -321,12 +322,12 @@ export const ArrowNavigationExtension = (
                     const { selection } = editor.state;
                     const { $anchor } = selection;
 
-                    // Check if cursor is at the start of the current text block
-                    // $anchor.parentOffset gives position within the parent node (0 means start)
-                    // We also need to check if we're in the first child of a block container
+                    // Check if cursor is at the start of the document
+                    // We need to verify both that we're at block start AND at the beginning of the document
                     const isAtBlockStart = $anchor.parentOffset === 0;
+                    const isAtDocumentStart = $anchor.pos === 1;
 
-                    if (isAtBlockStart) {
+                    if (isAtBlockStart && isAtDocumentStart) {
                         // Find the editor element above this one
                         const targetInfo = findNextEditor(
                             presentationId,

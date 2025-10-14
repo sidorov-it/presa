@@ -26,6 +26,60 @@ import { getNewLayoutWithTable } from '@/utils/getNewLayoutWithTable';
 import { getNewElement } from '@/utils/getNewElement';
 import { ElementType } from '@/types/elements';
 
+/**
+ * Convert HTML with lists to flat paragraphs to avoid extra empty lines when merging
+ */
+const convertListsToFlatParagraphs = (html: string): string => {
+    // Parse HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Find all list containers (ul, ol, taskList)
+    const lists = doc.querySelectorAll('ul, ol');
+
+    lists.forEach(list => {
+        const paragraphs: HTMLElement[] = [];
+        
+        // Extract all list items
+        const listItems = list.querySelectorAll('li');
+        
+        listItems.forEach(li => {
+            // Check if li contains a paragraph
+            const childParagraphs = li.querySelectorAll('p');
+            
+            if (childParagraphs.length > 0) {
+                // If li contains paragraphs, extract them
+                childParagraphs.forEach(p => {
+                    const newP = doc.createElement('p');
+                    // Copy all child nodes from the paragraph
+                    while (p.firstChild) {
+                        newP.appendChild(p.firstChild);
+                    }
+                    paragraphs.push(newP);
+                });
+            } else {
+                // If li doesn't contain a paragraph, wrap content in a paragraph
+                const newP = doc.createElement('p');
+                while (li.firstChild) {
+                    newP.appendChild(li.firstChild);
+                }
+                paragraphs.push(newP);
+            }
+        });
+
+        // Replace the list with the extracted paragraphs
+        const parent = list.parentNode;
+        if (parent) {
+            paragraphs.forEach(p => {
+                parent.insertBefore(p, list);
+            });
+            parent.removeChild(list);
+        }
+    });
+
+    return doc.body.innerHTML;
+};
+
 export const ElementContent = ({
     elementId,
     cellId,
@@ -888,16 +942,18 @@ export const ElementContent = ({
                         if (editorInPreviousLayout && currentEditor) {
                             const oldContentSize = editorInPreviousLayout.editor.state.doc.content.size - 1;
 
-                            // Get the text content from current editor to merge
-                            const currentTextContent = currentEditor.editor.getText();
+                            // Get the HTML content from current editor to merge (preserve structure)
+                            const currentHtmlContent = currentEditor.editor.getHTML();
+                            // Convert lists to flat paragraphs to avoid extra empty lines
+                            const flatHtmlContent = convertListsToFlatParagraphs(currentHtmlContent);
 
                             useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
-                            // Insert the text content at the end of previous editor
+                            // Insert the HTML content at the end of previous editor
                             editorInPreviousLayout.editor
                                 .chain()
                                 .setMeta('transaction', true)
                                 .focus('end')
-                                .insertContent(currentTextContent)
+                                .insertContent(flatHtmlContent)
                                 .run();
 
                             // Delete current element and layout
@@ -993,16 +1049,18 @@ export const ElementContent = ({
                         if (editorToUpdate && currentEditor) {
                             const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
 
-                            // Get the text content from current editor to merge
-                            const currentTextContent = currentEditor.editor.getText();
+                            // Get the HTML content from current editor to merge (preserve structure)
+                            const currentHtmlContent = currentEditor.editor.getHTML();
+                            // Convert lists to flat paragraphs to avoid extra empty lines
+                            const flatHtmlContent = convertListsToFlatParagraphs(currentHtmlContent);
 
                             useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
-                            // Insert the text content at the end of previous editor
+                            // Insert the HTML content at the end of previous editor
                             editorToUpdate.editor
                                 .chain()
                                 .setMeta('transaction', true)
                                 .focus('end')
-                                .insertContent(currentTextContent)
+                                .insertContent(flatHtmlContent)
                                 .run();
 
                             usePresentationStore
@@ -1052,16 +1110,18 @@ export const ElementContent = ({
                         if (editorToUpdate && currentEditor) {
                             const oldContentSize = editorToUpdate.editor.state.doc.content.size - 1;
 
-                            // Get the text content from current editor to merge
-                            const currentTextContent = currentEditor.editor.getText();
+                            // Get the HTML content from current editor to merge (preserve structure)
+                            const currentHtmlContent = currentEditor.editor.getHTML();
+                            // Convert lists to flat paragraphs to avoid extra empty lines
+                            const flatHtmlContent = convertListsToFlatParagraphs(currentHtmlContent);
 
                             useHistoryStore.getState().beginTransaction(presentationId, 'merge content');
-                            // Insert the text content at the end of previous editor
+                            // Insert the HTML content at the end of previous editor
                             editorToUpdate.editor
                                 .chain()
                                 .setMeta('transaction', true)
                                 .focus('end')
-                                .insertContent(currentTextContent)
+                                .insertContent(flatHtmlContent)
                                 .run();
 
                             usePresentationStore.getState().deleteLayout(presentationId, slideId, layoutId, true);
